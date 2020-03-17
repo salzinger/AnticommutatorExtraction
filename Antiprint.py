@@ -5,11 +5,19 @@ from qutip import *
 from qutip.solver import Options, Result, config, _solver_safety_check
 
 
-def productstate(up_atom,down_atom, N):
-    basislist = np.full(N,basis(3, 2))
+def productstateZ(up_atom, down_atom, N):
+    basislist = np.full(N, basis(3, 2))
     basislist[up_atom] = basis(3, 0)
     basislist[down_atom] = basis(3, 1)
-    #print(basislist)
+    # print(basislist)
+    return tensor(basislist).unit()
+
+
+def productstateX(up_atom, down_atom, N):
+    basislist = np.full(N, basis(3, 2))
+    basislist[up_atom] = basis(3, 0) + basis(3, 1)
+    basislist[down_atom] = - basis(3, 0) - basis(3, 1)
+    # print(basislist)
     return tensor(basislist).unit()
 
 
@@ -17,14 +25,14 @@ def bellstate(i, j, N):
     blist1 = []
     blist2 = []
     for n in range(0, N - 2):
-        blist1.append(identity(2))
-        blist2.append(identity(2))
+        blist1.append(identity(3))
+        blist2.append(identity(3))
 
-    blist1.insert(i, basis(2, 0))
-    blist1.insert(j, basis(2, 1))
+    blist1.insert(i, basis(3, 0))
+    blist1.insert(j, basis(3, 1))
 
-    blist2.insert(i, basis(2, 1))
-    blist2.insert(j, basis(2, 0))
+    blist2.insert(i, basis(3, 1))
+    blist2.insert(j, basis(3, 0))
 
     bell = tensor(blist1) + tensor(blist2)
 
@@ -32,16 +40,31 @@ def bellstate(i, j, N):
 
 
 def sigmaz(j, N):
-    oplist = np.full(N,identity(3))
+    oplist = np.full(N, identity(3))
     oplist[j] = Qobj([[1, 0, 0], [0, -1, 0], [0, 0, 0]])
     return tensor(oplist)
 
-def Magnetization(N):
-    sum=0
-    for j in range(0,N):
-        sum+=sigmaz(j,N)
-    #print(sum/N)
-    return sum/N
+
+def MagnetizationZ(N):
+    sum = 0
+    for j in range(0, N):
+        sum += sigmaz(j, N)
+    # print(sum/N)
+    return sum / 2
+
+
+def sigmax(j, N):
+    oplist = np.full(N, identity(3))
+    oplist[j] = Qobj([[0, 1, 0], [1, 0, 0], [0, 0, 0]])
+    return tensor(oplist)
+
+
+def MagnetizationX(N):
+    sum = 0
+    for j in range(0, N):
+        sum += sigmax(j, N)
+    # print(sum/N)
+    return sum / 2
 
 
 def disorder(E, N):
@@ -126,13 +149,13 @@ def H(R, N, C):
         # H_e=H_e+coupling(k,N,1)
         for j in range(0, N):
             if k > j:
-                Coupling = C / (np.abs(j - k))
+                Coupling = C  # * R / (np.abs(j - k))
                 hh += 1
                 HH = HH + 1.0 * (
                         upXY(j, N, Coupling) * downXY(k, N, Coupling) + downXY(j, N, Coupling) * upXY(k, N,
                                                                                                       Coupling))
 
-                #print("H", hh, ": Coherent XY dynamics between sites j=", j, "k=", k, "with Strength", Coupling)
+                # print("H", hh, ": Coherent XY dynamics between sites j=", j, "k=", k, "with Strength", Coupling)
 
     return HH
 
@@ -196,29 +219,39 @@ concav = np.zeros(timesteps)
 VNav = np.zeros(timesteps)
 disavgs = 1
 i = 1
+start_up_atom = 0
+start_down_atom = 3
+read_out_atom = 3
 radii = [0.5, 1, 1.5]
+realtime = 11
 
 
-def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
+def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, start_state, perturb_duration):
     for r in radii:
         for t in np.ones(disavgs):
             # print(i, "of", disavgs)
             # i = i + 1
-            realtime = 10
+
             print("Interaction Coefficient over one-half EIT bandwidth: ", "%6.3f" % (r ** (1 / 3)))
             print("Interparticle spacing in units of [Critical Radius R]: ", "%6.3f" % (a / r))
-            print("Start up-atom:", start_up_atom,"Start down-atom:", start_down_atom,"  , Readout atom:", read_out_atom)
+            print("Coherent hopping rate:", np.sqrt(J_eff(r, a, 1, 2)))
+            print("Incoherent hopping rate:", np.sqrt(G_eff(r, a, 1, 2)))
+            print("Incoherent scattering rate:", np.sqrt(g_eff(r, a, 1, 2)))
+            print("Start up-atom:", start_up_atom, "Start down-atom:", start_down_atom, "  , Readout atom:",
+                  read_out_atom)
             times = np.linspace(0.0, t * realtime, timesteps)
-            #results = []
-            #asklist = []
+            perturb_times = np.linspace(0.0, t * perturb_duration, timesteps)
+            # results = []
+            # asklist = []
             # for j in range(0,N):
-            #asklist.append(sigmaz(j,N))
+            # asklist.append(sigmaz(j,N))
             # result = mcsolve(H_eff(r,a,N) , productstate(0,N) , times, L_eff(r,a,N) , asklist, options=opts)
-            result1 = mesolve(H(r, N, 1), productstate(start_up_atom,start_down_atom, N), times, [], [Magnetization(N)], options=opts)
-            result2 = mesolve(H(r, N, 1) + H_eff(r, a, N), result1.states[timesteps - 1], times / realtime,
-                              L_eff(r, a, N), [Magnetization(N)],
+            result1 = mesolve(H(1, N, 1), start_state, times, [], [MagnetizationX(N), MagnetizationZ(N)], options=opts)
+            result2 = mesolve(H(1, N, 1) + H_eff(r, a, N), result1.states[timesteps - 1], perturb_times,
+                              L_eff(r, a, N), [MagnetizationX(N), MagnetizationZ(N)],
                               options=opts)
-            result3 = mesolve(H(r, N, 1), result2.states[timesteps - 1], times, [], [Magnetization(N)], options=opts)
+            result3 = mesolve(H(1, N, 1), result2.states[timesteps - 1], times, [],
+                              [MagnetizationX(N), MagnetizationZ(N)], options=opts)
 
             traceduu1 = []
             traceddd1 = []
@@ -228,6 +261,9 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
             purityC1 = []
             conc1 = []
             VN1 = []
+            mag1x = []
+            mag1z = []
+
             traceduu2 = []
             traceddd2 = []
             tracedbb2 = []
@@ -236,6 +272,9 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
             purityC2 = []
             conc2 = []
             VN2 = []
+            mag2x = []
+            mag2z = []
+
             traceduu3 = []
             traceddd3 = []
             tracedbb3 = []
@@ -244,12 +283,14 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
             purityC3 = []
             conc3 = []
             VN3 = []
-            #print(result1.expect)
-            #print(result1.states[99].ptrace(read_out_atom))
-            #print(result2.expect)
-            #print(result2.states[99].ptrace(read_out_atom))
-            #print(result3.expect)
-            #print(result3.states[99].ptrace(read_out_atom))
+            mag3x = []
+            mag3z = []
+
+            # print(result1.states[99].ptrace(read_out_atom))
+
+            # print(result2.states[99].ptrace(read_out_atom))
+
+            # print(result3.states[99].ptrace(read_out_atom))
 
             for t in range(0, timesteps):
                 traceduu1.append(np.abs(result1.states[t].ptrace(read_out_atom)[0][0][0]))
@@ -257,43 +298,52 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
                 tracedbb1.append(np.abs(result1.states[t].ptrace(read_out_atom)[2][0][2]))
                 # conc.append(concurrence(result.states[t]))
                 VN1.append(entropy_vn(result1.states[t]))
+                mag1x.append(result1.expect[0][t])
+                mag1z.append(result1.expect[1][t])
 
                 traceduu2.append(np.abs(result2.states[t].ptrace(read_out_atom)[0][0][0]))
                 traceddd2.append(np.abs(result2.states[t].ptrace(read_out_atom)[1][0][1]))
                 tracedbb2.append(np.abs(result2.states[t].ptrace(read_out_atom)[2][0][2]))
                 # conc2.append(concurrence(result.states2[t]))
                 VN2.append(entropy_vn(result2.states[t]))
+                mag2x.append(result2.expect[0][t])
+                mag2z.append(result2.expect[1][t])
 
                 traceduu3.append(np.abs(result3.states[t].ptrace(read_out_atom)[0][0][0]))
                 traceddd3.append(np.abs(result3.states[t].ptrace(read_out_atom)[1][0][1]))
                 tracedbb3.append(np.abs(result3.states[t].ptrace(read_out_atom)[2][0][2]))
                 # conc.append(concurrence(result.states[t]))
                 VN3.append(entropy_vn(result3.states[t]))
+                mag3x.append(result3.expect[0][t])
+                mag3z.append(result3.expect[1][t])
 
             fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
             axs[0].set_xlabel('Time [1/J]');
             axs[0].plot(times, np.abs(traceduu1) / disavgs)
             axs[0].plot(times, np.abs(traceddd1) / disavgs)
             axs[0].plot(times, np.abs(tracedbb1) / disavgs)
+
             # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
             # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
             # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
             # ax.plot(times, concav/disavgs, label="Concurrence")
             axs[0].plot(times, VN1, label="Von-Neumann Entropy")
             leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
-            #leg.get_frame().set_alpha(0.5)
+            # leg.get_frame().set_alpha(0.5)
             # plt.savefig("Phase 1 at t="+str(realtime)+" R_crit"+str(r)[0]+"."+str(r)[2]+".png", dpi=1000, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
             # plt.gcf().clear()
 
             axs[1].set_xlabel('Time [1/J]');
-            axs[1].plot(times / realtime, np.abs(traceduu2) / disavgs)
-            axs[1].plot(times / realtime, np.abs(traceddd2) / disavgs)
-            axs[1].plot(times / realtime, np.abs(tracedbb2) / disavgs)
+            axs[1].plot(perturb_times, np.abs(traceduu2) / disavgs)
+            axs[1].plot(perturb_times, np.abs(traceddd2) / disavgs)
+            axs[1].plot(perturb_times, np.abs(tracedbb2) / disavgs)
+
             # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
             # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
             # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
             # ax.plot(times, concav/disavgs, label="Concurrence")
-            axs[1].plot(times / realtime, VN2, label="Von-Neumann Entropy")
+            axs[1].plot(perturb_times, VN2, label="Von-Neumann Entropy")
+            axs[1].plot(perturb_times, np.full(100, np.log(2)))
             # leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
             # leg.get_frame().set_alpha(0.5)
             # plt.savefig("Phase 2 at t="+str(1)+" R_crit"+str(r)[0]+"."+str(r)[2]+".png", dpi=1000, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
@@ -305,8 +355,9 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
 
             axs[2].set_xlabel('Time [1/J]');
             axs[2].plot(times, np.abs(traceduu3) / disavgs, label="tr(rho_uu)")
-            axs[2].plot(times, np.abs(traceddd3) / disavgs, label="tr(rho_uu)")
-            axs[2].plot(times, np.abs(tracedbb3) / disavgs, label="tr(rho_uu)")
+            axs[2].plot(times, np.abs(traceddd3) / disavgs, label="tr(rho_dd)")
+            axs[2].plot(times, np.abs(tracedbb3) / disavgs, label="tr(rho_bb)")
+
             # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
             # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
             # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
@@ -315,6 +366,18 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom):
             leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
             leg.get_frame().set_alpha(0.5)
             # plt.savefig("t="+str(realtime)+"R_crit"+str(r)[0]+str(r)[2]+".png", dpi=100, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
+            plt.show()
+            plt.gcf().clear()
+
+            fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
+            axs[0].plot(times, mag1x)
+            axs[1].plot(perturb_times, mag2x)
+            axs[2].plot(times, mag3x, label="Magnetization x")
+            axs[0].plot(times, mag1z)
+            axs[1].plot(perturb_times, mag2z)
+            axs[2].plot(times, mag3z, label="Magnetization z")
+            leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
+            leg.get_frame().set_alpha(0.5)
             plt.show()
             plt.gcf().clear()
 
