@@ -9,16 +9,16 @@ def productstateZ(up_atom, down_atom, N):
     basislist = np.full(N, basis(3, 2))
     basislist[up_atom] = basis(3, 0)
     basislist[down_atom] = basis(3, 1)
-    # print(basislist)
-    return tensor(basislist).unit()
+    #print(basislist)
+    return tensor(basislist)
 
 
 def productstateX(up_atom, down_atom, N):
     basislist = np.full(N, basis(3, 2))
-    basislist[up_atom] = basis(3, 0) + basis(3, 1)
-    basislist[down_atom] = - basis(3, 0) - basis(3, 1)
-    # print(basislist)
-    return tensor(basislist).unit()
+    basislist[up_atom] = (basis(3, 0) + basis(3, 1)).unit()
+    basislist[down_atom] = (basis(3, 0) + basis(3, 1)).unit()
+    #print(basislist)
+    return tensor(basislist)
 
 
 def bellstate(i, j, N):
@@ -152,8 +152,7 @@ def H(R, N, C):
                 Coupling = C  # * R / (np.abs(j - k))
                 hh += 1
                 HH = HH + 1.0 * (
-                        upXY(j, N, Coupling) * downXY(k, N, Coupling) + downXY(j, N, Coupling) * upXY(k, N,
-                                                                                                      Coupling))
+                        upXY(j, N, Coupling) * downXY(k, N, Coupling) + downXY(j, N, Coupling) * upXY(k, N, Coupling))
 
                 # print("H", hh, ": Coherent XY dynamics between sites j=", j, "k=", k, "with Strength", Coupling)
 
@@ -184,22 +183,25 @@ def L_eff(R, a, N):
     sitelist = []
 
     for j in range(0, N):
+        L_j=0
         # L.append(scatter(j,N,1))
         for k in range(0, N):
             if k > j:
-                G = np.sqrt(G_eff(R, a, j, k))
-                L.append(upD(k, N, G) * downD(j, N, G))
+                G = - np.sqrt(G_eff(R, a, j, k))
+                L_j += (upD(k, N, G) * downD(j, N, G))
                 scatterindex.append(k)
                 # print("L",len(L)-1,": Transfer to scattering site k=",k,"from previous site j=",j," at distance=",a*np.abs(k-j),"with G_eff:","%6.5f" % G_eff(R,a,j,k))
-                L.append(upD(j, N, G) * downD(k, N, G))
+                #L.append(upD(j, N, G) * downD(k, N, G))
                 scatterindex.append(j)
                 # print("L",len(L)-1,": Transfer to scattering site j=",j,"from previous site k=",k,"at distance=",a*np.abs(k-j),"with G_eff:","%6.5f" % G_eff(R,a,j,k))
 
             if k != j:
-                g = np.sqrt(-1j * g_eff(R, a, j, k))
-                L.append(upD(k, N, g) * downD(k, N, g))
+                g = 1j * np.sqrt(g_eff(R, a, j, k))
+                L_j += (upD(k, N, g) * downD(k, N, g))
                 scatterindex.append(j)
                 # print("L",len(L)-1,": Scattering at j=",j,"due to impurity site k=",k,"at distance=",a*np.abs(k-j),"with g_eff:","%6.5f" % g_eff(R,a,j,k))
+        L.append(L_j)
+    print(L)
     return L
 
 
@@ -234,9 +236,9 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
 
             print("Interaction Coefficient over one-half EIT bandwidth: ", "%6.3f" % (r ** (1 / 3)))
             print("Interparticle spacing in units of [Critical Radius R]: ", "%6.3f" % (a / r))
-            print("Coherent hopping rate:", np.sqrt(J_eff(r, a, 1, 2)))
-            print("Incoherent hopping rate:", np.sqrt(G_eff(r, a, 1, 2)))
-            print("Incoherent scattering rate:", np.sqrt(g_eff(r, a, 1, 2)))
+            print("Coherent hopping rate:", J_eff(r, a, 1, 2))
+            print("Incoherent hopping rate:", G_eff(r, a, 1, 2))
+            print("Incoherent scattering rate:", g_eff(r, a, 1, 2))
             print("Start up-atom:", start_up_atom, "Start down-atom:", start_down_atom, "  , Readout atom:",
                   read_out_atom)
             times = np.linspace(0.0, t * realtime, timesteps)
@@ -246,13 +248,17 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
             # for j in range(0,N):
             # asklist.append(sigmaz(j,N))
             # result = mcsolve(H_eff(r,a,N) , productstate(0,N) , times, L_eff(r,a,N) , asklist, options=opts)
-            result1 = mesolve(H(1, N, 1), start_state, times, [], [MagnetizationX(N), MagnetizationZ(N)], options=opts)
+            result1 = mesolve(H(1, N, 1), start_state, times, [], [MagnetizationX(N)], options=opts,
+                              progress_bar=None)
             result2 = mesolve(H(1, N, 1) + H_eff(r, a, N), result1.states[timesteps - 1], perturb_times,
-                              L_eff(r, a, N), [MagnetizationX(N), MagnetizationZ(N)],
-                              options=opts)
+                              L_eff(r, a, N), [MagnetizationX(N)],
+                              options=opts,
+                              progress_bar=True)
             result3 = mesolve(H(1, N, 1), result2.states[timesteps - 1], times, [],
-                              [MagnetizationX(N), MagnetizationZ(N)], options=opts)
-
+                              [MagnetizationX(N)], options=opts,
+                              progress_bar=None)
+            '''
+            trace=[]
             traceduu1 = []
             traceddd1 = []
             tracedbb1 = []
@@ -286,13 +292,11 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
             mag3x = []
             mag3z = []
 
-            # print(result1.states[99].ptrace(read_out_atom))
+            #print(result1.states[0])#.ptrace([start_up_atom, start_down_atom]).tr())
+            #print(result2.states[99])#.ptrace([start_up_atom, start_down_atom]).tr())
+            #print(result3.states[99])#.ptrace([start_up_atom, start_down_atom]).tr())
 
-            # print(result2.states[99].ptrace(read_out_atom))
-
-            # print(result3.states[99].ptrace(read_out_atom))
-
-            for t in range(0, timesteps):
+            for t in range(0, 0*timesteps):
                 traceduu1.append(np.abs(result1.states[t].ptrace(read_out_atom)[0][0][0]))
                 traceddd1.append(np.abs(result1.states[t].ptrace(read_out_atom)[1][0][1]))
                 tracedbb1.append(np.abs(result1.states[t].ptrace(read_out_atom)[2][0][2]))
@@ -304,6 +308,7 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
                 traceduu2.append(np.abs(result2.states[t].ptrace(read_out_atom)[0][0][0]))
                 traceddd2.append(np.abs(result2.states[t].ptrace(read_out_atom)[1][0][1]))
                 tracedbb2.append(np.abs(result2.states[t].ptrace(read_out_atom)[2][0][2]))
+                trace.append(result2.states[t].tr())
                 # conc2.append(concurrence(result.states2[t]))
                 VN2.append(entropy_vn(result2.states[t]))
                 mag2x.append(result2.expect[0][t])
@@ -316,68 +321,21 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
                 VN3.append(entropy_vn(result3.states[t]))
                 mag3x.append(result3.expect[0][t])
                 mag3z.append(result3.expect[1][t])
-
+            
+            '''
             fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
-            axs[0].set_xlabel('Time [1/J]');
-            axs[0].plot(times, np.abs(traceduu1) / disavgs)
-            axs[0].plot(times, np.abs(traceddd1) / disavgs)
-            axs[0].plot(times, np.abs(tracedbb1) / disavgs)
-
-            # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
-            # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
-            # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
-            # ax.plot(times, concav/disavgs, label="Concurrence")
-            axs[0].plot(times, VN1, label="Von-Neumann Entropy")
-            leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
-            # leg.get_frame().set_alpha(0.5)
-            # plt.savefig("Phase 1 at t="+str(realtime)+" R_crit"+str(r)[0]+"."+str(r)[2]+".png", dpi=1000, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
-            # plt.gcf().clear()
-
-            axs[1].set_xlabel('Time [1/J]');
-            axs[1].plot(perturb_times, np.abs(traceduu2) / disavgs)
-            axs[1].plot(perturb_times, np.abs(traceddd2) / disavgs)
-            axs[1].plot(perturb_times, np.abs(tracedbb2) / disavgs)
-
-            # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
-            # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
-            # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
-            # ax.plot(times, concav/disavgs, label="Concurrence")
-            axs[1].plot(perturb_times, VN2, label="Von-Neumann Entropy")
-            axs[1].plot(perturb_times, np.full(100, np.log(2)))
-            # leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
-            # leg.get_frame().set_alpha(0.5)
-            # plt.savefig("Phase 2 at t="+str(1)+" R_crit"+str(r)[0]+"."+str(r)[2]+".png", dpi=1000, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
-            # plt.gcf().clear()
-
-            # summed=0
-            # for nt in range(0,ntraj):
-            # summed=summed+result.states[nt]
-
-            axs[2].set_xlabel('Time [1/J]');
-            axs[2].plot(times, np.abs(traceduu3) / disavgs, label="tr(rho_uu)")
-            axs[2].plot(times, np.abs(traceddd3) / disavgs, label="tr(rho_dd)")
-            axs[2].plot(times, np.abs(tracedbb3) / disavgs, label="tr(rho_bb)")
-
-            # ax.plot(times, np.abs(purityAav)/disavgs, label="Purity_site_0")
-            # ax.plot(times, np.abs(purityBav)/disavgs, label="PurityB")
-            # ax.plot(times, np.abs(purityCav)/disavgs, label="PurityC")
-            # ax.plot(times, concav/disavgs, label="Concurrence")
-            axs[2].plot(times, VN3, label="Von-Neumann Entropy")
+            axs[0].plot(times, result1.expect[0][:])
+            axs[0].set_xlabel('Time 1/J')
+            axs[1].plot(perturb_times, result2.expect[0][:])
+            axs[1].set_xlabel('Time 1/J')
+            axs[2].plot(times, result3.expect[0][:], label="Magnetization x")
+            axs[2].set_xlabel('Time 1/J')
+            #axs[0].plot(times, result1.expect[1][:])
+            #axs[1].plot(perturb_times, result2.expect[1][:])
+            #axs[2].plot(times, result3.expect[1][:], label="Magnetization z")
             leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
             leg.get_frame().set_alpha(0.5)
-            # plt.savefig("t="+str(realtime)+"R_crit"+str(r)[0]+str(r)[2]+".png", dpi=100, facecolor='w', edgecolor='w',orientation='portrait', papertype=None, format=None,transparent=False, bbox_inches=None, pad_inches=0.1,frameon=None, metadata=None)
-            plt.show()
-            plt.gcf().clear()
 
-            fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
-            axs[0].plot(times, mag1x)
-            axs[1].plot(perturb_times, mag2x)
-            axs[2].plot(times, mag3x, label="Magnetization x")
-            axs[0].plot(times, mag1z)
-            axs[1].plot(perturb_times, mag2z)
-            axs[2].plot(times, mag3z, label="Magnetization z")
-            leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
-            leg.get_frame().set_alpha(0.5)
             plt.show()
             plt.gcf().clear()
 
