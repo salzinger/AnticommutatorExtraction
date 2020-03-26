@@ -9,7 +9,7 @@ def productstateZ(up_atom, down_atom, N):
     basislist = np.full(N, basis(3, 2))
     basislist[up_atom] = basis(3, 0)
     basislist[down_atom] = basis(3, 1)
-    #print(basislist)
+    # print(basislist)
     return tensor(basislist)
 
 
@@ -17,22 +17,64 @@ def productstateX(up_atom, down_atom, N):
     basislist = np.full(N, basis(3, 2))
     basislist[up_atom] = (basis(3, 0) + basis(3, 1)).unit()
     basislist[down_atom] = (basis(3, 0) + basis(3, 1)).unit()
-    #print(basislist)
+    # print(basislist)
     return tensor(basislist)
 
 
-def bellstate(i, j, N):
-    blist1 = []
-    blist2 = []
-    for n in range(0, N - 2):
-        blist1.append(identity(3))
-        blist2.append(identity(3))
+def bellstate1(i, j, N):
+    blist1 = np.full(N, basis(3, 2))
+    blist2 = np.full(N, basis(3, 2))
 
-    blist1.insert(i, basis(3, 0))
-    blist1.insert(j, basis(3, 1))
+    blist1[i] = basis(3, 0)
+    blist1[j] = basis(3, 1)
 
-    blist2.insert(i, basis(3, 1))
-    blist2.insert(j, basis(3, 0))
+    blist2[i] = basis(3, 1)
+    blist2[j] = basis(3, 0)
+
+    bell = tensor(blist1) + tensor(blist2)
+
+    return bell.unit()
+
+
+def bellstate2(i, j, N):
+    blist1 = np.full(N, basis(3, 2))
+    blist2 = np.full(N, basis(3, 2))
+
+    blist1[i] = basis(3, 0)
+    blist1[j] = basis(3, 1)
+
+    blist2[i] = basis(3, 1)
+    blist2[j] = basis(3, 0)
+
+    bell = tensor(blist1) - tensor(blist2)
+
+    return bell.unit()
+
+
+def bellstate3(i, j, N):
+    blist1 = np.full(N, basis(3, 2))
+    blist2 = np.full(N, basis(3, 2))
+
+    blist1[i] = basis(3, 1)
+    blist1[j] = basis(3, 1)
+
+    blist2[i] = basis(3, 0)
+    blist2[j] = basis(3, 0)
+
+    bell = tensor(blist1) - tensor(blist2)
+
+    return bell.unit()
+
+
+def bellstate4(i, j, N):
+    blist1 = np.full(N, basis(3, 2))
+    blist2 = np.full(N, basis(3, 2))
+
+    blist1[i] = basis(3, 1)
+    blist1[j] = basis(3, 1)
+
+    blist2[i] = basis(3, 0)
+    blist2[j] = basis(3, 0)
 
     bell = tensor(blist1) + tensor(blist2)
 
@@ -151,7 +193,7 @@ def H(R, N, C):
             if k > j:
                 Coupling = C  # * R / (np.abs(j - k))
                 hh += 1
-                HH = HH + 1.0 * (
+                HH += 1.0 * (
                         upXY(j, N, Coupling) * downXY(k, N, Coupling) + downXY(j, N, Coupling) * upXY(k, N, Coupling))
 
                 # print("H", hh, ": Coherent XY dynamics between sites j=", j, "k=", k, "with Strength", Coupling)
@@ -168,7 +210,7 @@ def H_eff(R, a, N):
             if k > j:
                 h_e + 1
                 J = np.sqrt(J_eff(R, a, j, k))
-                H_e = H_e + 0.5 * (upD(j, N, J) * downD(k, N, J) + upD(k, N, J) * downD(j, N, J))
+                H_e += 0.5 * (upD(j, N, J) * downD(k, N, J) + upD(k, N, J) * downD(j, N, J))
                 # print("H",h_e,": Exchange dynamics between sites k=",k,"j=",j,"at distance",a*np.abs(k-j),"with J_eff:","%6.5f" % J_eff(R,a,j,k),H_e)
 
     return H_e
@@ -183,7 +225,7 @@ def L_eff(R, a, N):
     sitelist = []
 
     for j in range(0, N):
-        L_j=0
+        L_j = 0
         # L.append(scatter(j,N,1))
         for k in range(0, N):
             if k > j:
@@ -191,7 +233,7 @@ def L_eff(R, a, N):
                 L_j += (upD(k, N, G) * downD(j, N, G))
                 scatterindex.append(k)
                 # print("L",len(L)-1,": Transfer to scattering site k=",k,"from previous site j=",j," at distance=",a*np.abs(k-j),"with G_eff:","%6.5f" % G_eff(R,a,j,k))
-                #L.append(upD(j, N, G) * downD(k, N, G))
+                # L.append(upD(j, N, G) * downD(k, N, G))
                 scatterindex.append(j)
                 # print("L",len(L)-1,": Transfer to scattering site j=",j,"from previous site k=",k,"at distance=",a*np.abs(k-j),"with G_eff:","%6.5f" % G_eff(R,a,j,k))
 
@@ -201,7 +243,7 @@ def L_eff(R, a, N):
                 scatterindex.append(j)
                 # print("L",len(L)-1,": Scattering at j=",j,"due to impurity site k=",k,"at distance=",a*np.abs(k-j),"with g_eff:","%6.5f" % g_eff(R,a,j,k))
         L.append(L_j)
-    print(L)
+    # print(L)
     return L
 
 
@@ -211,7 +253,7 @@ timesteps = 100
 ntraj = 200
 statelist = []
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
-
+'''
 tracedEEav = np.zeros(timesteps)
 tracedGGav = np.zeros(timesteps)
 purityAav = np.zeros(timesteps)
@@ -219,21 +261,34 @@ purityBav = np.zeros(timesteps)
 purityCav = np.zeros(timesteps)
 concav = np.zeros(timesteps)
 VNav = np.zeros(timesteps)
-disavgs = 1
+
 i = 1
 start_up_atom = 0
 start_down_atom = 3
 read_out_atom = 3
 radii = [0.5, 1, 1.5]
 realtime = 11
+'''
+disavgs = 1
 
 
-def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, start_state, perturb_duration):
+def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, start_state, perturb_duration, timesteps,
+         opts):
     for r in radii:
         for t in np.ones(disavgs):
             # print(i, "of", disavgs)
             # i = i + 1
 
+            overlap_op1 = bellstate1(start_up_atom, start_down_atom, N) * bellstate1(start_up_atom, start_down_atom,
+                                                                                       N).dag()
+            overlap_op2 = bellstate2(start_up_atom, start_down_atom, N) * bellstate2(start_up_atom, start_down_atom,
+                                                                                       N).dag()
+            overlap_op3 = bellstate3(start_up_atom, start_down_atom, N) * bellstate3(start_up_atom, start_down_atom,
+                                                                                       N).dag()
+            overlap_op4 = bellstate4(start_up_atom, start_down_atom, N) * bellstate4(start_up_atom, start_down_atom,
+                                                                                       N).dag()
+
+            ops = [MagnetizationX(N), overlap_op1, overlap_op2, overlap_op3, overlap_op4]
             print("Interaction Coefficient over one-half EIT bandwidth: ", "%6.3f" % (r ** (1 / 3)))
             print("Interparticle spacing in units of [Critical Radius R]: ", "%6.3f" % (a / r))
             print("Coherent hopping rate:", J_eff(r, a, 1, 2))
@@ -248,15 +303,21 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
             # for j in range(0,N):
             # asklist.append(sigmaz(j,N))
             # result = mcsolve(H_eff(r,a,N) , productstate(0,N) , times, L_eff(r,a,N) , asklist, options=opts)
-            result1 = mesolve(H(1, N, 1), start_state, times, [], [MagnetizationX(N)], options=opts,
+            result1 = mesolve(H(1, N, 1), start_state, times, [], ops, options=opts,
                               progress_bar=None)
             result2 = mesolve(H(1, N, 1) + H_eff(r, a, N), result1.states[timesteps - 1], perturb_times,
-                              L_eff(r, a, N), [MagnetizationX(N)],
+                              L_eff(r, a, N), ops,
                               options=opts,
                               progress_bar=True)
             result3 = mesolve(H(1, N, 1), result2.states[timesteps - 1], times, [],
-                              [MagnetizationX(N)], options=opts,
+                              ops, options=opts,
                               progress_bar=None)
+
+            # print(result1.states[0].ptrace([start_up_atom, start_down_atom]).eigenenergies())
+            # print(result1.states[99].ptrace([start_up_atom, start_down_atom]))
+            # print(result2.states[99].ptrace([start_up_atom, start_down_atom]))
+            # print(result3.states[99].ptrace([start_up_atom, start_down_atom]))
+
             '''
             trace=[]
             traceduu1 = []
@@ -325,14 +386,20 @@ def call(N, radii, start_up_atom, start_down_atom, read_out_atom, realtime, star
             '''
             fig, axs = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
             axs[0].plot(times, result1.expect[0][:])
+            axs[0].plot(times, result1.expect[1][:])
+            axs[0].plot(times, result1.expect[2][:])
+            axs[0].plot(times, result1.expect[3][:])
+            axs[0].plot(times, result1.expect[4][:])
             axs[0].set_xlabel('Time 1/J')
             axs[1].plot(perturb_times, result2.expect[0][:])
+            axs[1].plot(perturb_times, result2.expect[1][:])
             axs[1].set_xlabel('Time 1/J')
             axs[2].plot(times, result3.expect[0][:], label="Magnetization x")
+            axs[2].plot(times, result3.expect[1][:], label="Bell Overlap")
             axs[2].set_xlabel('Time 1/J')
-            #axs[0].plot(times, result1.expect[1][:])
-            #axs[1].plot(perturb_times, result2.expect[1][:])
-            #axs[2].plot(times, result3.expect[1][:], label="Magnetization z")
+            # axs[0].plot(times, result1.expect[1][:])
+            # axs[1].plot(perturb_times, result2.expect[1][:])
+            # axs[2].plot(times, result3.expect[1][:], label="Magnetization z")
             leg = plt.legend(loc='upper right', ncol=1, shadow=True, fancybox=False)
             leg.get_frame().set_alpha(0.5)
 
