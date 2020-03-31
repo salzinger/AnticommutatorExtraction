@@ -86,32 +86,51 @@ def L(Gamma,N):
         L += tensor(oplist)
     return L
 
-times = np.linspace(0, 40, 100)
+
+timesteps=200
+times = np.linspace(0, 80, timesteps)
 
 op=0
-oc=0.4
-Gamma=6
+oc=0.3
+Gamma=0.4
 N=2
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
 result = mesolve(H(op,oc,1,N), productstateX(0,1,N), times,[L(Gamma,N)], [MagnetizationX(N),MagnetizationZ(N),sigmaz(0,N),sigmax(0,N)],options=opts)
 
-ups=np.zeros(100)
-downs=np.zeros(100)
+ups=np.zeros(timesteps)
+downs=np.zeros(timesteps)
+ground=np.zeros(timesteps)
+excited=np.zeros(timesteps)
 
-for t in range(0,100):
-    ups[t]=result.states[t].ptrace(1)[0][0][0]
-    downs[t]=result.states[t].ptrace(1)[1][0][1]
+for t in range(0,timesteps):
+    ups[t]=np.abs(result.states[t].ptrace(0)[0][0][0])
+    downs[t]=np.abs(result.states[t].ptrace(0)[1][0][1])
+    ground[t]=np.abs(result.states[t].ptrace(0)[3][0][3])
+    excited[t]=np.abs(result.states[t].ptrace(0)[2][0][2])
     #print(result.states[t].ptrace(0)[0][0][0])
 
 
 fig, ax = plt.subplots()
 ax.plot(times, result.expect[0],label="MagnetizationX");
-ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
-ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)");
 ax.plot(times, result.expect[3],label="Exp(SigmaX,0)",linestyle='--');
-ax.plot(times, np.abs(ups),label="Tr(rho_0,uu)",linestyle='--');
-ax.plot(times, np.abs(downs),label="Tr(rho_0,dd)",linestyle='-');
+ax.plot(times, result.expect[1],label="MagnetizationZ");
+ax.plot(times, result.expect[2],label="Exp(SigmaZ,0)",linestyle='--');
+#ax.plot(times, np.abs(ups),label="Tr_1(rho,uu)",linestyle='--');
+#ax.plot(times, np.abs(downs),label="Tr_1(rho,dd)",linestyle='-');
+ax.set_xlabel('Time [1/J]');
+ax.set_ylabel('');
+leg = plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
+leg.get_frame().set_alpha(0.5)
+plt.show(fig)
+fig, ax = plt.subplots()
+ax.plot(times, result.expect[0],label="MagnetizationX");
+#ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
+ax.plot(times, np.abs(ups),label="Tr_1(rho,uu)",linestyle='--');
+ax.plot(times, np.abs(downs),label="Tr_1(rho,dd)",linestyle='--');
+ax.plot(times, np.abs(excited),label="Tr_1(rho,ee)",linestyle='--');
+ax.plot(times, np.abs(ground),label="Tr_1(rho,gg)",linestyle='--');
+
 ax.set_xlabel('Time [1/J]');
 ax.set_ylabel('');
 leg = plt.legend(loc='best', ncol=1, shadow=True, fancybox=True)
