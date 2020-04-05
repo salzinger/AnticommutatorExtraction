@@ -138,12 +138,13 @@ print(Coupling(1, 0, 2))
 print(productstateZ(0, 1, 2))
 print(Coupling(1, 0, 2) * productstateZ(0, 1, 2))
 timesteps = 200
-times = np.linspace(0, 1, timesteps)
+endtime = 0.1
+times = np.linspace(0, endtime, timesteps)
 
 J = 0
 op = 0
-Omega = 0.1
-Gamma = 0.1
+Omega = 1
+Gamma = 1
 Delta = 10
 N = 2
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
@@ -171,33 +172,43 @@ for t in range(0, timesteps):
 
 fig, ax = plt.subplots(2,1)
 
-ax[0].plot(times, result.expect[0], label="MagnetizationX");
-ax[0].plot(times, result1.expect[0], label="MagnetizationX_eff");
+#ax[0].plot(times, result.expect[0], label="MagnetizationX");
+#ax[0].plot(times, result1.expect[0], label="MagnetizationX_eff", linestyle='', marker='o', markersize='1',color='green');
+#ax[0].plot(times, (1-0.5*Gamma*Omega**2*times/(4*Delta**2+Gamma**2)),label='1-t*Gamma*Omega^2/(8*Delta^2+2*Gamma^2)')
 #ax.plot(times, result.expect[3], label="Exp(SigmaX,0)", linestyle='--');
-ax[0].plot(times, result1.expect[1], label="MagnetizationZ_eff");
+#ax[0].plot(times, result1.expect[1], label="MagnetizationZ_eff");
 #ax.plot(times, result.expect[2], label="Exp(SigmaZ,0)", linestyle='--');
 #ax[0].plot(times, np.abs(ups),label="Tr_1(rho,uu)",linestyle='--');
-#ax[0].plot(times, np.abs(excited), label="Tr_1(rho,ee)", linestyle='--',color='orange');
-ax[0].plot(times, np.abs(downs1),label="Tr_1(rho,dd)_eff",linestyle='--',color='green');
+#ax[0].plot(times, np.abs(downs1),label="Tr_1(rho,dd)_eff",linestyle='--',color='green');
 #ax[0].plot(times, np.abs(ground), label="Tr_1(rho,gg)", linestyle='--',color='grey');
-ax[0].set_xlabel('Time [1/Gamma]');
-ax[0].set_ylabel('');
-ax[0].legend(loc="upper right")
+#ax[0].set_xlabel('Time [1/Gamma]');
+#ax[0].set_ylabel('');
+#ax[0].legend(loc="upper right")
 
-# ax.plot(times, result.expect[0], label="MagnetizationX");
+#ax[0].plot(times, result1.expect[0], label="MagnetizationX_eff");
+#ax[0].plot(times, result.expect[0], label="MagnetizationX");
 # ax.plot(times, 0.5*np.exp(-(oc/Gamma)*times),label='0.5*exp(-(oc/Gamma)*t)')
 # ax.plot(times, result.expect[1],label="MagnetizationZ",linestyle='--',marker='o',markersize='2');
 # ax.plot(times, np.abs(ups), label="Tr_1(rho,uu)", linestyle='--');
-# ax.plot(times, np.abs(downs), label="Tr_1(rho,dd)", linestyle='--');
-ax[1].plot(times, (1-Gamma*Omega**2*times/(4*Delta**2+Gamma**2))-result.expect[0], label="eff - MagnetizationX");
-ax[1].plot(times, np.abs(excited), label="Tr_1(rho,ee)", linestyle='--',color='orange');
-ax[1].plot(times, (np.abs(downs1) - np.abs(downs)), label="eff - Tr_1(rho,dd)", linestyle='', marker='o', markersize='1',color='green');
-# ax.plot(times, np.abs(ground), label="Tr_1(rho,gg)", linestyle='--');
-ax[1].plot(times, (np.abs(ground1) - np.abs(ground)), label="eff - Tr_1(rho,gg)", linestyle='', marker='o',
-        markersize='1',color='gray');
+#plt.ylim(-.05,0.6)
+ax[1].plot(times, np.abs(downs), label="Tr_1(rho,dd)", linestyle='-');
+ax[1].plot(times, (np.abs(downs1)), label="Tr_1(rho,dd)_eff", linestyle='', marker='o', markersize='1',color='green');
+ax[1].plot(times, np.heaviside(0.5-0.5*Gamma*Omega**2*times/(4*Delta**2+Gamma**2),0)*(0.5-0.5*Gamma*Omega**2*times/(4*Delta**2+Gamma**2)),label='0.5-t*Gamma*Omega^2/(8*Delta^2+2*Gamma^2)')
 ax[1].set_xlabel('Time [1/Gamma]');
 ax[1].set_ylabel('');
 ax[1].legend(loc="right")
+
+
+#ax[1].plot(times, np.abs(excited), label="Tr_1(rho,ee)", linestyle='--',color='orange');
+ax[0].plot(times,np.abs(excited), label="Tr_1(rho,ee)", linestyle='--',color='orange');
+#ax[1].plot(times, result.expect[0]-(1-Gamma*Omega**2*times/(8*Delta**2+2*Gamma**2)), label="MagnetizationX(t)-(1-t*Gamma*Omega^2/(8*Delta^2+2*Gamma^2))");
+ax[0].plot(times, result.expect[0]-result1.expect[0], label="MagnetizationX(t)-MagnetizationX(t)_eff");
+# ax.plot(times, np.abs(ground), label="Tr_1(rho,gg)", linestyle='--');
+#ax[1].plot(times, (np.abs(ground1) - np.abs(ground)), label="eff - Tr_1(rho,gg)", linestyle='', marker='o',
+        #markersize='1',color='gray');
+ax[0].set_xlabel('Time [1/Gamma]');
+ax[0].set_ylabel('');
+ax[0].legend(loc="right")
 
 # fig1, ax1 = plt.subplots()
 # ax1.plot(times, result.expect[4],label="a2sig11");
