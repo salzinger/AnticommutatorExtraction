@@ -94,7 +94,7 @@ def Coupling(Omega_c, j, N):
 def H(J, N):
     H = 0
     for j in range(0, N):
-        H += 0*sigmaz(j, N)
+        H += 0 * sigmaz(j, N) + Qobj([[2, 0], [0, 2]])
         for m in range(0, N):
             if m < j:
                 H += J * (sigmap(m, N) * sigmam(j, N) + sigmam(m, N) * sigmap(j, N))
@@ -104,10 +104,22 @@ def H(J, N):
 def H1(N):
     H = 0
     for j in range(0, N):
-        H += 100*(sigmap(j, N) + sigmam(j, N))
+        H += 1 * (sigmap(j, N))
     return H
 
-print(H1(2))
+
+def H2(N):
+    H = 0
+    for j in range(0, N):
+        H += 1 * (sigmam(j, N))
+    return H
+
+
+print(H(0, 1))
+print(H1(1))
+print(H2(1))
+
+
 def L(Gamma, N):
     up, down = twobasis()
     L = 0
@@ -148,21 +160,23 @@ def H_eff_delta(Gamma, Omega, Delta, N):
     return H
 
 
-
 timesteps = 200
 endtime = 1
-perturbtime = 0.01
+perturbtime = 0.1
 
 t = np.linspace(0, perturbtime, timesteps)
-func = lambda t: np.sin(t * 5000)
-noisy_func = lambda t: func(t+0.000*np.random.randn(t.shape[0]))
-noisy_data = noisy_func(t)
-S = Cubic_Spline(t[0], t[-1], noisy_data)
-plt.figure()
-plt.plot(t, func(t))
-plt.plot(t, noisy_data, 'o')
-plt.plot(t, S(t), lw=2)
-plt.show()
+
+random_phase = 0.00 * np.random.randn(t.shape[0])
+
+func1 = lambda t: np.exp(-1j * t * 100)
+noisy_func1 = lambda t: func1(t + random_phase)
+noisy_data1 = noisy_func1(t)
+S1 = Cubic_Spline(t[0], t[-1], noisy_data1)
+
+func2 = lambda t: np.exp(1j * t * 100)
+noisy_func2 = lambda t: func2(t + random_phase)
+noisy_data2 = noisy_func2(t)
+S2 = Cubic_Spline(t[0], t[-1], noisy_data2)
 
 times = np.linspace(0, endtime, timesteps)
 perturb_times = np.linspace(0, perturbtime, timesteps)
@@ -172,43 +186,51 @@ Omega = 0
 Gamma = 0
 Delta = 0
 N = 1
-ops = [MagnetizationX(N), MagnetizationZ(N)]
+Exps = [MagnetizationX(N), MagnetizationZ(N)]
 
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
-result1 = mesolve(H(0, N), productstateZ(0, 0, N), times, [], ops, options=opts,
+result1 = mesolve(H(0, N), productstateZ(0, 0, N), times, [], Exps, options=opts,
                   progress_bar=True)
 
-result2 = mesolve([H(0, N), [H1(N), S]], result1.states[timesteps - 1],
+result2 = mesolve([H(0, N), [H1(N), S1], [H2(N), S2]], result1.states[timesteps - 1],
                   perturb_times,
-                  [], ops,
+                  [], Exps,
                   options=opts,
                   progress_bar=True)
 
 result3 = mesolve(H(0, N), result2.states[timesteps - 1], times, [],
-                  ops, options=opts,
+                  Exps, options=opts,
                   progress_bar=True)
 
+fig, ax = plt.subplots(2, 3)
+
+ax[0, 0].plot(t, np.imag(func1(t)))
+ax[0, 0].plot(t, noisy_data1, 'o')
+ax[0, 0].plot(t, S1(t), lw=2)
+
+ax[0, 1].plot(t, np.imag(func2(t)))
+ax[0, 1].plot(t, noisy_data2, 'o')
+ax[0, 1].plot(t, S2(t), lw=2)
+
+ax[0, 2].plot(t, np.imag(func2(t))+np.imag(func1(t)))
 
 
+# ax[0].plot(times, result1.expect[0], label="MagnetizationX");
+ax[1, 0].plot(times, result1.expect[1], label="MagnetizationZ");
+ax[1, 0].set_xlabel('Time [1/Omega]');
+ax[1, 0].set_ylabel('');
+#ax[1, 0].legend(loc="upper right")
 
-fig, ax = plt.subplots(1,3)
-#ax[0].plot(times, result1.expect[0], label="MagnetizationX");
-ax[0].plot(times, result1.expect[1], label="MagnetizationZ");
-ax[0].set_xlabel('Time [1/Omega]');
-ax[0].set_ylabel('');
-ax[0].legend(loc="upper right")
+# ax[1].plot(perturb_times, result2.expect[0], label="MagnetizationX");
+ax[1, 1].plot(perturb_times, result2.expect[1], label="MagnetizationZ");
+ax[1, 1].set_xlabel('Time [1/Omega]');
+ax[1, 1].set_ylabel('');
+#ax[1, 1].legend(loc="right")
 
-#ax[1].plot(perturb_times, result2.expect[0], label="MagnetizationX");
-ax[1].plot(perturb_times, result2.expect[1], label="MagnetizationZ");
-ax[1].set_xlabel('Time [1/Omega]');
-ax[1].set_ylabel('');
-ax[1].legend(loc="right")
-
-
-#ax[2].plot(times, result3.expect[0], label="MagnetizationX");
-ax[2].plot(times, result3.expect[1], label="MagnetizationZ");
-ax[2].set_xlabel('Time [1/Omega]');
-ax[2].set_ylabel('');
-ax[2].legend(loc="right")
+# ax[2].plot(times, result3.expect[0], label="MagnetizationX");
+ax[1, 2].plot(times, result3.expect[1], label="MagnetizationZ");
+ax[1, 2].set_xlabel('Time [1/Omega]');
+ax[1, 2].set_ylabel('');
+#ax[1, 2].legend(loc="right")
 plt.show()
