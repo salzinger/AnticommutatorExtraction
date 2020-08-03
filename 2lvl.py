@@ -136,6 +136,8 @@ Measure = sigmax(0, 1)
 
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
+
+
 result_t1 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1, [], Exps, options=opts,
                   progress_bar=True)
 
@@ -154,17 +156,17 @@ prod_BA= result_AB.states[timesteps - 1].dag() * Measure * result_t1t2.states[ti
 Commutator = prod_AB - prod_BA
 
 
-result1 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1, [], Exps, options=opts,
-                  progress_bar=True)
 
-result2 = mesolve([H0(omega, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], result1.states[timesteps - 1],
-                 times, [], Exps, options=opts, progress_bar=True)
+result2 = mesolve([H0(omega, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], result_t1.states[timesteps - 1],
+                  perturb_times, [], Exps, options=opts, progress_bar=True)
 
-result3 = mesolve(H0(omega, N), Perturb*result_t1.states[timesteps - 1], t2, [],
+result3 = mesolve(H0(omega, N), result2.states[timesteps - 1], t2, [],
                   Exps, options=opts,
                   progress_bar=True)
 
-print(Commutator)
+
+
+
 
 print(H0(omega, N))
 print(H1(Omega_R, N))
@@ -188,43 +190,46 @@ ax[0, 2].set_xlabel('Time [2 Pi / Omega_R]')
 ax[0, 2].set_xlim([0.5, 0.7])
 # ax[0, 2].set_ylabel('Interpolated coupling amplitude');
 
-ax[1, 0].plot(times, result1.expect[0], label="MagnetizationX")
-ax[1, 0].plot(times, result1.expect[1], label="MagnetizationZ")
+ax[1, 0].plot(times, result_t1.expect[0], label="MagnetizationX")
+ax[1, 0].plot(times, result_t1.expect[1], label="MagnetizationZ")
 ax[1, 0].set_xlabel('Free Evolution Time [2 Pi / Omega_R]')
 ax[1, 0].set_ylabel('Magnetization')
 ax[1, 0].legend(loc="upper right")
-ax[1, 0].set_ylim([-1, 1])
+#ax[1, 0].set_ylim([-1, 1])
 
 ax[1, 1].plot(perturb_times, result2.expect[0], label="MagnetizationX")
 ax[1, 1].plot(perturb_times, result2.expect[1], label="MagnetizationZ")
 ax[1, 1].set_xlabel('Perturbation Time [2 Pi / Omega_R]')
 ax[1, 1].legend(loc="right")
-ax[1, 1].set_ylim([-1, 1])
+#ax[1, 1].set_ylim([-1, 1])
 
 ax[1, 2].plot(times, result3.expect[0], label="MagnetizationX")
 ax[1, 2].plot(times, result3.expect[1], label="MagnetizationZ")
 ax[1, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
 ax[1, 2].legend(loc="right")
 ax[1, 2].set_ylim([-1, 1])
-plt.show()
 
-ax[2, 0].plot(times, result1.expect[0], label="MagnetizationX")
-ax[2, 0].plot(times, result1.expect[1], label="MagnetizationZ")
+
+ax[2, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
+ax[2, 0].plot(t1, result_t1.expect[1], label="MagnetizationZ")
 ax[2, 0].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
 ax[2, 0].legend(loc="right")
-ax[2, 0].set_ylim([-1, 1])
-plt.show()
+#ax[2, 0].set_ylim([-1, 1])
 
-ax[2, 1].plot(times, result_AB.expect[0], label="MagnetizationX")
-ax[2, 1].plot(times, result_AB.expect[1], label="MagnetizationZ")
+
+ax[2, 1].plot(t2, result_AB.expect[0], label="MagnetizationX")
+ax[2, 1].plot(t2, result_AB.expect[1], label="MagnetizationZ")
 ax[2, 1].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
 ax[2, 1].legend(loc="right")
-ax[2, 1].set_ylim([-1, 1])
-plt.show()
+#ax[2, 1].set_ylim([-1, 1])
 
-ax[2, 2].plot(times, Commutator, label="Commutator")
-#ax[2, 2].plot(times, ommutator, label="MagnetizationZ")
+
+ax[2, 2].plot(t1t2, result_t1t2.expect[0], label="MagnetizationX")
+ax[2, 2].plot(t1t2, result_t1t2.expect[1], label="MagnetizationZ")
 ax[2, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
 ax[2, 2].legend(loc="right")
-ax[2, 2].set_ylim([-1, 1])
+#ax[2, 2].set_ylim([-1, 1])
 plt.show()
+
+
+print(1j*Commutator)
