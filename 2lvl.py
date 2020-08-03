@@ -75,103 +75,156 @@ def MagnetizationX(N):
 def H0(omega, N):
     H = 0
     for j in range(0, N):
-        H += 1 * omega/2 * sigmaz(j, N)
+        H += 1 * omega / 2 * sigmaz(j, N)
     return H
 
 
-def H1(Omega_R,j,N):
+def H1(Omega_R, N):
     H = 0
     for j in range(0, N):
         H += Omega_R * (sigmap(j, N))
     return H
 
 
-def H2(Omega_R,j,N):
+def H2(Omega_R, N):
     H = 0
     for j in range(0, N):
         H += Omega_R * (sigmam(j, N))
     return H
 
+
 N = 1
 
-j=0
+j = 0
 
-omega = 2.*np.pi*20
+omega = 2. * np.pi * 30
 
-Omega_R = 2.*np.pi*1
-
+Omega_R = 2. * np.pi * 1
 
 print('Initial state ....')
 print(productstateZ(0, 0, N))
+print(sigmaz(0,N)*productstateZ(0, 0, N))
 
-timesteps = 200
+timesteps = 400
 endtime = 1
 
-t = np.linspace(0, endtime, timesteps)#Perturbtime?
+t = np.linspace(0, endtime, timesteps)
 times = np.linspace(0, endtime, timesteps)
+t1 = np.linspace(0, endtime, timesteps)
+t2 = np.linspace(0, endtime, timesteps)
+t1t2 = np.linspace(0, 2*endtime, 2*timesteps)
 perturb_times = np.linspace(0, endtime, timesteps)
 
-random_phase = 0.00 * np.random.randn(t.shape[0])
+random_phase = 0.007 * np.random.randn(t.shape[0])
 
 func1 = lambda t: np.exp(-1j * t * omega)
-#noisy_data1 = func1(t)
+# noisy_data1 = func1(t)
 noisy_func1 = lambda t: func1(t + random_phase)
 noisy_data1 = noisy_func1(t)
 S1 = Cubic_Spline(t[0], t[-1], noisy_data1)
 
 func2 = lambda t: np.exp(1j * t * omega)
-#noisy_data2 = func2(t)
+# noisy_data2 = func2(t)
 noisy_func2 = lambda t: func2(t + random_phase)
 noisy_data2 = noisy_func2(t)
 S2 = Cubic_Spline(t[0], t[-1], noisy_data2)
 
 Exps = [MagnetizationX(N), MagnetizationZ(N)]
 
+Perturb = sigmax(0, 1)
+Measure = sigmax(0, 1)
+
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
-result1 = mesolve(H0(omega, N), productstateZ(0, 0, N), times, [], Exps, options=opts,
+result_t1 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1, [], Exps, options=opts,
                   progress_bar=True)
 
-result2 = mesolve([H0(omega, N), [H1(Omega_R,j,N), S1], [H2(Omega_R,j,N), S2]], productstateZ(0, 0, N), times,[], Exps,options=opts,progress_bar=True)
-
-result3 = mesolve(H0(omega, N), result2.states[timesteps - 1], times, [],
+result_t1t2 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1t2, [],
                   Exps, options=opts,
                   progress_bar=True)
 
-print(H0(omega, N))
-print(H1(Omega_R,j,N))
-print(H2(Omega_R,j,N))
+result_AB = mesolve(H0(omega, N), Perturb*result_t1.states[timesteps - 1], t2, [],
+                  Exps, options=opts,
+                  progress_bar=True)
 
-fig, ax = plt.subplots(2, 3)
+prod_AB = result_t1t2.states[timesteps - 1].dag() * Measure * result_AB.states[timesteps - 1]
+
+prod_BA= result_AB.states[timesteps - 1].dag() * Measure * result_t1t2.states[timesteps - 1]
+
+Commutator = prod_AB - prod_BA
+
+
+result1 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1, [], Exps, options=opts,
+                  progress_bar=True)
+
+result2 = mesolve([H0(omega, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], result1.states[timesteps - 1],
+                 times, [], Exps, options=opts, progress_bar=True)
+
+result3 = mesolve(H0(omega, N), Perturb*result_t1.states[timesteps - 1], t2, [],
+                  Exps, options=opts,
+                  progress_bar=True)
+
+print(Commutator)
+
+print(H0(omega, N))
+print(H1(Omega_R, N))
+print(H2(Omega_R, N))
+
+fig, ax = plt.subplots(3, 3)
 ax[0, 0].plot(t, np.imag(func1(t)))
 ax[0, 0].plot(t, noisy_data1, 'o')
 ax[0, 0].plot(t, S1(t), lw=2)
-ax[0, 0].set_xlabel('Time [2 Pi / Omega_Rabi]');
-ax[0, 0].set_ylabel('Coupling Amplitude');
+ax[0, 0].set_xlabel('Time [2 Pi / Omega_Rabi]')
+ax[0, 0].set_ylabel('Coupling Amplitude')
 
 ax[0, 1].plot(t, np.imag(func2(t)))
 ax[0, 1].plot(t, noisy_data2, 'o')
 ax[0, 1].plot(t, S2(t), lw=2)
-ax[0, 1].set_xlabel('Time [2 Pi / Omega_R]');
-#ax[0, 0].set_ylabel('Sigma_minus coupling amplitude');
+ax[0, 1].set_xlabel('Time [2 Pi / Omega_R]')
+# ax[0, 0].set_ylabel('Sigma_minus coupling amplitude');
 
 ax[0, 2].plot(t, S1(t), lw=2)
-ax[0, 2].set_xlabel('Time [2 Pi / Omega_R]');
-#ax[0, 2].set_ylabel('Interpolated coupling amplitude');
+ax[0, 2].set_xlabel('Time [2 Pi / Omega_R]')
+ax[0, 2].set_xlim([0.5, 0.7])
+# ax[0, 2].set_ylabel('Interpolated coupling amplitude');
 
-ax[1, 0].plot(times, result1.expect[0], label="MagnetizationX");
-ax[1, 0].plot(times, result1.expect[1], label="MagnetizationZ");
-ax[1, 0].set_xlabel('Free Evolution Time [2 Pi / Omega_R]');
-ax[1, 0].set_ylabel('Magnetization');
+ax[1, 0].plot(times, result1.expect[0], label="MagnetizationX")
+ax[1, 0].plot(times, result1.expect[1], label="MagnetizationZ")
+ax[1, 0].set_xlabel('Free Evolution Time [2 Pi / Omega_R]')
+ax[1, 0].set_ylabel('Magnetization')
 ax[1, 0].legend(loc="upper right")
+ax[1, 0].set_ylim([-1, 1])
 
-ax[1, 1].plot(perturb_times, result2.expect[0], label="MagnetizationX");
-ax[1, 1].plot(perturb_times, result2.expect[1], label="MagnetizationZ");
-ax[1, 1].set_xlabel('Perturbation Time [2 Pi / Omega_R]');
+ax[1, 1].plot(perturb_times, result2.expect[0], label="MagnetizationX")
+ax[1, 1].plot(perturb_times, result2.expect[1], label="MagnetizationZ")
+ax[1, 1].set_xlabel('Perturbation Time [2 Pi / Omega_R]')
 ax[1, 1].legend(loc="right")
+ax[1, 1].set_ylim([-1, 1])
 
-ax[1, 2].plot(times, result3.expect[0], label="MagnetizationX");
-ax[1, 2].plot(times, result3.expect[1], label="MagnetizationZ");
-ax[1, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]');
+ax[1, 2].plot(times, result3.expect[0], label="MagnetizationX")
+ax[1, 2].plot(times, result3.expect[1], label="MagnetizationZ")
+ax[1, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
 ax[1, 2].legend(loc="right")
+ax[1, 2].set_ylim([-1, 1])
+plt.show()
+
+ax[2, 0].plot(times, result1.expect[0], label="MagnetizationX")
+ax[2, 0].plot(times, result1.expect[1], label="MagnetizationZ")
+ax[2, 0].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
+ax[2, 0].legend(loc="right")
+ax[2, 0].set_ylim([-1, 1])
+plt.show()
+
+ax[2, 1].plot(times, result_AB.expect[0], label="MagnetizationX")
+ax[2, 1].plot(times, result_AB.expect[1], label="MagnetizationZ")
+ax[2, 1].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
+ax[2, 1].legend(loc="right")
+ax[2, 1].set_ylim([-1, 1])
+plt.show()
+
+ax[2, 2].plot(times, Commutator, label="Commutator")
+#ax[2, 2].plot(times, ommutator, label="MagnetizationZ")
+ax[2, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
+ax[2, 2].legend(loc="right")
+ax[2, 2].set_ylim([-1, 1])
 plt.show()
