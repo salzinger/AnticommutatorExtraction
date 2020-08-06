@@ -109,7 +109,7 @@ omega = 2. * np.pi * 20
 Omega_R = 2. * np.pi * 1
 
 timesteps = 400
-endtime = 1.25
+endtime = 2
 
 t1 = np.linspace(0, endtime, timesteps)
 t2 = np.linspace(0, endtime, timesteps)
@@ -117,14 +117,14 @@ t2 = np.linspace(0, endtime, timesteps)
 t = np.linspace(0, endtime / 2, timesteps)
 random_phase = 0.000 * np.random.randn(t.shape[0])
 
-func1 = lambda t: np.exp(-1j * t * 1 * omega) + 1
+func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
 # noisy_data1 = func1(t)
 noisy_func1 = lambda t: func1(t + random_phase)
 noisy_data1 = noisy_func1(t)
 S1 = Cubic_Spline(t[0], t[-1], noisy_data1)
 
-func2 = lambda t: np.exp(1j * t * 1 * omega) + 1
-# noisy_data2 = func2(t)
+func2 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+# noisy_data2 = func(t)
 noisy_func2 = lambda t: func2(t + random_phase)
 noisy_data2 = noisy_func2(t)
 S2 = Cubic_Spline(t[0], t[-1], noisy_data2)
@@ -178,9 +178,9 @@ print('Commutator:', 1j * Commutator[0][0])
 print('AntiCommutator: ', AntiCommutator[0][0])
 
 fig, ax = plt.subplots(3, 3)
-ax[0, 0].plot(t, np.imag(func1(t)))
-ax[0, 0].plot(t, np.imag(noisy_data1), 'o')
-ax[0, 0].plot(t, np.imag(S1(t)), lw=2)
+ax[0, 0].plot(t, func1(t))
+ax[0, 0].plot(t, noisy_data1, 'o')
+ax[0, 0].plot(t, S1(t), lw=2)
 ax[0, 0].set_xlabel('Time [2 Pi / Omega_Rabi]')
 ax[0, 0].set_ylabel('Coupling Amplitude')
 ax[0, 0].set_xlim([0, 0.1])
@@ -188,9 +188,9 @@ ax[0, 0].set_xlim([0, 0.1])
 ax[0, 1].plot(t, S1(t), lw=2)
 ax[0, 1].set_xlabel('Time [2 Pi / Omega_R]')
 
-ax[0, 2].plot(t, np.imag(func2(t)))
-ax[0, 2].plot(t, np.imag(noisy_data2), 'o')
-ax[0, 2].plot(t, np.imag(S2(t)), lw=2)
+ax[0, 2].plot(t, func2(t))
+ax[0, 2].plot(t, noisy_data2, 'o')
+ax[0, 2].plot(t, S2(t), lw=2)
 ax[0, 2].set_xlabel('Time [2 Pi / Omega_R]')
 ax[0, 2].set_xlim([0, 0.1])
 
