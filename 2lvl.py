@@ -62,152 +62,179 @@ def MagnetizationZ(N):
     sum = 0
     for j in range(0, N):
         sum += sigmaz(j, N)
-    return sum / 2
+    return sum / N
 
 
 def MagnetizationX(N):
     sum = 0
     for j in range(0, N):
         sum += sigmax(j, N)
-    return sum / 2
+    return sum / N
 
 
-def Levels(Delta, j, N):
-    up, down = twobasis()
-    oplist = np.full(N, identity(2))
-    oplist[j] = Delta * down * down.dag()
-    return tensor(oplist)
+def MagnetizationY(N):
+    sum = 0
+    for j in range(0, N):
+        sum += sigmay(j, N)
+    return sum / N
 
 
-def Probe(Omega_p, j, N):
-    oplist = np.full(N, identity(4))
-    oplist[j] = Omega_p / 2 * Qobj([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
-    return tensor(oplist)
-
-
-def Coupling(Omega_c, j, N):
-    oplist = np.full(N, identity(4))
-    oplist[j] = Omega_c / 2 * Qobj([[0, 1, 0], [0, 1, 0], [0, 0, 0]])
-    return tensor(oplist)
-
-
-def H(J, N):
+def H0(omega, N):
     H = 0
     for j in range(0, N):
-        H += sigmaz(j, N)
-        for m in range(0, N):
-            if m < j:
-                H += J * (sigmap(m, N) * sigmam(j, N) + sigmam(m, N) * sigmap(j, N))
+        H += 1 * omega / 2 * sigmaz(j, N)
     return H
 
 
-def H1(N):
+def H1(Omega_R, N):
     H = 0
     for j in range(0, N):
-        H += (sigmap(j, N) + sigmam(j, N))
-    return H
-
-print(H1(2))
-def L(Gamma, N):
-    up, down = twobasis()
-    L = 0
-    for j in range(0, N):
-        oplist = np.full(N, identity(2))
-        oplist[j] = down * up.dag()
-        L += tensor(oplist)
-    return L
-
-
-def L_eff(Gamma, Omega, N):
-    up, down = twobasis()
-    L = 0
-    for j in range(0, N):
-        oplist = np.full(N, identity(2))
-        oplist[j] = up * down.dag()
-        L += tensor(oplist)
-    return L
-
-
-def L_eff_delta(Gamma, Omega, Delta, N):
-    up, down = twobasis()
-    L = 0
-    for j in range(0, N):
-        oplist = np.full(N, identity(2))
-        oplist[j] = up * down.dag()
-        L += tensor(oplist)
-    return L
-
-
-def H_eff_delta(Gamma, Omega, Delta, N):
-    up, down = twobasis()
-    H = 0
-    for j in range(0, N):
-        oplist = np.full(N, identity(2))
-        oplist[j] = down * down.dag()
-        H += tensor(oplist)
+        H -= Omega_R * (sigmap(j, N))
     return H
 
 
+def H2(Omega_R, N):
+    H = 0
+    for j in range(0, N):
+        H -= Omega_R * (sigmam(j, N))
+    return H
 
-timesteps = 200
-endtime = 5
-perturbtime = 1
 
-t = np.linspace(0, perturbtime, timesteps)
-func = lambda t: np.sin(t * 50)
-noisy_func = lambda t: func(t+0.01*np.random.randn(t.shape[0]))
-noisy_data = noisy_func(t)
-S = Cubic_Spline(t[0], t[-1], noisy_data)
-plt.figure()
-plt.plot(t, func(t))
-plt.plot(t, noisy_data, 'o')
-plt.plot(t, S(t), lw=2)
-plt.show()
-
-times = np.linspace(0, endtime, timesteps)
-perturb_times = np.linspace(0, perturbtime, timesteps)
-J = 0
-op = 0
-Omega = 0
-Gamma = 0
-Delta = 0
 N = 1
-ops = [MagnetizationX(N), MagnetizationZ(N)]
+
+j = 0
+
+omega = 2. * np.pi * 20
+
+Omega_R = 2. * np.pi * 1
+
+timesteps = 400
+endtime = 2
+
+t1 = np.linspace(0, endtime, timesteps)
+t2 = np.linspace(0, endtime, timesteps)
+
+t = np.linspace(0, endtime / 2, timesteps)
+random_phase = 0.000 * np.random.randn(t.shape[0])
+
+func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+# noisy_data1 = func1(t)
+noisy_func1 = lambda t: func1(t + random_phase)
+noisy_data1 = noisy_func1(t)
+S1 = Cubic_Spline(t[0], t[-1], noisy_data1)
+
+func2 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+# noisy_data2 = func(t)
+noisy_func2 = lambda t: func2(t + random_phase)
+noisy_data2 = noisy_func2(t)
+S2 = Cubic_Spline(t[0], t[-1], noisy_data2)
+
+Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N)]
+
+Perturb = sigmax(0, 1)
+Measure = sigmay(0, 1)
 
 opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
-result1 = mesolve(H(0, N), productstateX(0, 0, N), times, [], ops, options=opts,
+result_t1 = mesolve(H0(omega, N), productstateZ(0, 0, N), t1, [], Exps, options=opts,
+                    progress_bar=True)
+
+result_t1t2 = mesolve(H0(omega, N), result_t1.states[timesteps - 1], t2, [],
+                      Exps, options=opts,
+                      progress_bar=True)
+
+result_AB = mesolve(H0(omega, N), Perturb * result_t1.states[timesteps - 1], t2, [],
+                    Exps, options=opts,
+                    progress_bar=True)
+
+prod_AB = result_t1t2.states[timesteps - 1].dag() * Measure * result_AB.states[timesteps - 1]
+
+prod_BA = result_AB.states[timesteps - 1].dag() * Measure * result_t1t2.states[timesteps - 1]
+
+Commutator = prod_AB - prod_BA
+
+AntiCommutator = prod_AB + prod_BA
+
+result2 = mesolve([H0(omega, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], result_t1.states[timesteps - 1],
+                  t, [], Exps, options=opts, progress_bar=True)
+
+result3 = mesolve(H0(omega, N), result2.states[timesteps - 1], t2, [],
+                  Exps, options=opts,
                   progress_bar=True)
-fig, ax = plt.subplots()
-ax.plot(times, result1.expect[0], label="MagnetizationX");
-ax.plot(times, result1.expect[1], label="MagnetizationZ");
-ax.set_xlabel('Time [1/J]');
-ax.set_ylabel('');
-ax.legend(loc="upper right")
-plt.show()
+
+print('Initial state ....')
+print(productstateZ(0, 0, N))
+print(productstateZ(0, 0, N).dag()*sigmaz(0,1)*productstateZ(0, 0, N))
 
 
-result2 = mesolve([H(0, N), [H1(N), S]], result1.states[timesteps - 1],
-                  perturb_times,
-                  [], ops,
-                  options=opts,
-                  progress_bar=True)
-fig, ax = plt.subplots()
-ax[0].plot(times, result2.expect[0], label="MagnetizationX");
-ax[0].plot(times, result2.expect[1], label="MagnetizationZ");
-ax.set_xlabel('Time [1/Gamma]');
-ax.set_ylabel('');
-ax.legend(loc="right")
-plt.show()
+print('H0...')
+print(H0(omega, N))
+print('H1...')
+print(H1(Omega_R, N))
+print('H2...')
+print(H2(Omega_R, N))
+
+print('Commutator:', 1j * Commutator[0][0])
+print('AntiCommutator: ', AntiCommutator[0][0])
+
+fig, ax = plt.subplots(3, 3)
+ax[0, 0].plot(t, func1(t))
+ax[0, 0].plot(t, noisy_data1, 'o')
+ax[0, 0].plot(t, S1(t), lw=2)
+ax[0, 0].set_xlabel('Time [2 Pi / Omega_Rabi]')
+ax[0, 0].set_ylabel('Coupling Amplitude')
+ax[0, 0].set_xlim([0, 0.1])
+
+ax[0, 1].plot(t, S1(t), lw=2)
+ax[0, 1].set_xlabel('Time [2 Pi / Omega_R]')
+
+ax[0, 2].plot(t, func2(t))
+ax[0, 2].plot(t, noisy_data2, 'o')
+ax[0, 2].plot(t, S2(t), lw=2)
+ax[0, 2].set_xlabel('Time [2 Pi / Omega_R]')
+ax[0, 2].set_xlim([0, 0.1])
 
 
-result3 = mesolve(H(0, N), result2.states[timesteps - 1], times, [],
-                  ops, options=opts,
-                  progress_bar=True)
-fig, ax = plt.subplots()
-ax[0].plot(times, result3.expect[0], label="MagnetizationX");
-ax[0].plot(times, result3.expect[1], label="MagnetizationZ");
-ax.set_xlabel('Time [1/Gamma]');
-ax.set_ylabel('');
-ax.legend(loc="right")
+ax[1, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
+ax[1, 0].plot(t1, result_t1.expect[1], label="MagnetizationZ")
+ax[1, 0].set_xlabel('Free Evolution Time [2 Pi / Omega_R]')
+ax[1, 0].set_ylabel('Magnetization')
+ax[1, 0].legend(loc="upper right")
+ax[1, 0].set_ylim([-1.1, 1.1])
+
+ax[1, 1].plot(t, result2.expect[0], label="MagnetizationX")
+ax[1, 1].plot(t, result2.expect[1], label="MagnetizationZ")
+ax[1, 1].plot(t, result2.expect[2], label="MagnetizationY")
+ax[1, 1].set_xlabel('Perturbation Time [2 Pi / Omega_R]')
+ax[1, 1].legend(loc="right")
+ax[1, 1].set_ylim([-1.1, 1.1])
+
+ax[1, 2].plot(t2, result3.expect[0], label="MagnetizationX")
+ax[1, 2].plot(t2, result3.expect[1], label="MagnetizationZ")
+ax[1, 2].plot(t2, result3.expect[2], label="MagnetizationY")
+ax[1, 2].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
+ax[1, 2].legend(loc="right")
+ax[1, 2].set_ylim([-1.1, 1.1])
+
+
+ax[2, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
+ax[2, 0].plot(t1, result_t1.expect[1], label="MagnetizationZ")
+ax[2, 0].set_xlabel('Free Evolution time [2 Pi / Omega_Rabi]')
+ax[2, 0].legend(loc="right")
+ax[2, 0].set_ylim([-1.1, 1.1])
+
+ax[2, 1].plot(t2, result_AB.expect[0], label="MagnetizationX")
+ax[2, 1].plot(t2, result_AB.expect[1], label="MagnetizationZ")
+ax[2, 1].plot(t2, result_AB.expect[2], label="MagnetizationY")
+ax[2, 1].set_xlabel('After Perturbation [2 Pi / Omega_Rabi]')
+ax[2, 1].legend(loc="right")
+ax[2, 1].set_ylim([-1.1, 1.1])
+
+ax[2, 2].plot(t2, result_t1t2.expect[0], label="MagnetizationX")
+ax[2, 2].plot(t2, result_t1t2.expect[1], label="MagnetizationZ")
+ax[2, 2].plot(t2, result_t1t2.expect[2], label="MagnetizationY")
+ax[2, 2].set_xlabel('No Perturbation [2 Pi / Omega_Rabi]')
+ax[2, 2].legend(loc="right")
+ax[2, 2].set_ylim([-1.1, 1.1])
+
 plt.show()
