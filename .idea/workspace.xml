@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8dc54b92-aad5-4177-b4e4-244c8e52380c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/2lvl.py" beforeDir="false" afterPath="$PROJECT_DIR$/2lvl.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1b75sWRYLT0uLV94nKDR0rzI9cA" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../rydsim_julia" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="2lvl" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AnticommutatorExtraction" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/2lvl.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.2lvl" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8dc54b92-aad5-4177-b4e4-244c8e52380c" name="Default Changelist" comment="" />
+      <created>1587970498473</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1587970498473</updated>
+    </task>
+    <task id="LOCAL-00001" summary="2 lvl time dependent hamiltionian works only under linux so far (due cython compiler error in windows)">
+      <created>1588156296702</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1588156296703</updated>
+    </task>
+    <task id="LOCAL-00002" summary="changing sigmaz">
+      <created>1590405502484</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1590405502484</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fixed Rabi Oscillations (Omega_R&lt;&lt;omega_laser=omega_atoms)">
+      <created>1595257903299</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1595257903299</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Implements averaging over different trajectories with classical noise">
+      <created>1600247877949</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1600247877949</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Finalised averaging over different trajectories with classical noise">
+      <created>1600687913333</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1600687913333</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="2 lvl time dependent hamiltionian works only under linux so far (due cython compiler error in windows)" />
+    <MESSAGE value="changing sigmaz" />
+    <MESSAGE value="Fixed Rabi Oscillations (Omega_R&lt;&lt;omega_laser=omega_atoms)" />
+    <MESSAGE value="Implements averaging over different trajectories with classical noise" />
+    <MESSAGE value="Finalised averaging over different trajectories with classical noise" />
+    <MESSAGE value="Implemented BlochRedfield MasterEquation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented BlochRedfield MasterEquation" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2915" y="557" width="615" height="350" key="#Notifications" timestamp="1600703062253">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2915" y="557" width="615" height="350" key="#Notifications/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600703062253" />
+    <state x="2585" y="116" width="912" height="904" key="CommitChangelistDialog2" timestamp="1600703050466">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2585" y="116" width="912" height="904" key="CommitChangelistDialog2/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600703050466" />
+    <state x="3010" y="490" width="424" height="484" key="FileChooserDialogImpl" timestamp="1596805816708">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="3010" y="490" width="424" height="484" key="FileChooserDialogImpl/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1596805816708" />
+    <state width="2482" height="471" key="GridCell.Tab.0.bottom" timestamp="1600702927824">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1897" height="413" key="GridCell.Tab.0.bottom/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1596723880068" />
+    <state width="2482" height="471" key="GridCell.Tab.0.bottom/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600702927824" />
+    <state width="2482" height="471" key="GridCell.Tab.0.center" timestamp="1600702927824">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1897" height="413" key="GridCell.Tab.0.center/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1596723880068" />
+    <state width="2482" height="471" key="GridCell.Tab.0.center/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600702927824" />
+    <state width="2482" height="471" key="GridCell.Tab.0.left" timestamp="1600702927824">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1897" height="413" key="GridCell.Tab.0.left/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1596723880067" />
+    <state width="2482" height="471" key="GridCell.Tab.0.left/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600702927824" />
+    <state width="2482" height="471" key="GridCell.Tab.0.right" timestamp="1600702927824">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state width="1897" height="413" key="GridCell.Tab.0.right/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@0.27.1920.1053" timestamp="1596723880068" />
+    <state width="2482" height="471" key="GridCell.Tab.0.right/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600702927824" />
+    <state x="2660" y="367" width="800" height="528" key="Vcs.Push.Dialog.v2" timestamp="1600687931276">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="2660" y="367" width="800" height="528" key="Vcs.Push.Dialog.v2/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600687931276" />
+    <state x="3008" y="647" width="428" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1600247833381">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="3008" y="647" width="428" height="170" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1600247833381" />
+    <state x="3127" y="349" width="672" height="678" key="search.everywhere.popup" timestamp="1596468908550">
+      <screen x="1920" y="0" width="2560" height="1440" />
+    </state>
+    <state x="3127" y="349" width="672" height="678" key="search.everywhere.popup/1920.0.2560.1440/4480.0.1920.1080/0.27.1920.1053@1920.0.2560.1440" timestamp="1596468908550" />
+  </component>
+</project>
