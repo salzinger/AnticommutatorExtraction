@@ -25,6 +25,19 @@ def productstateX(m, j, N):
     return tensor(pbasis)
 
 
+def upup(m,N):
+    up, down = twobasis()
+    oplist = np.full(N, identity(2))
+    oplist[m] = up * up.dag()
+    return tensor(oplist)
+
+def downdown(m,N):
+    up, down = twobasis()
+    oplist = np.full(N, identity(2))
+    oplist[m] = down * down.dag()
+    return tensor(oplist)
+
+
 def sigmap(m, N):
     up, down = twobasis()
     oplist = np.full(N, identity(2))
@@ -108,7 +121,7 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 2
+N = 1
 
 omega = 2. * np.pi * 20
 
@@ -132,24 +145,32 @@ random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
-up, down = twobasis()
 
-Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N-1, N), up*up.dag(),
-        up*down.dag(), down*up.dag(), down*down.dag()]
+
+
+
+Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N-1, N), upup(0, N),
+        sigmap(0, N), sigmam(0, N), downdown(0, N)]
+
+up, down = twobasis()
+oplist = np.full(N, identity(2))
+
+for i in range(0, N):
+    for j in range(0, N):
+        oplist[i] = up
+        oplist[j] = down
+        Exps.append(tensor())
 
 Perturb = sigmax(0, N)
 Measure = sigmay(0, N)
 
 opts = Options(store_states=True, store_final_state=True)
 
-result_t1 = mesolve(H0(omega, J, N), productstateZ(0, N-1, N), t1, [], Exps, options=opts,
-                    progress_bar=True)
+result_t1 = mesolve(H0(omega, J, N), productstateZ(0, N-1, N), t1, [], Exps, options=opts)
 
-result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts,
-                      progress_bar=True)
+result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
-result_AB = mesolve(H0(omega, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts,
-                    progress_bar=True)
+result_AB = mesolve(H0(omega, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
 prod_AB = result_t1t2.states[timesteps - 1].dag() * Measure * result_AB.states[timesteps - 1]
 
@@ -176,7 +197,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [0.5*sigmap(0, N), 0.5*sigmam(0, N)], Exps, options=opts, progress_bar=True)
+                    perturb_times, [0.5*sigmap(0, N), 0.5*sigmam(0, N)], Exps, options=opts)
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
 
@@ -198,22 +219,22 @@ updownt1t2br = np.zeros(timesteps)
 downupt1t2br = np.zeros(timesteps)
 
 for t in range(0, timesteps):
-    upup[t] = result_me.states[t][0][0][0]
-    downdown[t] = result_me.states[t][1][0][1]
-    updown[t] = result_me.states[t][1][0][0]
-    downup[t] = result_me.states[t][0][0][1]
-    upupt1t2me[t] = result_t1t2_me.states[t][0][0][0]
-    downdownt1t2me[t] = result_t1t2_me.states[t][1][0][1]
-    updownt1t2me[t] = result_t1t2_me.states[t][1][0][0]
-    downupt1t2me[t] = result_t1t2_me.states[t][0][0][1]
-    upupbr[t] = result_br.states[t][0][0][0]
-    downdownbr[t] = result_br.states[t][1][0][1]
-    updownt1t2br[t] = result_t1t2_br.states[t][1][0][0]
-    downupt1t2br[t] = result_t1t2_br.states[t][0][0][1]
-    upupt1t2br[t] = result_t1t2_br.states[t][0][0][0]
-    downdownt1t2br[t] = result_t1t2_br.states[t][1][0][1]
-    updownt1t2br[t] = result_t1t2_br.states[t][1][0][0]
-    downupt1t2br[t] = result_t1t2_br.states[t][0][0][1]
+    upup[t] = np.real(result_me.states[t][0][0][0])
+    downdown[t] = np.real(result_me.states[t][1][0][1])
+    updown[t] = np.real(result_me.states[t][1][0][0])
+    downup[t] = np.real(result_me.states[t][0][0][1])
+    upupt1t2me[t] = np.real(result_t1t2_me.states[t][0][0][0])
+    downdownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][1])
+    updownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][0])
+    downupt1t2me[t] = np.real(result_t1t2_me.states[t][0][0][1])
+    upupbr[t] = np.real(result_br.states[t][0][0][0])
+    downdownbr[t] = np.real(result_br.states[t][1][0][1])
+    updownt1t2br[t] = np.real(result_t1t2_br.states[t][1][0][0])
+    downupt1t2br[t] = np.real(result_t1t2_br.states[t][0][0][1])
+    upupt1t2br[t] = np.real(result_t1t2_br.states[t][0][0][0])
+    downdownt1t2br[t] = np.real(result_t1t2_br.states[t][1][0][1])
+    updownt1t2br[t] = np.real(result_t1t2_br.states[t][1][0][0])
+    downupt1t2br[t] = np.real(result_t1t2_br.states[t][0][0][1])
 
 
 
@@ -233,7 +254,7 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 40:
+    while i < 10:
         print(i)
         i += 1
         random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -255,8 +276,7 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     #print((expect2[5]+expect2[8]).mean())
     density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]], [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
 
-    result3 = mesolve(H0(omega, J, N), density_matrix, t2, [],
-                      e_ops=Exps, options=opts)
+    result3 = mesolve(H0(omega, J, N), density_matrix, t2, [], e_ops=Exps, options=opts)
 
     #print('Initial state ....')
     #print(productstateZ(0, 0, N))
