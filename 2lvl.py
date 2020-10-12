@@ -137,7 +137,7 @@ pertubation_length = endtime/1
 t1 = np.linspace(0, endtime, timesteps)
 t2 = np.linspace(0, endtime, timesteps)
 
-noise_amplitude = 0.005
+noise_amplitude = 0.000
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -154,12 +154,16 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 
 up, down = twobasis()
 oplist = np.full(N, identity(2))
+tensorlist = []
 
-for i in range(0, N):
-    for j in range(0, N):
-        oplist[i] = up
-        oplist[j] = down
-        Exps.append(tensor())
+#for n in range(0, N):
+    #oplist[n] = down
+    #for m in range(0, N):
+     #   if m != n:
+     #       oplist[n] = up
+
+    #tensorlist.append(tensor(oplist))
+    #oplist = np.full(N, identity(2))
 
 Perturb = sigmax(0, N)
 Measure = sigmay(0, N)
@@ -197,7 +201,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [0.5*sigmap(0, N), 0.5*sigmam(0, N)], Exps, options=opts)
+                    perturb_times, [0.8*sigmap(0, N), 0.8*sigmam(0, N)], Exps, options=opts)
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
 
@@ -239,15 +243,10 @@ for t in range(0, timesteps):
 
 
 for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
+
     i = 1
-
+    random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
     S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
-
-    func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    noisy_func1 = lambda t: func1(t + random_phase)
-    noisy_data1 = noisy_func1(perturb_times)
-
-    S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data1)
 
     result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                       perturb_times, e_ops=Exps, options=opts)
@@ -294,14 +293,14 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     print('AntiCommutator: ', AntiCommutator[0][0])
 
     fig, ax = plt.subplots(5, 2, figsize=(10, 10))
-    ax[0, 0].plot(perturb_times, func1(perturb_times))
-    ax[0, 0].plot(perturb_times, noisy_data1, 'o')
-    ax[0, 0].plot(perturb_times, S1(perturb_times), lw=2)
+    ax[0, 0].plot(perturb_times, func2(perturb_times))
+    ax[0, 0].plot(perturb_times, noisy_data2, 'o')
+    ax[0, 0].plot(perturb_times, S2(perturb_times), lw=2)
     ax[0, 0].set_xlabel('Time [1/J]')
     ax[0, 0].set_ylabel('Coupling Amplitude')
     ax[0, 0].set_xlim([0, 0.1])
 
-    ax[0, 1].plot(perturb_times, S(perturb_times), lw=2)
+    ax[0, 1].plot(perturb_times, S2(perturb_times), lw=2)
     ax[0, 1].set_xlabel('Time [1/J]')
 
     ax[1, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
