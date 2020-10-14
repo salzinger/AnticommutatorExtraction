@@ -102,7 +102,7 @@ def H0(omega, J, N):
         H += 1 * omega / 2 * sigmaz(j, N)
         for i in range(0, N):
             if i != j:
-                H += J * (sigmax(i, N) * sigmax(j, N) + sigmay(i, N) * sigmay(j, N))
+                H += J * (sigmax(i, N) * sigmax(j, N) + 2* sigmay(i, N) * sigmay(j, N))
     return H
 
 
@@ -126,7 +126,7 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 2
+N = 4
 
 omega = 2. * np.pi * 20
 
@@ -136,53 +136,34 @@ J = 1
 
 timesteps = 400
 
-endtime = 2
+endtime = 1
 pertubation_length = endtime/1
 
 t1 = np.linspace(0, endtime, timesteps)
 
+noise_amplitude = 0.000
+
+perturb_times = np.linspace(0, pertubation_length, timesteps)
+random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+
+S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
+
+Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
+        sigmap(0, N), sigmam(0, N), downdown(0, N)]
+
 Commutatorlist = []
 Anticommutatorlist = []
-t1t2list=np.linspace(0.1, 0.8, num=500)
+t1t2list=np.linspace(0.1, 0.8, num=200)
+
 for t1t2 in t1t2list:
     t2 = np.linspace(0, t1t2, timesteps)
-
-    noise_amplitude = 0.000
-
-    perturb_times = np.linspace(0, pertubation_length, timesteps)
-    random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
-
-
-    S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
-
-
-
-
-
-    Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N-1, N), upup(0, N),
-            sigmap(0, N), sigmam(0, N), downdown(0, N)]
-
-    #print(downdown(0,N))
-
-    #up, down = twobasis()
-    #oplist = [identity(2)]
-    #tensorlist = []
-
-    #for n in range(0, N):
-        #oplist[n] = down
-        #for m in range(0, N):
-         #   if m != n:
-         #       oplist[n] = up
-
-        #tensorlist.append(tensor(oplist))
-        #oplist = np.full(N, identity(2))
 
     Perturb = MagnetizationX(N)
     Measure = MagnetizationY(N)
 
     opts = Options(store_states=True, store_final_state=True)
 
-    result_t1 = mesolve(H0(omega, J, N), productstateZ(0, N-1, N), t1, [], Exps, options=opts)
+    result_t1 = mesolve(H0(omega, J, N), productstateX(0, N-1, N), t1, [], Exps, options=opts)
 
     result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
