@@ -3,69 +3,76 @@ import matplotlib.pyplot as plt
 from qutip import *
 from qutip.solver import Options, Result, config, _solver_safety_check
 
-opts = Options(store_states=True, store_final_state=True, ntraj=200)
-
+#opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
 def twobasis():
     return np.array([basis(2, 0), basis(2, 1)], dtype=object)
 
-
 def productstateZ(up_atom, down_atom, N):
     up, down = twobasis()
-    pbasis = np.full(N, down)
-    pbasis[up_atom] = up
-    pbasis[down_atom] = down
-    return tensor(pbasis)
+    oplist = np.empty(N, dtype=object)
+    oplist = [down for _ in oplist]
+    oplist[up_atom] = up
+    oplist[down_atom] = down
+    return tensor(oplist)
 
 def productstateX(m, j, N):
     up, down = twobasis()
-    pbasis = np.full(N, down)
-    pbasis[m] = (up + down).unit()
-    pbasis[j] = (up + down).unit()
-    return tensor(pbasis)
+    oplist = np.empty(N, dtype=object)
+    oplist = [down for _ in oplist]
+    oplist[m] = (up + down).unit()
+    oplist[j] = (up + down).unit()
+    return tensor(oplist)
 
 
 def upup(m,N):
     up, down = twobasis()
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = up * up.dag()
     return tensor(oplist)
 
 def downdown(m,N):
     up, down = twobasis()
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = down * down.dag()
     return tensor(oplist)
 
 
 def sigmap(m, N):
     up, down = twobasis()
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = up * down.dag()
     return tensor(oplist)
 
 
 def sigmam(m, N):
     up, down = twobasis()
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = down * up.dag()
     return tensor(oplist)
 
 
 def sigmaz(j, N):
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[1, 0], [0, -1]])
     return tensor(oplist)
 
 
 def sigmax(j, N):
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[0, 1], [1, 0]])
     return tensor(oplist)
 
 
 def sigmay(j, N):
-    oplist = np.full(N, identity(2))
+    oplist = np.empty(N, dtype=object)
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[0, -1j], [1j, 0]])
     return tensor(oplist)
 
@@ -121,11 +128,11 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 1
+N = 2
 
 omega = 2. * np.pi * 20
 
-Omega_R = 2. * np.pi * 4
+Omega_R = 2. * np.pi * 0#*4
 
 J = 1
 
@@ -152,9 +159,11 @@ S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitud
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N-1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-up, down = twobasis()
-oplist = np.full(N, identity(2))
-tensorlist = []
+#print(downdown(0,N))
+
+#up, down = twobasis()
+#oplist = [identity(2)]
+#tensorlist = []
 
 #for n in range(0, N):
     #oplist[n] = down
@@ -165,8 +174,8 @@ tensorlist = []
     #tensorlist.append(tensor(oplist))
     #oplist = np.full(N, identity(2))
 
-Perturb = sigmax(0, N)
-Measure = sigmay(0, N)
+Perturb = sigmaz(0, N)
+Measure = sigmaz(0, N)
 
 opts = Options(store_states=True, store_final_state=True)
 
@@ -202,6 +211,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
                     perturb_times, [0.8*sigmap(0, N), 0.8*sigmam(0, N)], Exps, options=opts)
+
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
 
@@ -248,9 +258,17 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
     S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
+    #print('H0...')
+    #print(H0(omega, J, N))
+    #print('H1...')
+    #print(H1(Omega_R, N))
+    #print('H2...')
+    #print(H2(Omega_R, N))
+
     result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                       perturb_times, e_ops=Exps, options=opts)
-    opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
+
+    #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     while i < 10:
@@ -261,6 +279,7 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
 
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                           perturb_times, e_ops=Exps, options=opts)
+
         states2 += np.array(result2.states[timesteps - 1])
         expect2 += np.array(result2.expect[:])
 
@@ -271,23 +290,18 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
 
     states2 = states2/i
     expect2 = expect2/i
-
+    #print(Qobj(states2))
     #print((expect2[5]+expect2[8]).mean())
     density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]], [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
-
-    result3 = mesolve(H0(omega, J, N), density_matrix, t2, [], e_ops=Exps, options=opts)
+    #print(density_matrix)
+    result3 = mesolve(H0(omega, J, N), Qobj(states2), t2, [], e_ops=Exps, options=opts)
 
     #print('Initial state ....')
     #print(productstateZ(0, 0, N))
     #print(productstateZ(0, 0, N).dag()*sigmaz(1, N)*productstateZ(0, 0, N))
 
 
-    #print('H0...')
-    #print(H0(omega, J, N))
-    #print('H1...')
-    #print(H1(Omega_R, N))
-    #print('H2...')
-    #print(H2(Omega_R, N))
+
 
     print('Commutator:', 1j * Commutator[0][0])
     print('AntiCommutator: ', AntiCommutator[0][0])
