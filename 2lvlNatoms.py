@@ -126,7 +126,7 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 4
+N = 1
 
 omega = 2. * np.pi * 20
 
@@ -134,12 +134,13 @@ Omega_R = 2. * np.pi * 0#*4
 
 J = 1
 
-timesteps = 400
+timesteps = 200
 
 endtime = 1
 pertubation_length = endtime/1
 
 t1 = np.linspace(0, endtime, timesteps)
+t2 = np.linspace(0, endtime, timesteps)
 
 noise_amplitude = 0.000
 
@@ -153,38 +154,45 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 
 Commutatorlist = []
 Anticommutatorlist = []
-t1t2list=np.linspace(0.1, 0.8, num=200)
 
-for t1t2 in t1t2list:
-    t2 = np.linspace(0, t1t2, timesteps)
+opts = Options(store_states=True, store_final_state=True)
 
-    Perturb = MagnetizationX(N)
-    Measure = MagnetizationY(N)
+result_t1 = mesolve(H0(omega, J, N), productstateX(0, N-1, N), t1, [], Exps, options=opts)
 
-    opts = Options(store_states=True, store_final_state=True)
+result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
-    result_t1 = mesolve(H0(omega, J, N), productstateX(0, N-1, N), t1, [], Exps, options=opts)
+Perturb = MagnetizationX(N)
+Measure = MagnetizationY(N)
 
-    result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+result_AB = mesolve(H0(omega, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
-    result_AB = mesolve(H0(omega, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+for t in range(0, timesteps):
 
-    prod_AB = result_t1t2.states[timesteps - 1].dag() * Measure * result_AB.states[timesteps - 1]
+    prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
 
-    prod_BA = result_AB.states[timesteps - 1].dag() * Measure * result_t1t2.states[timesteps - 1]
+    prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
 
     Commutator = prod_AB - prod_BA
 
     AntiCommutator = prod_AB + prod_BA
 
-    Commutatorlist.append(1j * Commutator[0][0])
-    Anticommutatorlist.append(AntiCommutator[0][0])
-    print('Commutator:', 1j * Commutator[0][0])
-    print('AntiCommutator: ', AntiCommutator[0][0])
+    Commutatorlist.append(1j * Commutator[0][0][0])
+    Anticommutatorlist.append(AntiCommutator[0][0][0])
+    #print('Commutator:', 1j * Commutator[0][0])
+    #print('AntiCommutator: ', AntiCommutator[0][0])
 
 
-plt.plot(t1t2list , Commutatorlist)
-plt.plot(t1t2list , Anticommutatorlist)
+freq = np.fft.fftfreq(t2.shape[-1])
+plt.plot(freq, np.fft.fft(Commutatorlist), linestyle='--', marker='o', markersize='5', label="Commutator")
+plt.plot(freq, np.fft.fft(Anticommutatorlist), linestyle='--', marker='o', markersize='5', label="Anticommutator")
+plt.xlim(0, 0.2)
+plt.legend()
+plt.show()
+
+plt.plot(t2, Commutatorlist, label="Commutator")
+plt.plot(t2, Anticommutatorlist,  label="Anticommutator")
+plt.legend()
+plt.xlabel('t_measure - t_perturb')
 plt.show()
 
 gamma1 = 0
@@ -285,7 +293,7 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 10:
+    while i < 2:
         print(i)
         i += 1
         random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
