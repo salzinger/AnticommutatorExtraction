@@ -126,11 +126,11 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 1
+N = 2
 
 omega = 2. * np.pi * 20
 
-Omega_R = 2. * np.pi * 0#*4
+Omega_R = 2. * np.pi * 4
 
 J = 1
 
@@ -157,7 +157,7 @@ Anticommutatorlist = []
 
 opts = Options(store_states=True, store_final_state=True)
 
-result_t1 = mesolve(H0(omega, J, N), productstateX(0, N-1, N), t1, [], Exps, options=opts)
+result_t1 = mesolve(H0(omega, J, N), productstateZ(0, N-1, N), t1, [], Exps, options=opts)
 
 result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -213,7 +213,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [0.0*sigmap(0, N), 0.0*sigmam(0, N)], Exps, options=opts)
+                    perturb_times, [0.6*sigmap(0, N), 0.6*sigmam(0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -274,7 +274,7 @@ else:
 
 
 
-for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
+for noise_amplitude in np.logspace(-2, -2, num=1):
 
     i = 1
     random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -293,7 +293,7 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 2:
+    while i < 20:
         print(i)
         i += 1
         random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -325,8 +325,8 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
 
 
 
-    print('Commutator:', 1j * Commutator[0][0])
-    print('AntiCommutator: ', AntiCommutator[0][0])
+    #print('Commutator:', 1j * Commutator[0][0])
+    #print('AntiCommutator: ', AntiCommutator[0][0])
 
     fig, ax = plt.subplots(5, 2, figsize=(10, 10))
     ax[0, 0].plot(perturb_times, func2(perturb_times))
@@ -339,9 +339,10 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     ax[0, 1].plot(perturb_times, S2(perturb_times), lw=2)
     ax[0, 1].set_xlabel('Time [1/J]')
 
-    ax[1, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
+
     ax[1, 0].plot(t1, result_t1.expect[1], label="MagnetizationZ")
     ax[1, 0].plot(t1, result_t1.expect[2], label="MagnetizationY")
+    ax[1, 0].plot(t1, result_t1.expect[0], label="MagnetizationX")
     #ax[1, 0].plot(t1, result_t1.expect[3], label="tensor(SigmaZ,Id) ")
     #ax[1, 0].plot(t1, result_t1.expect[4], label="tensor(Id,SigmaZ) ")
     ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
@@ -349,9 +350,10 @@ for noise_amplitude in np.logspace(-2.3, -2.3, num=1):
     ax[1, 0].legend(loc="upper right")
     ax[1, 0].set_ylim([-1.1, 1.1])
 
-    ax[1, 1].plot(t2, result_AB.expect[0], label="MagnetizationX")
+
     ax[1, 1].plot(t2, result_AB.expect[1], label="MagnetizationZ")
     ax[1, 1].plot(t2, result_AB.expect[2], label="MagnetizationY")
+    ax[1, 1].plot(t2, result_AB.expect[0], label="MagnetizationX")
     #ax[1, 1].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
     #ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
     ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
