@@ -126,7 +126,7 @@ def noisy_func(noise_amplitude, perturb_times):
     return noisy_func1(perturb_times)
 
 
-N = 2
+N = 1
 
 omega = 2. * np.pi * 20
 
@@ -213,7 +213,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [0.6*sigmap(0, N), 0.6*sigmam(0, N)], Exps, options=opts)
+                    perturb_times, [5.6*sigmap(0, N), 5.6*sigmam(0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -274,10 +274,14 @@ else:
 
 
 
-for noise_amplitude in np.logspace(-2, -2, num=1):
+for noise_amplitude in np.logspace(-1.2, -1.2, num=1):
 
     i = 1
     random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+    for t in range(0, len(random_phase)):
+        if divmod(t, 10)[1] != 0:
+            random_phase[t] = 0
+
     S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
     #print('H0...')
@@ -293,10 +297,13 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 20:
+    while i < 50:
         print(i)
         i += 1
         random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+        for t in range(0, len(random_phase)):
+            if divmod(t , 10)[1] != 0:
+                random_phase[t] = 0
         S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],

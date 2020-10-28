@@ -146,7 +146,10 @@ def H2(Omega_R, N):
     return H
 
 def noisy_func(noise_amplitude, perturb_times):
-    random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+    random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0]) + np.pi
+    for t in range(0, len(random_phase)):
+        if divmod(t, np.random.randint(5, 10))[1] != 0:
+            random_phase[t] = 0
     func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
     noisy_func1 = lambda t: func1(t + random_phase)
     return noisy_func1(perturb_times)
@@ -154,13 +157,13 @@ def noisy_func(noise_amplitude, perturb_times):
 
 N = 2
 
-omega = 2. * np.pi * 20
+omega = 2. * np.pi * 40
 
-Omega_R = 2. * np.pi * 6
+Omega_R = 2. * np.pi * 10
 
-J = 1
+J = 0.5
 
-timesteps = 200
+timesteps = 400
 
 endtime = 1
 pertubation_length = endtime/1
@@ -239,7 +242,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [0.6*sigmap(1, 0, N), 0.6*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [sigmap(1, 0, N), sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -249,6 +252,7 @@ upup = np.zeros(timesteps)
 downdown = np.zeros(timesteps)
 updown = np.zeros(timesteps)
 downup = np.zeros(timesteps)
+anant1t2me = np.zeros(timesteps)
 upupt1t2me = np.zeros(timesteps)
 downdownt1t2me = np.zeros(timesteps)
 updownt1t2me = np.zeros(timesteps)
@@ -269,10 +273,11 @@ if N == 1:
         downdown[t] = np.real(result_me.states[t][2][0][2])
         updown[t] = np.real(result_me.states[t][1][0][2])
         downup[t] = np.real(result_me.states[t][2][0][1])
-        upupt1t2me[t] = np.real(result_t1t2_me.states[t][0][0][0])
-        downdownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][1])
-        updownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][0])
-        downupt1t2me[t] = np.real(result_t1t2_me.states[t][0][0][1])
+        anant1t2me = np.real(result_t1t2_me.states[t][0][0][0])
+        upupt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
+        downdownt1t2me[t] = np.real(result_t1t2_me.states[t][2][0][2])
+        updownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
+        downupt1t2me[t] = np.real(result_t1t2_me.states[t][2][0][1])
         upupbr[t] = np.real(result_br.states[t][0][0][0])
         downdownbr[t] = np.real(result_br.states[t][1][0][1])
         updownt1t2br[t] = np.real(result_t1t2_br.states[t][1][0][0])
@@ -288,10 +293,11 @@ else:
         downdown[t] = np.real(result_me.states[t].ptrace(0)[2][0][2])
         updown[t] = np.real(result_me.states[t].ptrace(0)[1][0][2])
         downup[t] = np.real(result_me.states[t].ptrace(0)[2][0][1])
-        upupt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[0][0][0])
-        downdownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][1])
-        updownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][0])
-        downupt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[0][0][1])
+        anant1t2me = np.real(result_t1t2_me.states[t].ptrace(0)[0][0][0])
+        upupt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][1])
+        downdownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[2][0][2])
+        updownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][2])
+        downupt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[2][0][1])
         upupbr[t] = np.real(result_br.states[t].ptrace(0)[0][0][0])
         downdownbr[t] = np.real(result_br.states[t].ptrace(0)[1][0][1])
         updownt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[1][0][0])
@@ -302,10 +308,10 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(-2, -2, num=1):
+for noise_amplitude in np.logspace(0, 0, num=1):
 
     i = 1
-    random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+    #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
     S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
     #print('H0...')
@@ -324,7 +330,7 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
     while i < 20:
         print(i)
         i += 1
-        random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+        #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
         S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
 
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
@@ -333,9 +339,9 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
         states2 += np.array(result2.states[timesteps - 1])
         expect2 += np.array(result2.expect[:])
 
-    func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    noisy_func2 = lambda t: func2(t + random_phase)
-    noisy_data2 = noisy_func2(perturb_times)
+    #func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    #noisy_func2 = lambda t: func2(t + random_phase)
+    noisy_data2 = noisy_func(noise_amplitude, perturb_times)
     S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
     states2 = states2/i
@@ -357,7 +363,7 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
     #print('AntiCommutator: ', AntiCommutator[0][0])
 
     fig, ax = plt.subplots(5, 2, figsize=(10, 10))
-    ax[0, 0].plot(perturb_times, func2(perturb_times))
+    #ax[0, 0].plot(perturb_times, func2(perturb_times))
     ax[0, 0].plot(perturb_times, noisy_data2, 'o')
     ax[0, 0].plot(perturb_times, S2(perturb_times), lw=2)
     ax[0, 0].set_xlabel('Time [1/J]')
@@ -430,6 +436,9 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
     #ax[3, 0].legend(loc="right")
     ax[3, 0].set_ylim([-1.1, 1.1])
 
+    print(anant1t2me)
+
+
     #ax[3, 1].plot(t2, result_t1t2_me.expect[0], label="MagnetizationX")
     ax[3, 1].plot(t2, np.real(result_t1t2_me.expect[1]), label="MagnetizationZ")
     #ax[3, 1].plot(t2, result_t1t2_me.expect[2], label="MagnetizationY")
@@ -437,6 +446,7 @@ for noise_amplitude in np.logspace(-2, -2, num=1):
     ax[3, 1].plot(t2, updownt1t2me, label="updown")
     ax[3, 1].plot(t2, downupt1t2me, label="downup")
     ax[3, 1].plot(t2, downdownt1t2me, label="downdown")
+    ax[3, 1].plot(t2, anant1t2me, label="aa")
     #ax[3, 1].plot(t2, result_t1t2.expect[3], label="tensor(SigmaZ,Id)")
     #ax[3, 1].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
     ax[3, 1].set_xlabel('After Lindblad Perturbation [1/J]')
