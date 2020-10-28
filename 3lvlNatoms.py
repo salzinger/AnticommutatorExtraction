@@ -161,7 +161,7 @@ omega = 2. * np.pi * 40
 
 Omega_R = 2. * np.pi * 10
 
-J = 0.5
+J = 1
 
 timesteps = 400
 
@@ -186,7 +186,7 @@ Anticommutatorlist = []
 
 opts = Options(store_states=True, store_final_state=True)
 
-result_t1 = mesolve(H0(omega, J, N), productstateZ(0, N-1, N), t1, [], Exps, options=opts)
+result_t1 = mesolve(H0(omega, J, N), productstateX(0, N-1, N), t1, [], Exps, options=opts)
 
 result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -273,7 +273,7 @@ if N == 1:
         downdown[t] = np.real(result_me.states[t][2][0][2])
         updown[t] = np.real(result_me.states[t][1][0][2])
         downup[t] = np.real(result_me.states[t][2][0][1])
-        anant1t2me = np.real(result_t1t2_me.states[t][0][0][0])
+        anant1t2me[t] = np.real(result_t1t2_me.states[t][0][0][0])
         upupt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
         downdownt1t2me[t] = np.real(result_t1t2_me.states[t][2][0][2])
         updownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
@@ -293,7 +293,7 @@ else:
         downdown[t] = np.real(result_me.states[t].ptrace(0)[2][0][2])
         updown[t] = np.real(result_me.states[t].ptrace(0)[1][0][2])
         downup[t] = np.real(result_me.states[t].ptrace(0)[2][0][1])
-        anant1t2me = np.real(result_t1t2_me.states[t].ptrace(0)[0][0][0])
+        anant1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[0][0][0])
         upupt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][1])
         downdownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[2][0][2])
         updownt1t2me[t] = np.real(result_t1t2_me.states[t].ptrace(0)[1][0][2])
@@ -308,7 +308,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(0, 0, num=1):
+for noise_amplitude in np.logspace(-10, -10, num=1):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -382,7 +382,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
     ax[1, 0].set_ylabel('Magnetization')
     #ax[1, 0].legend(loc="upper right")
-    ax[1, 0].set_ylim([-1.1, 1.1])
+    #ax[1, 0].set_ylim([-1.1, 1.1])
 
 
     ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
@@ -392,7 +392,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
     ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
     ax[1, 1].legend(loc="right")
-    ax[1, 1].set_ylim([-1.1, 1.1])
+    #ax[1, 1].set_ylim([-1.1, 1.1])
 
     #ax[2, 0].plot(perturb_times, expect2[0], label="MagnetizationX")
     ax[2, 0].plot(perturb_times, expect2[1], label="MagnetizationZ")
@@ -406,7 +406,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     ax[2, 0].plot(perturb_times, expect2[9], label="aa")
     ax[2, 0].set_xlabel('Time Dependent Perturbation [1/J]')
     #ax[2, 0].legend(loc="right")
-    ax[2, 0].set_ylim([-1.1, 1.1])
+    #ax[2, 0].set_ylim([-1.1, 1.1])
 
     #ax[2, 1].plot(t2, result3.expect[0], label="MagnetizationX")
     ax[2, 1].plot(t2, np.real(result3.expect[1]), label="MagnetizationZ")
@@ -420,7 +420,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     ax[2, 1].plot(t2, np.real(result3.expect[9]), label="aa")
     ax[2, 1].set_xlabel('After Time Dependent Pertubation [1/J]')
     ax[2, 1].legend(loc="right")
-    ax[2, 1].set_ylim([-1.1, 1.1])
+    #ax[2, 1].set_ylim([-1.1, 1.1])
 
     #ax[3, 0].plot(t2, result_AB_me.expect[0], label="MagnetizationX")
     ax[3, 0].plot(t2, np.real(result_me.expect[1]), label="MagnetizationZ")
@@ -434,10 +434,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[3, 0].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
     ax[3, 0].set_xlabel('Lindblad Perturbation [1/J]')
     #ax[3, 0].legend(loc="right")
-    ax[3, 0].set_ylim([-1.1, 1.1])
-
-    print(anant1t2me)
-
+    #ax[3, 0].set_ylim([-1.1, 1.1])
 
     #ax[3, 1].plot(t2, result_t1t2_me.expect[0], label="MagnetizationX")
     ax[3, 1].plot(t2, np.real(result_t1t2_me.expect[1]), label="MagnetizationZ")
@@ -451,7 +448,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[3, 1].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
     ax[3, 1].set_xlabel('After Lindblad Perturbation [1/J]')
     ax[3, 1].legend(loc="right")
-    ax[3, 1].set_ylim([-1.1, 1.1])
+    #ax[3, 1].set_ylim([-1.1, 1.1])
 
     #ax[4, 0].plot(t2, result_t1t2_br.expect[0], label="MagnetizationX")
     ax[4, 0].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
@@ -464,7 +461,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[4, 0].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
     ax[4, 0].set_xlabel('Bloch Redfield Perturbation [1/J]')
     #ax[4, 0].legend(loc="right")
-    ax[4, 0].set_ylim([-1.1, 1.1])
+    #ax[4, 0].set_ylim([-1.1, 1.1])
 
     #ax[4, 1].plot(t2, result_t1t2_br.expect[0], label="MagnetizationX")
     ax[4, 1].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
@@ -477,7 +474,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[4, 1].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
     ax[4, 1].set_xlabel('After Bloch Redfield Pertubation [1/J]')
     ax[4, 1].legend(loc="right")
-    ax[4, 1].set_ylim([-1.1, 1.1])
+    #ax[4, 1].set_ylim([-1.1, 1.1])
     fig.tight_layout()
     plt.show()
     #plt.savefig("Dephasing with"+str(noise_amplitude)+".pdf")
