@@ -147,23 +147,33 @@ def H2(Omega_R, N):
 
 def noisy_func(noise_amplitude, perturb_times):
     random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0]) + np.pi
-    for t in range(0, len(random_phase)):
-        if divmod(t, np.random.randint(5, 10))[1] != 0:
-            random_phase[t] = 0
+    random_amplitude = np.random.uniform(low=0.8, high=1.8, size=perturb_times.shape[0])
+    random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
+
+    for t in range(0, len(random_phase)-1):
+        if divmod(t, np.random.randint(29, 30))[1] != 0:
+            random_amplitude[t+1] = random_amplitude[t]
+            random_phase[t + 1] = random_phase[t]
+            random_frequency[t + 1] = random_frequency[t]
+
     func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    noisy_func1 = lambda t: func1(t + random_phase)
+    noisy_func1 = lambda t: random_amplitude * func1(t * random_frequency + random_phase)
     return noisy_func1(perturb_times)
+
+def func(perturb_times):
+    func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    return func1(perturb_times)
 
 
 N = 2
 
-omega = 2. * np.pi * 40
+omega = 2. * np.pi * 400
 
-Omega_R = 2. * np.pi * 10
+Omega_R = 2. * np.pi * 4
 
 J = 1
 
-timesteps = 400
+timesteps = 2000
 
 endtime = 1
 pertubation_length = endtime/1
@@ -216,13 +226,13 @@ plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', 
 plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5', label="Anticommutator")
 plt.xlim(-1/2, 1/2)
 plt.legend()
-plt.show()
+#plt.show()
 
 plt.plot(t2, np.real(Commutatorlist), label="Commutator")
 plt.plot(t2, np.real(Anticommutatorlist),  label="Anticommutator")
 plt.legend()
 plt.xlabel('t_measure - t_perturb')
-plt.show()
+#plt.show()
 
 gamma1 = 0
 
@@ -235,14 +245,15 @@ def ohmic_spectrum(w):
 spectra_cb = [ohmic_spectrum]
 a_ops = []
 
+S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times))
 
 result_br = brmesolve(H0(omega, J, N), result_t1.states[timesteps-1], perturb_times, a_ops, spectra_cb=spectra_cb, options=opts)
 
 result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [], Exps, options=opts)
 
 
-result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S1]], result_t1.states[timesteps - 1],
-                    perturb_times, [sigmap(1, 0, N), sigmam(1, 0, N)], Exps, options=opts)
+result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
+                    perturb_times, [3*sigmap(1, 0, N), 3*sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -308,7 +319,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(-10, -10, num=1):
+for noise_amplitude in np.logspace(0, 0, num=1):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -327,7 +338,7 @@ for noise_amplitude in np.logspace(-10, -10, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 20:
+    while i < 100:
         print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
