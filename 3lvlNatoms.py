@@ -167,13 +167,13 @@ def func(perturb_times):
 
 N = 2
 
-omega = 2. * np.pi * 400
+omega = 2. * np.pi * 40
 
 Omega_R = 2. * np.pi * 4
 
 J = 1
 
-timesteps = 2000
+timesteps = 200
 
 endtime = 1
 pertubation_length = endtime/1
@@ -282,10 +282,10 @@ if N == 1:
         anan[t] = np.real(result_me.states[t][0][0][0])
         upup[t] = np.real(result_me.states[t][1][0][1])
         downdown[t] = np.real(result_me.states[t][2][0][2])
-        updown[t] = np.real(result_me.states[t][1][0][2])
+        updown[t] = np.real(result_me.states[t][1][0][1])
         downup[t] = np.real(result_me.states[t][2][0][1])
         anant1t2me[t] = np.real(result_t1t2_me.states[t][0][0][0])
-        upupt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
+        upupt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][1])
         downdownt1t2me[t] = np.real(result_t1t2_me.states[t][2][0][2])
         updownt1t2me[t] = np.real(result_t1t2_me.states[t][1][0][2])
         downupt1t2me[t] = np.real(result_t1t2_me.states[t][2][0][1])
