@@ -146,36 +146,36 @@ def H2(Omega_R, N):
     return H
 
 def noisy_func(noise_amplitude, perturb_times):
-    random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0]) + np.pi
-    random_amplitude = np.random.uniform(low=0.8, high=1.8, size=perturb_times.shape[0])
-    random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
+    random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
+    #random_amplitude = np.random.uniform(low=0.99, high=1.11, size=perturb_times.shape[0])
+    #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
 
     for t in range(0, len(random_phase)-1):
-        if divmod(t, np.random.randint(29, 30))[1] != 0:
-            random_amplitude[t+1] = random_amplitude[t]
+        if divmod(t, np.random.randint(500, 501))[1] != 0:
+            #random_amplitude[t+1] = random_amplitude[t]
             random_phase[t + 1] = random_phase[t]
-            random_frequency[t + 1] = random_frequency[t]
+            #random_frequency[t + 1] = random_frequency[t]
 
     func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    noisy_func1 = lambda t: random_amplitude * func1(t * random_frequency + random_phase)
+    noisy_func1 = lambda t:  func1(t + random_phase) #* random_amplitude
     return noisy_func1(perturb_times)
 
 def func(perturb_times):
-    func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    return func1(perturb_times)
+    func2 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    return func2(perturb_times)
 
 
 N = 2
 
-omega = 2. * np.pi * 40
+omega = 2. * np.pi * 350
 
-Omega_R = 2. * np.pi * 4
+Omega_R = 2. * np.pi * 3
 
 J = 1
 
-timesteps = 200
+timesteps = 2000
 
-endtime = 1
+endtime = 0.2
 pertubation_length = endtime/1
 
 t1 = np.linspace(0, endtime, timesteps)
@@ -338,7 +338,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 100:
+    while i < 500:
         print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
