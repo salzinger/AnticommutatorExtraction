@@ -145,15 +145,28 @@ def H2(Omega_R, N):
         H -= Omega_R * (sigmam(1, j, N))
     return H
 
+
 def noisy_func(noise_amplitude, perturb_times):
-    random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
     #random_amplitude = np.random.uniform(low=0.99, high=1.11, size=perturb_times.shape[0])
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
-
+    random_phase = np.zeros_like(perturb_times)
+    i=0
+    time = np.random.randint(0, len(perturb_times)-1)
+    times = [time]
+    random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
+    while i < 100:
+        i += 1
+        time = np.random.randint(0, len(perturb_times) - 1)
+        #print(times)
+        if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/10:
+            random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
+            times.append(time)
+    #random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
     for t in range(0, len(random_phase)-1):
-        if divmod(t, np.random.randint(500, 501))[1] != 0:
+        if random_phase[t] == 0: #divmod(t, np.random.randint(200, 300))[1] != 0:
             #random_amplitude[t+1] = random_amplitude[t]
-            random_phase[t + 1] = random_phase[t]
+            #random_phase[t + 1] = random_phase[t]
+            random_phase[t] = random_phase[t-1]
             #random_frequency[t + 1] = random_frequency[t]
 
     func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
@@ -169,11 +182,11 @@ N = 2
 
 omega = 2. * np.pi * 350
 
-Omega_R = 2. * np.pi * 3
+Omega_R = 2. * np.pi * 6
 
 J = 1
 
-timesteps = 2000
+timesteps = 1000
 
 endtime = 0.2
 pertubation_length = endtime/1
@@ -253,7 +266,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
-                    perturb_times, [3*sigmap(1, 0, N), 3*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [6*sigmap(1, 0, N), 6*sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -338,7 +351,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 500:
+    while i < 50:
         print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
