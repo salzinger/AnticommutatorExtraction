@@ -182,7 +182,7 @@ N = 2
 
 omega = 2. * np.pi * 350
 
-Omega_R = 2. * np.pi * 6
+Omega_R = 2. * np.pi * 5
 
 J = 1
 
@@ -266,7 +266,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
-                    perturb_times, [6*sigmap(1, 0, N), 6*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [2*sigmap(1, 0, N), 2*sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -332,7 +332,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(0, 0, num=1):
+for noise_amplitude in np.logspace(-6,0, num=10):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -351,7 +351,7 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 50:
+    while i < 100:
         print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -488,17 +488,17 @@ for noise_amplitude in np.logspace(0, 0, num=1):
     #ax[4, 0].set_ylim([-1.1, 1.1])
 
     #ax[4, 1].plot(t2, result_t1t2_br.expect[0], label="MagnetizationX")
-    ax[4, 1].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
+    #ax[4, 1].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
     #ax[4, 1].plot(t2, result_t1t2_br.expect[2], label="MagnetizationY")
-    ax[4, 1].plot(t2, upupt1t2br, label="upup")
-    ax[4, 1].plot(t2, updownt1t2br, label="updown")
-    ax[4, 1].plot(t2, downupt1t2br, label="downup")
-    ax[4, 1].plot(t2, downdownt1t2br, label="downdown")
+    #ax[4, 1].plot(t2, upupt1t2br, label="upup")
+    #ax[4, 1].plot(t2, updownt1t2br, label="updown")
+    #ax[4, 1].plot(t2, downupt1t2br, label="downup")
+    #ax[4, 1].plot(t2, downdownt1t2br, label="downdown")
     #ax[4, 1].plot(t2, result_t1t2.expect[3], label="tensor(SigmaZ,Id)")
     #ax[4, 1].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
-    ax[4, 1].set_xlabel('After Bloch Redfield Pertubation [1/J]')
-    ax[4, 1].legend(loc="right")
+    #ax[4, 1].set_xlabel('After Bloch Redfield Pertubation [1/J]')
+    #ax[4, 1].legend(loc="right")
     #ax[4, 1].set_ylim([-1.1, 1.1])
     fig.tight_layout()
-    plt.show()
-    #plt.savefig("Dephasing with"+str(noise_amplitude)+".pdf")
+    #plt.show()
+    plt.savefig("Dephasing with"+str(noise_amplitude)+".pdf")
