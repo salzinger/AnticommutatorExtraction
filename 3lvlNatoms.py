@@ -18,6 +18,13 @@ def productstateZ(up_atom, down_atom, N):
     oplist[down_atom] = down
     return tensor(oplist)
 
+def productstateA(up_atom, down_atom, N):
+    ancilla, up, down = threebasis()
+    oplist = np.empty(N, dtype=object)
+    oplist = [down for _ in oplist]
+    oplist[up_atom] = ancilla
+    oplist[down_atom] = ancilla
+    return tensor(oplist)
 
 def productstateX(m, j, N):
     ancilla, up, down = threebasis()
@@ -360,6 +367,7 @@ for noise_amplitude in np.logspace(-6,0, num=10):
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                           perturb_times, e_ops=Exps, options=opts)
 
+        ancilla_overlap = (productstateA(0, 1, N) * np.array(result2.states[timesteps - 1]))**2
         states2 += np.array(result2.states[timesteps - 1])
         expect2 += np.array(result2.expect[:])
 
