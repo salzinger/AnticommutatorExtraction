@@ -18,13 +18,13 @@ def productstateZ(up_atom, down_atom, N):
     oplist[down_atom] = down
     return tensor(oplist)
 
-def productstateA(up_atom, down_atom, N):
+def productstateA(up_atom, ancilla_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [down for _ in oplist]
-    oplist[up_atom] = ancilla
-    oplist[down_atom] = ancilla
-    return tensor(oplist)
+    oplist[up_atom] = up
+    oplist[ancilla_atom] = ancilla
+    return tensor(up, ancilla) + tensor(ancilla, up) + tensor(down, ancilla) + tensor(ancilla, down) + tensor(ancilla, ancilla)
 
 def productstateX(m, j, N):
     ancilla, up, down = threebasis()
@@ -189,13 +189,13 @@ N = 2
 
 omega = 2. * np.pi * 350
 
-Omega_R = 2. * np.pi * 5
+Omega_R = 2. * np.pi * 2
 
 J = 1
 
-timesteps = 1000
+timesteps = 500
 
-endtime = 0.2
+endtime = 0.1
 pertubation_length = endtime/1
 
 t1 = np.linspace(0, endtime, timesteps)
@@ -339,7 +339,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(-6,0, num=10):
+for noise_amplitude in np.logspace(-4, -3, num=5):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -358,8 +358,9 @@ for noise_amplitude in np.logspace(-6,0, num=10):
     #opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
-    while i < 100:
-        print(i)
+    ancilla_overlap = []
+    while i < 50:
+        #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
         S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
@@ -367,9 +368,17 @@ for noise_amplitude in np.logspace(-6,0, num=10):
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                           perturb_times, e_ops=Exps, options=opts)
 
-        ancilla_overlap = (productstateA(0, 1, N) * np.array(result2.states[timesteps - 1]))**2
+        ancilla_overlap.append(np.abs(productstateA(0, 1, N).dag() * np.array(result2.states[timesteps-1]))**2)
+
+
+        #print(ancilla_overlap)
+
+
         states2 += np.array(result2.states[timesteps - 1])
         expect2 += np.array(result2.expect[:])
+
+    #print(ancilla_overlap)
+    print(np.mean(ancilla_overlap))
 
     #func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
     #noisy_func2 = lambda t: func2(t + random_phase)
@@ -396,13 +405,13 @@ for noise_amplitude in np.logspace(-6,0, num=10):
 
     fig, ax = plt.subplots(5, 2, figsize=(10, 10))
     #ax[0, 0].plot(perturb_times, func2(perturb_times))
-    ax[0, 0].plot(perturb_times, noisy_data2, 'o')
-    ax[0, 0].plot(perturb_times, S2(perturb_times), lw=2)
+    ax[0, 0].plot(perturb_times, np.real(noisy_data2), 'o')
+    ax[0, 0].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
     ax[0, 0].set_xlabel('Time [1/J]')
     ax[0, 0].set_ylabel('Coupling Amplitude')
     ax[0, 0].set_xlim([0, 0.1])
 
-    ax[0, 1].plot(perturb_times, S2(perturb_times), lw=2)
+    ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
     ax[0, 1].set_xlabel('Time [1/J]')
 
 
@@ -427,15 +436,15 @@ for noise_amplitude in np.logspace(-6,0, num=10):
     #ax[1, 1].set_ylim([-1.1, 1.1])
 
     #ax[2, 0].plot(perturb_times, expect2[0], label="MagnetizationX")
-    ax[2, 0].plot(perturb_times, expect2[1], label="MagnetizationZ")
+    ax[2, 0].plot(perturb_times, np.real(expect2[1]), label="MagnetizationZ")
     #ax[2, 0].plot(perturb_times, expect2[2], label="MagnetizationY")
     #ax[2, 0].plot(perturb_times, expect2[3], label="tensor(SigmaZ,Id) ")
     #ax[2, 0].plot(perturb_times, expect2[4], label="tensor(Id,SigmaZ) ")
-    ax[2, 0].plot(perturb_times, expect2[5], label="upup")
-    ax[2, 0].plot(perturb_times, expect2[6], label="updown")
-    ax[2, 0].plot(perturb_times, expect2[7], label="downup")
-    ax[2, 0].plot(perturb_times, expect2[8], label="downdown")
-    ax[2, 0].plot(perturb_times, expect2[9], label="aa")
+    ax[2, 0].plot(perturb_times, np.real(expect2[5]), label="upup")
+    ax[2, 0].plot(perturb_times, np.real(expect2[6]), label="updown")
+    ax[2, 0].plot(perturb_times, np.real(expect2[7]), label="downup")
+    ax[2, 0].plot(perturb_times, np.real(expect2[8]), label="downdown")
+    ax[2, 0].plot(perturb_times, np.real(expect2[9]), label="aa")
     ax[2, 0].set_xlabel('Time Dependent Perturbation [1/J]')
     #ax[2, 0].legend(loc="right")
     #ax[2, 0].set_ylim([-1.1, 1.1])
