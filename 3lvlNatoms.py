@@ -161,14 +161,16 @@ def noisy_func(noise_amplitude, perturb_times):
     time = np.random.randint(0, len(perturb_times)-1)
     times = [time]
     random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
-    while i < 100:
+    number_of_jumps=[]
+    while i < 400:
         i += 1
         time = np.random.randint(0, len(perturb_times) - 1)
         #print(times)
-        if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/10:
+        if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/200:
             random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
             times.append(time)
     #random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
+    print(len(times))
     for t in range(0, len(random_phase)-1):
         if random_phase[t] == 0: #divmod(t, np.random.randint(200, 300))[1] != 0:
             #random_amplitude[t+1] = random_amplitude[t]
@@ -189,7 +191,7 @@ N = 2
 
 omega = 2. * np.pi * 350
 
-Omega_R = 2. * np.pi * 2
+Omega_R = 2. * np.pi * 20
 
 J = 1
 
@@ -273,7 +275,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
-                    perturb_times, [2*sigmap(1, 0, N), 2*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [15*sigmap(1, 0, N), 15*sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -339,7 +341,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(-4, -3, num=5):
+for noise_amplitude in np.logspace(-4, -3, num=10):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -359,7 +361,7 @@ for noise_amplitude in np.logspace(-4, -3, num=5):
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     ancilla_overlap = []
-    while i < 50:
+    while i < 150:
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -402,14 +404,17 @@ for noise_amplitude in np.logspace(-4, -3, num=5):
 
     #print('Commutator:', 1j * Commutator[0][0])
     #print('AntiCommutator: ', AntiCommutator[0][0])
-
-    fig, ax = plt.subplots(5, 2, figsize=(10, 10))
+    #print(np.correlate(S2(perturb_times), S2(perturb_times), "valid"))
+    fig, ax = plt.subplots(4, 2, figsize=(10, 10))
+    freq = np.fft.fftfreq(perturb_times.shape[-1])
+    ax[0, 0].plot(freq, np.abs(np.fft.fft(S2(perturb_times))), linestyle='--', marker='o', markersize='5')
+    #ax[0, 0].plot(freq, np.correlate(S2(perturb_times), S2(perturb_times), "valid")[0], linestyle='--', marker='o', markersize='5')
     #ax[0, 0].plot(perturb_times, func2(perturb_times))
-    ax[0, 0].plot(perturb_times, np.real(noisy_data2), 'o')
-    ax[0, 0].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
-    ax[0, 0].set_xlabel('Time [1/J]')
+    #ax[0, 0].plot(perturb_times, np.real(noisy_data2), 'o')
+    #ax[0, 0].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
+    ax[0, 0].set_xlabel('F [1/J]')
     ax[0, 0].set_ylabel('Coupling Amplitude')
-    ax[0, 0].set_xlim([0, 0.1])
+    ax[0, 0].set_xlim([0, 0.4])
 
     ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
     ax[0, 1].set_xlabel('Time [1/J]')
@@ -492,15 +497,15 @@ for noise_amplitude in np.logspace(-4, -3, num=5):
     #ax[3, 1].set_ylim([-1.1, 1.1])
 
     #ax[4, 0].plot(t2, result_t1t2_br.expect[0], label="MagnetizationX")
-    ax[4, 0].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
+    #ax[4, 0].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
     #ax[4, 0].plot(t2, result_t1t2_br.expect[2], label="MagnetizationY")
-    ax[4, 0].plot(t2, upupbr, label="upup")
-    ax[4, 0].plot(t2, updownbr, label="updown")
-    ax[4, 0].plot(t2, downupbr, label="downup")
-    ax[4, 0].plot(t2, downdownbr, label="downdown")
+    #ax[4, 0].plot(t2, upupbr, label="upup")
+    #ax[4, 0].plot(t2, updownbr, label="updown")
+    #ax[4, 0].plot(t2, downupbr, label="downup")
+    #ax[4, 0].plot(t2, downdownbr, label="downdown")
     #ax[4, 0].plot(t2, result_t1t2.expect[3], label="tensor(SigmaZ,Id)")
     #ax[4, 0].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
-    ax[4, 0].set_xlabel('Bloch Redfield Perturbation [1/J]')
+    #ax[4, 0].set_xlabel('Bloch Redfield Perturbation [1/J]')
     #ax[4, 0].legend(loc="right")
     #ax[4, 0].set_ylim([-1.1, 1.1])
 
