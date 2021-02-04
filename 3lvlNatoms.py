@@ -154,21 +154,26 @@ def H2(Omega_R, N):
 
 
 def noisy_func(noise_amplitude, perturb_times):
-    random_amplitude = np.zeros_like(perturb_times)#
+    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
+    freq = np.fft.fft(random_amplitude)
+    freq[0:30] = 0
+    freq[45:len(freq)] = 0
+    random_amplitude = np.fft.ifft(freq)
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
     random_phase = np.zeros_like(perturb_times)
     i=0
     time = np.random.randint(0, len(perturb_times)-1)
     times = [time]
     random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
+
     number_of_jumps=[]
-    while i < 400:
+    while i < 2:
         i += 1
         time = np.random.randint(0, len(perturb_times) - 1)
         #print(times)
         if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/100:
             random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
-            random_amplitude[time] = noise_amplitude * np.random.uniform(-1, 1)
+            #random_amplitude[time] = noise_amplitude * np.random.uniform(-1, 1)
             times.append(time)
     #random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
     #print(len(times))
@@ -342,7 +347,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.linspace(1, 10, num=9):
+for noise_amplitude in np.linspace(1, 5, num=4):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -362,7 +367,7 @@ for noise_amplitude in np.linspace(1, 10, num=9):
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     ancilla_overlap = []
-    while i < 150:
+    while i < 50:
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -524,4 +529,4 @@ for noise_amplitude in np.linspace(1, 10, num=9):
     #ax[4, 1].set_ylim([-1.1, 1.1])
     fig.tight_layout()
     #plt.show()
-    plt.savefig("Dephasing with"+str(noise_amplitude)+".pdf")
+    plt.savefig("Dephasing with Amplitude noise at"+str(np.round(noise_amplitude,2))+".pdf")
