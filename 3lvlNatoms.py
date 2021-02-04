@@ -154,7 +154,7 @@ def H2(Omega_R, N):
 
 
 def noisy_func(noise_amplitude, perturb_times):
-    #random_amplitude = np.random.uniform(low=0.99, high=1.11, size=perturb_times.shape[0])
+    random_amplitude = np.zeros_like(perturb_times)#
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
     random_phase = np.zeros_like(perturb_times)
     i=0
@@ -166,20 +166,21 @@ def noisy_func(noise_amplitude, perturb_times):
         i += 1
         time = np.random.randint(0, len(perturb_times) - 1)
         #print(times)
-        if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/200:
+        if np.min(np.abs(times-np.full_like(times, time))) > len(perturb_times)/100:
             random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
+            random_amplitude[time] = noise_amplitude * np.random.uniform(-1, 1)
             times.append(time)
     #random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
-    print(len(times))
+    #print(len(times))
     for t in range(0, len(random_phase)-1):
         if random_phase[t] == 0: #divmod(t, np.random.randint(200, 300))[1] != 0:
             #random_amplitude[t+1] = random_amplitude[t]
-            #random_phase[t + 1] = random_phase[t]
-            random_phase[t] = random_phase[t-1]
+            random_phase[t + 1] = random_phase[t]
+            #random_phase[t] = random_phase[t-1]
             #random_frequency[t + 1] = random_frequency[t]
 
     func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    noisy_func1 = lambda t:  func1(t + random_phase) #* random_amplitude
+    noisy_func1 = lambda t:  func1(t) + random_amplitude
     return noisy_func1(perturb_times)
 
 def func(perturb_times):
@@ -341,7 +342,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.logspace(-4, -3, num=10):
+for noise_amplitude in np.linspace(1, 10, num=9):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
