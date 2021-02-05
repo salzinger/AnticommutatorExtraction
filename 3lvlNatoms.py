@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import signal
 from qutip import *
 from qutip.solver import Options, Result, config, _solver_safety_check
 
@@ -152,16 +153,24 @@ def H2(Omega_R, N):
         H -= Omega_R * (sigmam(1, j, N))
     return H
 
+def envelope(shape, function):
+    if shape == "Blackman":
+        window = signal.windows.blackman(len(function))
+        function = window * function
+    else:
+        None
+    return function
+
 
 def noisy_func(noise_amplitude, perturb_times):
     random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
-    freq = np.fft.fft(random_amplitude)
-    freq[0:30] = 0
-    freq[45:len(freq)] = 0
-    random_amplitude = np.fft.ifft(freq)
+    #freq = envelope(1, np.fft.fft(random_amplitude))
+    #freq[0:30] = 0
+    #freq[45:len(freq)] = 0
+    #random_amplitude = np.fft.ifft(freq)
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
     random_phase = np.zeros_like(perturb_times)
-    i=0
+    i = 0
     time = np.random.randint(0, len(perturb_times)-1)
     times = [time]
     random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
@@ -347,7 +356,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.linspace(1, 5, num=4):
+for noise_amplitude in np.linspace(1, 5, num=1):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -367,7 +376,7 @@ for noise_amplitude in np.linspace(1, 5, num=4):
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     ancilla_overlap = []
-    while i < 50:
+    while i < 5:
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -420,31 +429,38 @@ for noise_amplitude in np.linspace(1, 5, num=4):
     #ax[0, 0].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
     ax[0, 0].set_xlabel('F [1/J]')
     ax[0, 0].set_ylabel('Coupling Amplitude')
-    ax[0, 0].set_xlim([0, 0.4])
+    #ax[0, 0].set_xlim([0, 0.4])
 
     ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
     ax[0, 1].set_xlabel('Time [1/J]')
 
 
-    ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
-    ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
-    ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
+    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
+    noisefreq = envelope("Blackman", np.fft.fft(random_amplitude))
+    ax[1, 0].plot(freq, noisefreq, label="Fequency after Window")
+
+    pulse = envelope("Blackman", np.fft.fftshift(S2(perturb_times)))
+    ax[1, 1].plot(freq, pulse, label="Frequency after shifted Window")
+    #ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
+    #ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
+    #ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
     #ax[1, 0].plot(t1, result_t1.expect[3], label="tensor(SigmaZ,Id) ")
     #ax[1, 0].plot(t1, result_t1.expect[4], label="tensor(Id,SigmaZ) ")
-    ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
-    ax[1, 0].set_ylabel('Magnetization')
+    #ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
+    #ax[1, 0].set_ylabel('Magnetization')
     #ax[1, 0].legend(loc="upper right")
     #ax[1, 0].set_ylim([-1.1, 1.1])
 
 
-    ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
-    ax[1, 1].plot(t2, np.real(result_AB.expect[2]), label="MagnetizationY")
-    ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
+    #ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
+    #ax[1, 1].plot(t2, np.real(result_AB.expect[2]), label="MagnetizationY")
+    #ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
     #ax[1, 1].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
     #ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
-    ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
-    ax[1, 1].legend(loc="right")
+    #ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
+    #ax[1, 1].legend(loc="right")
     #ax[1, 1].set_ylim([-1.1, 1.1])
+
 
     #ax[2, 0].plot(perturb_times, expect2[0], label="MagnetizationX")
     ax[2, 0].plot(perturb_times, np.real(expect2[1]), label="MagnetizationZ")
