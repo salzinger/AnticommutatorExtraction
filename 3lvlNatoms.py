@@ -423,6 +423,7 @@ for noise_amplitude in np.linspace(1, 5, num=1):
     fig, ax = plt.subplots(4, 2, figsize=(10, 10))
     freq = np.fft.fftfreq(perturb_times.shape[-1])
     ax[0, 0].plot(freq, np.abs(np.fft.fft(S2(perturb_times))), linestyle='--', marker='o', markersize='5')
+    print(np.argmax(np.abs(np.fft.fft(S2(perturb_times)))))
     #ax[0, 0].plot(freq, np.correlate(S2(perturb_times), S2(perturb_times), "valid")[0], linestyle='--', marker='o', markersize='5')
     #ax[0, 0].plot(perturb_times, func2(perturb_times))
     #ax[0, 0].plot(perturb_times, np.real(noisy_data2), 'o')
@@ -436,11 +437,13 @@ for noise_amplitude in np.linspace(1, 5, num=1):
 
 
     random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
-    noisefreq = envelope("Blackman", np.fft.fft(random_amplitude))
+    noisefreq = np.fft.fft(S2(perturb_times))
+    noisefreq[465-20:465+20] = envelope("Blackman", noisefreq[465-20:465+20])
+    #noisefreq = envelope("Blackman", np.fft.fft(S2(perturb_times)))
     ax[1, 0].plot(freq, noisefreq, label="Fequency after Window")
 
-    pulse = envelope("Blackman", np.fft.fftshift(S2(perturb_times)))
-    ax[1, 1].plot(freq, pulse, label="Frequency after shifted Window")
+    #pulse = envelope("Blackman", np.fft.fftshift(S2(perturb_times)))
+    ax[1, 1].plot(perturb_times, np.abs(np.fft.ifft(noisefreq)), label="Frequency after shifted Window")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
