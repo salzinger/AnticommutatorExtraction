@@ -164,10 +164,13 @@ def envelope(shape, function):
 
 def noisy_func(noise_amplitude, perturb_times):
     random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
-    #freq = envelope(1, np.fft.fft(random_amplitude))
-    #freq[0:30] = 0
-    #freq[45:len(freq)] = 0
-    #random_amplitude = np.fft.ifft(freq)
+    noisefreq = np.fft.fft(random_amplitude)
+    noisefreq[25:45] = envelope("Blackman", np.real(noisefreq[25:45])) + np.imag(noisefreq[25:45])
+    noisefreq[500 - 45:500 - 25] = envelope("Blackman", np.real(noisefreq[500 - 45:500 - 25])) + np.imag(noisefreq[500 - 45:500 - 25])
+    noisefreq[0:25] = 0
+    noisefreq[45:500 - 45] = 0
+    noisefreq[500 - 25:500] = 0
+    random_amplitude = np.fft.ifft(noisefreq)
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
     random_phase = np.zeros_like(perturb_times)
     i = 0
@@ -422,7 +425,7 @@ for noise_amplitude in np.linspace(1, 5, num=1):
     #print(np.correlate(S2(perturb_times), S2(perturb_times), "valid"))
     fig, ax = plt.subplots(4, 2, figsize=(10, 10))
     freq = np.fft.fftfreq(perturb_times.shape[-1])
-    ax[0, 0].plot(freq, np.abs(np.fft.fft(S2(perturb_times))), linestyle='--', marker='o', markersize='5')
+    ax[0, 0].plot(freq, np.abs(np.fft.fft(noisy_func(noise_amplitude, perturb_times))), linestyle='--', marker='o', markersize='5')
     print(np.argmax(np.abs(np.fft.fft(S2(perturb_times)))))
     #ax[0, 0].plot(freq, np.correlate(S2(perturb_times), S2(perturb_times), "valid")[0], linestyle='--', marker='o', markersize='5')
     #ax[0, 0].plot(perturb_times, func2(perturb_times))
