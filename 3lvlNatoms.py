@@ -438,12 +438,16 @@ for noise_amplitude in np.linspace(1, 5, num=1):
 
     random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
     noisefreq = np.fft.fft(S2(perturb_times))
-    noisefreq[465-20:465+20] = envelope("Blackman", noisefreq[465-20:465+20])
+    noisefreq[25:45] = envelope("Blackman", np.real(noisefreq[25:45]))+np.imag(noisefreq[25:45])
+    noisefreq[500-45:500-25] = envelope("Blackman", np.real(noisefreq[500-45:500-25])) + np.imag(noisefreq[500-45:500-25])
+    noisefreq[0:25] = 0
+    noisefreq[45:500-45] = 0
+    noisefreq[500-25:500] = 0
     #noisefreq = envelope("Blackman", np.fft.fft(S2(perturb_times)))
-    ax[1, 0].plot(freq, noisefreq, label="Fequency after Window")
+    ax[1, 0].plot(freq, np.abs(noisefreq), label="Fequency after Window")
 
     #pulse = envelope("Blackman", np.fft.fftshift(S2(perturb_times)))
-    ax[1, 1].plot(perturb_times, np.abs(np.fft.ifft(noisefreq)), label="Frequency after shifted Window")
+    ax[1, 1].plot(perturb_times, np.fft.ifft(noisefreq), label="Frequency after shifted Window")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
