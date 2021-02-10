@@ -359,7 +359,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.linspace(1, 5, num=1):
+for noise_amplitude in np.linspace(1, 5, num=5):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -379,7 +379,7 @@ for noise_amplitude in np.linspace(1, 5, num=1):
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     ancilla_overlap = []
-    while i < 5:
+    while i < 150:
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -439,36 +439,36 @@ for noise_amplitude in np.linspace(1, 5, num=1):
     ax[0, 1].set_xlabel('Time [1/J]')
 
 
-    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
-    noisefreq = np.fft.fft(S2(perturb_times))
-    noisefreq[25:45] = envelope("Blackman", np.real(noisefreq[25:45]))+np.imag(noisefreq[25:45])
-    noisefreq[500-45:500-25] = envelope("Blackman", np.real(noisefreq[500-45:500-25])) + np.imag(noisefreq[500-45:500-25])
-    noisefreq[0:25] = 0
-    noisefreq[45:500-45] = 0
-    noisefreq[500-25:500] = 0
+    #random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
+    #noisefreq = np.fft.fft(S2(perturb_times))
+    #noisefreq[25:45] = envelope("Blackman", np.real(noisefreq[25:45]))+np.imag(noisefreq[25:45])
+    #noisefreq[500-45:500-25] = envelope("Blackman", np.real(noisefreq[500-45:500-25])) + np.imag(noisefreq[500-45:500-25])
+    #noisefreq[0:25] = 0
+    #noisefreq[45:500-45] = 0
+    #noisefreq[500-25:500] = 0
     #noisefreq = envelope("Blackman", np.fft.fft(S2(perturb_times)))
-    ax[1, 0].plot(freq, np.abs(noisefreq), label="Fequency after Window")
+    #ax[1, 0].plot(freq, np.abs(noisefreq), label="Fequency after Window")
 
     #pulse = envelope("Blackman", np.fft.fftshift(S2(perturb_times)))
-    ax[1, 1].plot(perturb_times, np.fft.ifft(noisefreq), label="Frequency after shifted Window")
-    #ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
-    #ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
-    #ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
+    #ax[1, 1].plot(perturb_times, np.fft.ifft(noisefreq), label="Frequency after shifted Window")
+    ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
+    ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
+    ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
     #ax[1, 0].plot(t1, result_t1.expect[3], label="tensor(SigmaZ,Id) ")
     #ax[1, 0].plot(t1, result_t1.expect[4], label="tensor(Id,SigmaZ) ")
-    #ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
-    #ax[1, 0].set_ylabel('Magnetization')
-    #ax[1, 0].legend(loc="upper right")
+    ax[1, 0].set_xlabel('Free Evolution Time [1/J]')
+    ax[1, 0].set_ylabel('Magnetization')
+    ax[1, 0].legend(loc="upper right")
     #ax[1, 0].set_ylim([-1.1, 1.1])
 
 
-    #ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
-    #ax[1, 1].plot(t2, np.real(result_AB.expect[2]), label="MagnetizationY")
-    #ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
-    #ax[1, 1].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
-    #ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
-    #ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
-    #ax[1, 1].legend(loc="right")
+    ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
+    ax[1, 1].plot(t2, np.real(result_AB.expect[2]), label="MagnetizationY")
+    ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
+    ax[1, 1].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
+    ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
+    ax[1, 1].set_xlabel('After Perturbation Operator [1/J]')
+    ax[1, 1].legend(loc="right")
     #ax[1, 1].set_ylim([-1.1, 1.1])
 
 
