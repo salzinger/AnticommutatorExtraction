@@ -191,7 +191,7 @@ Omega_R = 2. * np.pi * 5.6
 
 J = 0
 
-bandwidth = 10
+bandwidth = 1
 
 sampling_rate = 2000
 endtime = 0.5
@@ -208,10 +208,11 @@ def noisy_func(noise_amplitude, perturb_times, bandwidth):
     max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times)/2)])
     max_pos = int(len(perturb_times)/2) - np.argmax(fourier[int(len(perturb_times)/2): len(perturb_times)])
 
-    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times)) #2000*np.ones_like(perturb_times)#
+
+    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
     #random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
     noisefreq = np.fft.fft(random_amplitude)
-
+    #noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
     noisefreq[max_neg + bandwidth: max_neg - bandwidth] =\
         envelope("Blackman", 0, noisefreq[max_neg + bandwidth: max_neg - bandwidth])
 
@@ -221,8 +222,7 @@ def noisy_func(noise_amplitude, perturb_times, bandwidth):
     noisefreq[0: max_pos - bandwidth] = 0
     noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
     noisefreq[max_neg + bandwidth: len(perturb_times)] = 0
-    #noisefreq[max_neg + bandwidth: int(len(perturb_times)/2) - (max_pos - bandwidth)] = 0
-    #noisefreq[int(len(perturb_times)/2) - (max_pos + bandwidth): len(perturb_times)] = 0
+
     #noisefreq[max_neg - bandwidth] = 1000
     #noisefreq[max_neg + bandwidth] = 1000
     #noisefreq[max_pos + bandwidth] = 1000
