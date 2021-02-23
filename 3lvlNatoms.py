@@ -178,17 +178,56 @@ def envelope(shape, bandwidth, function):
         None
     return function
 
+def func(perturb_times):
+    func2 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    return func2(perturb_times)
 
-def noisy_func(noise_amplitude, perturb_times):
-    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
+
+N = 2
+
+omega = 2. * np.pi * 100
+
+Omega_R = 2. * np.pi * 5.6
+
+J = 0
+
+bandwidth = 10
+
+sampling_rate = 2000
+endtime = 0.5
+timesteps = int(endtime * sampling_rate)
+
+gamma1 = 0
+
+
+
+def noisy_func(noise_amplitude, perturb_times, bandwidth):
+    func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    fourier = np.abs(np.fft.fft(func1(perturb_times)))
+
+    max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times)/2)])
+    max_pos = int(len(perturb_times)/2) - np.argmax(fourier[int(len(perturb_times)/2): len(perturb_times)])
+
+    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times)) #2000*np.ones_like(perturb_times)#
     #random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
-    #noisefreq = np.fft.fft(random_amplitude)
-    #noisefreq[25:45] = envelope("Blackman", np.real(noisefreq[25:45])) + np.imag(noisefreq[25:45])
-    #noisefreq[500 - 45:500 - 25] = envelope("Blackman", np.real(noisefreq[500 - 45:500 - 25])) + np.imag(noisefreq[500 - 45:500 - 25])
-    #noisefreq[0:25] = 0
-    #noisefreq[45:500 - 45] = 0
-    #noisefreq[500 - 25:500] = 0
-    #random_amplitude = np.fft.ifft(noisefreq)
+    noisefreq = np.fft.fft(random_amplitude)
+
+    noisefreq[max_neg + bandwidth: max_neg - bandwidth] =\
+        envelope("Blackman", 0, noisefreq[max_neg + bandwidth: max_neg - bandwidth])
+
+    noisefreq[max_pos + bandwidth: max_pos - bandwidth] =\
+        envelope("Blackman", 0, noisefreq[max_pos + bandwidth: max_pos - bandwidth])
+
+    noisefreq[0: max_pos - bandwidth] = 0
+    noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
+    noisefreq[max_neg + bandwidth: len(perturb_times)] = 0
+    #noisefreq[max_neg + bandwidth: int(len(perturb_times)/2) - (max_pos - bandwidth)] = 0
+    #noisefreq[int(len(perturb_times)/2) - (max_pos + bandwidth): len(perturb_times)] = 0
+    #noisefreq[max_neg - bandwidth] = 1000
+    #noisefreq[max_neg + bandwidth] = 1000
+    #noisefreq[max_pos + bandwidth] = 1000
+    #noisefreq[max_pos - bandwidth] = 1000
+    random_amplitude = np.fft.ifft(noisefreq)
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
     random_phase = np.zeros_like(perturb_times)
     i = 0
@@ -214,26 +253,16 @@ def noisy_func(noise_amplitude, perturb_times):
             #random_phase[t] = random_phase[t-1]
             #random_frequency[t + 1] = random_frequency[t]
 
-    func1 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+
     noisy_func1 = lambda t:  func1(t) + random_amplitude
     return noisy_func1(perturb_times)
 
-def func(perturb_times):
-    func2 = lambda t: 0.5j*np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    return func2(perturb_times)
 
-
-N = 2
-
-omega = 2. * np.pi * 350
-
-Omega_R = 2. * np.pi * 5.6
-
-J = 0
-
-sampling_rate = 65*10**2
-endtime = 0.5
-timesteps = int(endtime * sampling_rate)
+def ohmic_spectrum(w):
+    if w == 0.0:  # dephasing inducing noise
+        return gamma1
+    else:  # relaxation inducing noise
+        return gamma1  # / 2 * (w / (2 * np.pi)) * (w > 0.0)
 
 
 pertubation_length = endtime/1
@@ -246,7 +275,7 @@ noise_amplitude = 0.000
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
-S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
+S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, bandwidth))
 
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, 0, N), sigmaz(0, N - 1, N), upup(0, N),
         sigmap(0, 0, N), sigmam(0, 0, N), downdown(0, N), anan(0, N)]
@@ -294,13 +323,7 @@ plt.legend()
 plt.xlabel('t_measure - t_perturb')
 #plt.show()
 
-gamma1 = 0
 
-def ohmic_spectrum(w):
-    if w == 0.0:  # dephasing inducing noise
-        return gamma1
-    else:  # relaxation inducing noise
-        return gamma1  # / 2 * (w / (2 * np.pi)) * (w > 0.0)
 
 spectra_cb = [ohmic_spectrum]
 a_ops = []
@@ -313,7 +336,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
-                    perturb_times, [15*sigmap(1, 0, N), 15*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [bandwidth*sigmap(1, 0, N), bandwidth*sigmam(1, 0, N)], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -383,7 +406,7 @@ for noise_amplitude in np.linspace(1, 5, num=2):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
-    S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
+    S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, bandwidth))
 
     #print('H0...')
     #print(H0(omega, J, N))
@@ -403,7 +426,7 @@ for noise_amplitude in np.linspace(1, 5, num=2):
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
-        S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times))
+        S = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, bandwidth))
 
         result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
                           perturb_times, e_ops=Exps, options=opts)
@@ -422,7 +445,7 @@ for noise_amplitude in np.linspace(1, 5, num=2):
 
     #func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
     #noisy_func2 = lambda t: func2(t + random_phase)
-    noisy_data2 = noisy_func(noise_amplitude, perturb_times)
+    noisy_data2 = noisy_func(noise_amplitude, perturb_times, bandwidth)
     S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
     states2 = states2/i
@@ -444,14 +467,17 @@ for noise_amplitude in np.linspace(1, 5, num=2):
     #print('AntiCommutator: ', AntiCommutator[0][0])
     #print(np.correlate(S2(perturb_times), S2(perturb_times), "valid"))
     fig, ax = plt.subplots(4, 2, figsize=(10, 10))
-    freq = np.fft.fftfreq(perturb_times.shape[-1])
-    ax[0, 0].plot(freq, np.abs(np.fft.fft(noisy_func(noise_amplitude, perturb_times))), linestyle='--', marker='o', markersize='5')
-    print(np.argmax(np.abs(np.fft.fft(S2(perturb_times)))))
+    freq = np.fft.fftfreq(perturb_times.shape[-1], d=1/sampling_rate)
+    ax[0, 0].plot(freq, np.abs(np.fft.fft(noisy_func(noise_amplitude, perturb_times, bandwidth))), linestyle='--',
+                  marker='o', markersize='5')
+    #ax[0, 0].plot(freq, np.imag(np.fft.fft(noisy_func(noise_amplitude, perturb_times, bandwidth))), linestyle='--',
+                  #marker='o', markersize='5')
+
     #ax[0, 0].plot(freq, np.correlate(S2(perturb_times), S2(perturb_times), "valid")[0], linestyle='--', marker='o', markersize='5')
     #ax[0, 0].plot(perturb_times, func2(perturb_times))
     #ax[0, 0].plot(perturb_times, np.real(noisy_data2), 'o')
     #ax[0, 0].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
-    ax[0, 0].set_xlabel('F [J]')
+    ax[0, 0].set_xlabel('F [MHz]')
     ax[0, 0].set_ylabel('Coupling Amplitude')
     #ax[0, 0].set_xlim([0, 0.4])
 
