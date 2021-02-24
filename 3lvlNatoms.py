@@ -127,7 +127,7 @@ def MagnetizationZ(N):
     sum = 0
     for j in range(0, N):
         sum += sigmaz(0, j, N)
-    return sum / N
+    return -sum / N
 
 
 def MagnetizationX(N):
@@ -167,12 +167,12 @@ def H2(Omega_R, N):
         H -= Omega_R * (sigmam(1, j, N))
     return H
 
-def envelope(shape, bandwidth, function):
+def envelope(shape, function):
     if shape == "Blackman":
         window = signal.windows.blackman(len(function))
         function = window * function
     elif shape == "Window":
-        window = signal.windows.blackman(len(function))
+        window = np.ones_like(function)
         function = window * function
     else:
         None
@@ -191,10 +191,10 @@ Omega_R = 2. * np.pi * 5.6
 
 J = 0
 
-bandwidth = 1
+bandwidth = 20
 
-sampling_rate = 2000
-endtime = 0.5
+sampling_rate = 1000
+endtime = 1
 timesteps = int(endtime * sampling_rate)
 
 gamma1 = 0
@@ -202,22 +202,29 @@ gamma1 = 0
 
 
 def noisy_func(noise_amplitude, perturb_times, bandwidth):
+
+    ########  STARTING FUNCTION  #####################
     func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
     fourier = np.abs(np.fft.fft(func1(perturb_times)))
 
     max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times)/2)])
     max_pos = int(len(perturb_times)/2) - np.argmax(fourier[int(len(perturb_times)/2): len(perturb_times)])
 
-
+    ########### AMPLITUDE NOISE ################
     random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
-    #random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
+
+
+    #######  FILTERING  ####################
+    # random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
+
     noisefreq = np.fft.fft(random_amplitude)
     #noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
+
     noisefreq[max_neg + bandwidth: max_neg - bandwidth] =\
-        envelope("Blackman", 0, noisefreq[max_neg + bandwidth: max_neg - bandwidth])
+        envelope("Blackman", noisefreq[max_neg + bandwidth: max_neg - bandwidth])
 
     noisefreq[max_pos + bandwidth: max_pos - bandwidth] =\
-        envelope("Blackman", 0, noisefreq[max_pos + bandwidth: max_pos - bandwidth])
+        envelope("Blackman", noisefreq[max_pos + bandwidth: max_pos - bandwidth])
 
     noisefreq[0: max_pos - bandwidth] = 0
     noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
@@ -228,7 +235,12 @@ def noisy_func(noise_amplitude, perturb_times, bandwidth):
     #noisefreq[max_pos + bandwidth] = 1000
     #noisefreq[max_pos - bandwidth] = 1000
     random_amplitude = np.fft.ifft(noisefreq)
+
+
+    ######### FREQUENCY NOISE #####################
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
+
+    ########### PHASE NOISE ##############
     random_phase = np.zeros_like(perturb_times)
     i = 0
     time = np.random.randint(0, len(perturb_times)-1)
@@ -402,7 +414,7 @@ else:
         downupt1t2br[t] = np.real(result_t1t2_br.states[t].ptrace(0)[0][0][1])
 
 
-for noise_amplitude in np.linspace(1, 5, num=2):
+for noise_amplitude in np.linspace(0, 5, num=6):
 
     i = 1
     #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -422,7 +434,7 @@ for noise_amplitude in np.linspace(1, 5, num=2):
     states2 = np.array(result2.states[timesteps - 1])
     expect2 = np.array(result2.expect[:])
     ancilla_overlap = []
-    while i < 2:
+    while i < 25:
         #print(i)
         i += 1
         #random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
