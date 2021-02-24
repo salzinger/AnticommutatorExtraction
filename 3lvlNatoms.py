@@ -216,7 +216,7 @@ def noisy_func(noise_amplitude, perturb_times, bandwidth):
 
     #######  FILTERING  ####################
     # random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
-
+    '''
     noisefreq = np.fft.fft(random_amplitude)
     #noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
 
@@ -235,7 +235,7 @@ def noisy_func(noise_amplitude, perturb_times, bandwidth):
     #noisefreq[max_pos + bandwidth] = 1000
     #noisefreq[max_pos - bandwidth] = 1000
     random_amplitude = np.fft.ifft(noisefreq)
-
+    '''
 
     ######### FREQUENCY NOISE #####################
     #random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
@@ -348,7 +348,7 @@ result_t1t2_br = mesolve(H0(omega, J, N), result_br.states[timesteps - 1], t2, [
 
 
 result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], result_t1.states[timesteps - 1],
-                    perturb_times, [bandwidth*sigmap(1, 0, N), bandwidth*sigmam(1, 0, N)], Exps, options=opts)
+                    perturb_times, [bandwidth*sigmap(1, 0, N)/10, bandwidth*sigmam(1, 0, N)/10], Exps, options=opts)
 
 result_t1t2_me = mesolve(H0(omega, J, N), result_me.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -478,10 +478,10 @@ for noise_amplitude in np.linspace(0, 5, num=6):
     #print('Commutator:', 1j * Commutator[0][0])
     #print('AntiCommutator: ', AntiCommutator[0][0])
     #print(np.correlate(S2(perturb_times), S2(perturb_times), "valid"))
-    fig, ax = plt.subplots(4, 2, figsize=(10, 10))
+    fig, ax = plt.subplots(3, 2, figsize=(10, 10))
     freq = np.fft.fftfreq(perturb_times.shape[-1], d=1/sampling_rate)
-    ax[0, 0].plot(freq, np.abs(np.fft.fft(noisy_func(noise_amplitude, perturb_times, bandwidth))), linestyle='--',
-                  marker='o', markersize='5')
+    ax[0, 0].plot(freq, np.abs(np.fft.fft(noisy_func(noise_amplitude, perturb_times, bandwidth))), linestyle='',
+                  marker='o', markersize='2', linewidth=0.0)
     #ax[0, 0].plot(freq, np.imag(np.fft.fft(noisy_func(noise_amplitude, perturb_times, bandwidth))), linestyle='--',
                   #marker='o', markersize='5')
 
@@ -493,7 +493,7 @@ for noise_amplitude in np.linspace(0, 5, num=6):
     ax[0, 0].set_ylabel('Coupling Amplitude')
     #ax[0, 0].set_xlim([0, 0.4])
 
-    ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), lw=2)
+    ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), linestyle='-', marker='o', markersize='0', linewidth=1.0)
     ax[0, 1].set_xlabel('Time [us]')
 
 
@@ -511,80 +511,84 @@ for noise_amplitude in np.linspace(0, 5, num=6):
     #ax[1, 1].plot(perturb_times, np.fft.ifft(noisefreq), label="Frequency after shifted Window")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[1]), label="MagnetizationZ")
     #ax[1, 0].plot(t1, np.real(result_t1.expect[2]), label="MagnetizationY")
-    ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
+    #ax[1, 0].plot(t1, np.real(result_t1.expect[0]), label="MagnetizationX")
     #ax[1, 0].plot(t1, result_t1.expect[3], label="tensor(SigmaZ,Id) ")
     #ax[1, 0].plot(t1, result_t1.expect[4], label="tensor(Id,SigmaZ) ")
-    ax[1, 0].set_xlabel('Free Evolution Time [us]')
-    ax[1, 0].set_ylabel('Magnetization')
-    ax[1, 0].legend(loc="upper right")
+    #ax[1, 0].set_xlabel('Free Evolution Time [us]')
+    #ax[1, 0].set_ylabel('Magnetization')
+    #ax[1, 0].legend(loc="upper right")
     #ax[1, 0].set_ylim([-1.1, 1.1])
 
 
-    ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
+    #ax[1, 1].plot(t2, np.real(result_AB.expect[1]), label="MagnetizationZ")
     #ax[1, 1].plot(t2, np.real(result_AB.expect[2]), label="MagnetizationY")
-    ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
+    #ax[1, 1].plot(t2, np.real(result_AB.expect[0]), label="MagnetizationX")
     #ax[1, 1].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
     #ax[1, 1].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
-    ax[1, 1].set_xlabel('After Perturbation Operator [us]')
-    ax[1, 1].legend(loc="right")
+    #ax[1, 1].set_xlabel('After Perturbation Operator [us]')
+    #ax[1, 1].legend(loc="right")
     #ax[1, 1].set_ylim([-1.1, 1.1])
 
 
     #ax[2, 0].plot(perturb_times, expect2[0], label="MagnetizationX")
-    ax[2, 0].plot(perturb_times, np.real(expect2[1]), label="MagnetizationZ")
+    ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="MagnetizationZ")
     #ax[2, 0].plot(perturb_times, expect2[2], label="MagnetizationY")
     #ax[2, 0].plot(perturb_times, expect2[3], label="tensor(SigmaZ,Id) ")
     #ax[2, 0].plot(perturb_times, expect2[4], label="tensor(Id,SigmaZ) ")
-    ax[2, 0].plot(perturb_times, np.real(expect2[5]), label="upup")
+    #ax[2, 0].plot(perturb_times, np.real(expect2[5]), label="upup")
     #ax[2, 0].plot(perturb_times, np.real(expect2[6]), label="updown")
     #ax[2, 0].plot(perturb_times, np.real(expect2[7]), label="downup")
-    ax[2, 0].plot(perturb_times, np.real(expect2[8]), label="downdown")
-    ax[2, 0].plot(perturb_times, np.real(expect2[9]), label="aa")
-    ax[2, 0].set_xlabel('Time Dependent Perturbation [1/J]')
+    #ax[2, 0].plot(perturb_times, np.real(expect2[8]), label="downdown")
+    #ax[2, 0].plot(perturb_times, np.real(expect2[9]), label="aa")
+    ax[1, 0].set_xlabel('Time Dependent Perturbation [us]')
     #ax[2, 0].legend(loc="right")
     #ax[2, 0].set_ylim([-1.1, 1.1])
 
     #ax[2, 1].plot(t2, result3.expect[0], label="MagnetizationX")
-    ax[2, 1].plot(t2, np.real(result3.expect[1]), label="MagnetizationZ")
+    #ax[1, 1].plot(t2, np.real(result3.expect[1]), label="MagnetizationZ")
+    ax[1, 1].plot(perturb_times, np.real(S2(perturb_times)),  linestyle='--', marker='o', markersize='3', linewidth=1.0)
+    ax[1, 1].set_xlabel('Time [us]')
     #ax[2, 1].plot(t2, result3.expect[2], label="MagnetizationY")
     #ax[2, 1].plot(t2, result3.expect[3], label="tensor(SigmaZ,Id) ")
     #ax[2, 1].plot(t2, result3.expect[4], label="tensor(Id,SigmaZ) ")
-    ax[2, 1].plot(t2, np.real(result3.expect[5]), label="upup")
+    #ax[2, 1].plot(t2, np.real(result3.expect[5]), label="upup")
     #ax[2, 1].plot(t2, np.real(result3.expect[6]), label="updown")
     #ax[2, 1].plot(t2, np.real(result3.expect[7]), label="downup")
-    ax[2, 1].plot(t2, np.real(result3.expect[8]), label="downdown")
-    ax[2, 1].plot(t2, np.real(result3.expect[9]), label="aa")
-    ax[2, 1].set_xlabel('After Time Dependent Pertubation [1/J]')
-    ax[2, 1].legend(loc="right")
-    #ax[2, 1].set_ylim([-1.1, 1.1])
+    #ax[2, 1].plot(t2, np.real(result3.expect[8]), label="downdown")
+    #ax[2, 1].plot(t2, np.real(result3.expect[9]), label="aa")
+    #ax[1, 1].set_xlabel('After Time Dependent Pertubation [us]')
+    #ax[1, 1].legend(loc="right")
+    ax[1, 1].set_xlim([0, 0.1])
 
     #ax[3, 0].plot(t2, result_AB_me.expect[0], label="MagnetizationX")
-    ax[3, 0].plot(t2, np.real(result_me.expect[1]), label="MagnetizationZ")
+    ax[2, 0].plot(t2, np.real(result_me.expect[1]), label="MagnetizationZ")
     #ax[3, 0].plot(t2, result_AB_me.expect[2], label="MagnetizationY")
-    ax[3, 0].plot(t2, upup, label="uu")
-    ax[3, 0].plot(t2, updown, label="ud")
-    ax[3, 0].plot(t2, downup, label="du")
-    ax[3, 0].plot(t2, downdown, label="dd")
-    ax[3, 0].plot(t2, anan, label="aa")
+    ax[2, 0].plot(t2, upup, label="uu")
+    ax[2, 0].plot(t2, updown, label="ud")
+    ax[2, 0].plot(t2, downup, label="du")
+    ax[2, 0].plot(t2, downdown, label="dd")
+    ax[2, 0].plot(t2, anan, label="aa")
     #ax[3, 0].plot(t2, result_AB.expect[3], label="tensor(SigmaZ,Id)")
     #ax[3, 0].plot(t2, result_AB.expect[4], label="tensor(Id,SigmaZ)")
-    ax[3, 0].set_xlabel('Lindblad Perturbation [1/J]')
+    ax[2, 0].set_xlabel('Lindblad Perturbation [1/J]')
     #ax[3, 0].legend(loc="right")
     #ax[3, 0].set_ylim([-1.1, 1.1])
 
+    ax[2, 1].plot(perturb_times, np.real(S2(perturb_times)), linestyle='--', marker='o', markersize='3', linewidth=1.0)
+    ax[2, 1].set_xlabel('Time [us]')
     #ax[3, 1].plot(t2, result_t1t2_me.expect[0], label="MagnetizationX")
-    ax[3, 1].plot(t2, np.real(result_t1t2_me.expect[1]), label="MagnetizationZ")
+    #ax[2, 1].plot(t2, np.real(result_t1t2_me.expect[1]), label="MagnetizationZ")
     #ax[3, 1].plot(t2, result_t1t2_me.expect[2], label="MagnetizationY")
-    ax[3, 1].plot(t2, upupt1t2me, label="upup")
-    ax[3, 1].plot(t2, updownt1t2me, label="updown")
-    ax[3, 1].plot(t2, downupt1t2me, label="downup")
-    ax[3, 1].plot(t2, downdownt1t2me, label="downdown")
-    ax[3, 1].plot(t2, anant1t2me, label="aa")
+    #ax[2, 1].plot(t2, upupt1t2me, label="upup")
+    #ax[2, 1].plot(t2, updownt1t2me, label="updown")
+    #ax[2, 1].plot(t2, downupt1t2me, label="downup")
+    #ax[2, 1].plot(t2, downdownt1t2me, label="downdown")
+    #ax[2, 1].plot(t2, anant1t2me, label="aa")
     #ax[3, 1].plot(t2, result_t1t2.expect[3], label="tensor(SigmaZ,Id)")
     #ax[3, 1].plot(t2, result_t1t2.expect[4], label="tensor(Id,SigmaZ)")
-    ax[3, 1].set_xlabel('After Lindblad Perturbation [1/J]')
-    ax[3, 1].legend(loc="right")
-    #ax[3, 1].set_ylim([-1.1, 1.1])
+    #ax[2, 1].set_xlabel('After Lindblad Perturbation [us]')
+    #ax[2, 1].legend(loc="right")
+    ax[2, 1].set_xlim([0, 0.01])
 
     #ax[4, 0].plot(t2, result_t1t2_br.expect[0], label="MagnetizationX")
     #ax[4, 0].plot(t2, np.real(result_t1t2_br.expect[1]), label="MagnetizationZ")
