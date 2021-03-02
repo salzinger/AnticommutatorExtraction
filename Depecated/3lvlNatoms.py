@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from qutip import *
-from qutip.solver import Options, Result, config, _solver_safety_check
+from qutip.solver import Options, Result, config, _solver_safety_check, Qobj
 from scipy.signal import freqz
 from scipy.signal import butter, lfilter
 
@@ -13,12 +13,13 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     b, a = butter(order, [low, high], btype='band')
     return b, a
 
+
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
 
-#opts = Options(store_states=True, store_final_state=True, ntraj=200)
+opts = Options(store_states=True, store_final_state=True, ntraj=200)
 
 
 def threebasis():
@@ -29,22 +30,23 @@ def productstateZ(up_atom, down_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [down for _ in oplist]
-    oplist[up_atom] = up
-    oplist[down_atom] = down
+    oplist[up_atom] = Qobj(up)
+    oplist[down_atom] = Qobj(down)
     return tensor(oplist)
 
 def productstateA(up_atom, ancilla_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [down for _ in oplist]
-    oplist[up_atom] = up
-    oplist[ancilla_atom] = ancilla
-    return tensor(up, ancilla) + tensor(ancilla, up) + tensor(down, ancilla) + tensor(ancilla, down) + tensor(ancilla, ancilla)
+    oplist = [Qobj(down) for _ in oplist]
+    oplist[up_atom] = Qobj(up)
+    oplist[ancilla_atom] = Qobj(ancilla)
+    return tensor(Qobj(up), Qobj(ancilla)) + tensor(Qobj(ancilla), Qobj(up)) + tensor(Qobj(down), Qobj(ancilla)) +\
+           tensor(Qobj(ancilla), Qobj(down)) + tensor(Qobj(ancilla), Qobj(ancilla))
 
 def productstateX(m, j, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [(up + down).unit() for _ in oplist]
+    oplist = [Qobj((up + down)).unit() for _ in oplist]
     return tensor(oplist)
 
 
@@ -52,7 +54,7 @@ def anan(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = ancilla * ancilla.dag()
+    oplist[m] = Qobj(ancilla * ancilla.conj().T)
     return tensor(oplist)
 
 
@@ -60,7 +62,7 @@ def upup(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = up * up.dag()
+    oplist[m] = Qobj(up * up.conj().T)
     return tensor(oplist)
 
 
@@ -68,7 +70,7 @@ def downdown(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = down * down.dag()
+    oplist[m] = Qobj(down * down.conj().T)
     return tensor(oplist)
 
 def sigmap(ancilla_coupling, m, N):
@@ -76,9 +78,9 @@ def sigmap(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = ancilla * up.dag()
+        oplist[m] = Qobj(ancilla * up.conj().T)
     else:
-        oplist[m] = up * down.dag()
+        oplist[m] = Qobj(up * down.conj().T)
     return tensor(oplist)
 
 
@@ -87,9 +89,9 @@ def sigmam(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = up * ancilla.dag()
+        oplist[m] = Qobj(up * ancilla.conj().T)
     else:
-        oplist[m] = down * up.dag()
+        oplist[m] = Qobj(down * up.conj().T)
     return tensor(oplist)
 
 

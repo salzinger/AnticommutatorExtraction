@@ -1,30 +1,31 @@
 from qutip import *
 import numpy as np
 
-def twobasis():
-    return np.array([basis(2, 0), basis(2, 1)], dtype=object)
+def threebasis():
+    return np.array([basis(3, 0), basis(3, 1), basis(3, 2)], dtype=object)
 
 
 def productstateZ(up_atom, down_atom, N):
-    ancilla, up, down = twobasis()
+    ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [down for _ in oplist]
-    oplist[up_atom] = up
-    oplist[down_atom] = down
+    oplist[up_atom] = Qobj(up)
+    oplist[down_atom] = Qobj(down)
     return tensor(oplist)
 
 def productstateA(up_atom, ancilla_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [down for _ in oplist]
-    oplist[up_atom] = up
-    oplist[ancilla_atom] = ancilla
-    return tensor(up, ancilla) + tensor(ancilla, up) + tensor(down, ancilla) + tensor(ancilla, down) + tensor(ancilla, ancilla)
+    oplist = [Qobj(down) for _ in oplist]
+    oplist[up_atom] = Qobj(up)
+    oplist[ancilla_atom] = Qobj(ancilla)
+    return tensor(Qobj(up), Qobj(ancilla)) + tensor(Qobj(ancilla), Qobj(up)) + tensor(Qobj(down), Qobj(ancilla)) +\
+           tensor(Qobj(ancilla), Qobj(down)) + tensor(Qobj(ancilla), Qobj(ancilla))
 
 def productstateX(m, j, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [(up + down).unit() for _ in oplist]
+    oplist = [Qobj((up + down)).unit() for _ in oplist]
     return tensor(oplist)
 
 
@@ -32,7 +33,7 @@ def anan(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = ancilla * ancilla.dag()
+    oplist[m] = Qobj(ancilla * ancilla.conj().T)
     return tensor(oplist)
 
 
@@ -40,7 +41,7 @@ def upup(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = up * up.dag()
+    oplist[m] = Qobj(up * up.conj().T)
     return tensor(oplist)
 
 
@@ -48,7 +49,7 @@ def downdown(m,N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = down * down.dag()
+    oplist[m] = Qobj(down * down.conj().T)
     return tensor(oplist)
 
 def sigmap(ancilla_coupling, m, N):
@@ -56,9 +57,9 @@ def sigmap(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = ancilla * up.dag()
+        oplist[m] = Qobj(ancilla * up.conj().T)
     else:
-        oplist[m] = up * down.dag()
+        oplist[m] = Qobj(up * down.conj().T)
     return tensor(oplist)
 
 
@@ -67,9 +68,9 @@ def sigmam(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = up * ancilla.dag()
+        oplist[m] = Qobj(up * ancilla.conj().T)
     else:
-        oplist[m] = down * up.dag()
+        oplist[m] = Qobj(down * up.conj().T)
     return tensor(oplist)
 
 
@@ -107,7 +108,7 @@ def MagnetizationZ(N):
     sum = 0
     for j in range(0, N):
         sum += sigmaz(0, j, N)
-    return sum / N
+    return -sum / N
 
 
 def MagnetizationX(N):
