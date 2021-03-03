@@ -1,8 +1,10 @@
 from qutip import *
 import numpy as np
 
+
 def twobasis():
     return np.array([basis(2, 0), basis(2, 1)], dtype=object)
+
 
 def productstateZ(up_atom, down_atom, N):
     up, down = twobasis()
@@ -12,25 +14,29 @@ def productstateZ(up_atom, down_atom, N):
     oplist[down_atom] = Qobj(down)
     return tensor(oplist)
 
+
 def productstateX(m, j, N):
     ancilla, up, down = twobasis()
     oplist = np.empty(N, dtype=object)
     oplist = [Qobj((up + down)).unit() for _ in oplist]
     return tensor(oplist)
 
-def upup(m,N):
+
+def upup(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     oplist[m] = Qobj(up) * Qobj(up).dag()
     return tensor(oplist)
 
-def downdown(m,N):
+
+def downdown(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     oplist[m] = Qobj(down) * Qobj(down).dag()
     return tensor(oplist)
+
 
 def sigmap(m, N):
     up, down = twobasis()

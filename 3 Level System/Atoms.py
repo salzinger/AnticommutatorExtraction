@@ -1,6 +1,7 @@
 from qutip import *
 import numpy as np
 
+
 def threebasis():
     return np.array([basis(3, 0), basis(3, 1), basis(3, 2)], dtype=object)
 
@@ -13,14 +14,16 @@ def productstateZ(up_atom, down_atom, N):
     oplist[down_atom] = Qobj(down)
     return tensor(oplist)
 
+
 def productstateA(up_atom, ancilla_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [Qobj(down) for _ in oplist]
     oplist[up_atom] = Qobj(up)
     oplist[ancilla_atom] = Qobj(ancilla)
-    return tensor(Qobj(up), Qobj(ancilla)) + tensor(Qobj(ancilla), Qobj(up)) + tensor(Qobj(down), Qobj(ancilla)) +\
+    return tensor(Qobj(up), Qobj(ancilla)) + tensor(Qobj(ancilla), Qobj(up)) + tensor(Qobj(down), Qobj(ancilla)) + \
            tensor(Qobj(ancilla), Qobj(down)) + tensor(Qobj(ancilla), Qobj(ancilla))
+
 
 def productstateX(m, j, N):
     ancilla, up, down = threebasis()
@@ -29,7 +32,7 @@ def productstateX(m, j, N):
     return tensor(oplist)
 
 
-def anan(m,N):
+def anan(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
@@ -37,7 +40,7 @@ def anan(m,N):
     return tensor(oplist)
 
 
-def upup(m,N):
+def upup(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
@@ -45,12 +48,13 @@ def upup(m,N):
     return tensor(oplist)
 
 
-def downdown(m,N):
+def downdown(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     oplist[m] = Qobj(down * down.conj().T)
     return tensor(oplist)
+
 
 def sigmap(ancilla_coupling, m, N):
     ancilla, up, down = threebasis()
