@@ -1,6 +1,78 @@
-import numpy as np
 from scipy import signal
 from scipy.signal import butter, lfilter
+from pylab import plot, show, grid, xlabel, ylabel
+from math import sqrt
+from scipy.stats import norm
+import numpy as np
+
+def lorentzian(frequencies, amplitude, omega_0, gamma):
+    func = lambda t: amplitude*(gamma**2/((t-omega_0)**2)+gamma**2)
+    return func(frequencies)
+
+
+def brownian(x0, n, dt, delta, out=None):
+    """
+    Generate an instance of Brownian motion (i.e. the Wiener process):
+
+        X(t) = X(0) + N(0, delta**2 * t; 0, t)
+
+    where N(a,b; t0, t1) is a normally distributed random variable with mean a and
+    variance b.  The parameters t0 and t1 make explicit the statistical
+    independence of N on different time intervals; that is, if [t0, t1) and
+    [t2, t3) are disjoint intervals, then N(a, b; t0, t1) and N(a, b; t2, t3)
+    are independent.
+
+    Written as an iteration scheme,
+
+        X(t + dt) = X(t) + N(0, delta**2 * dt; t, t+dt)
+
+
+    If `x0` is an array (or array-like), each value in `x0` is treated as
+    an initial condition, and the value returned is a numpy array with one
+    more dimension than `x0`.
+
+    Arguments
+    ---------
+    x0 : float or numpy array (or something that can be converted to a numpy array
+         using numpy.asarray(x0)).
+        The initial condition(s) (i.e. position(s)) of the Brownian motion.
+    n : int
+        The number of steps to take.
+    dt : float
+        The time step.
+    delta : float
+        delta determines the "speed" of the Brownian motion.  The random variable
+        of the position at time t, X(t), has a normal distribution whose mean is
+        the position at time t=0 and whose variance is delta**2*t.
+    out : numpy array or None
+        If `out` is not None, it specifies the array in which to put the
+        result.  If `out` is None, a new numpy array is created and returned.
+
+    Returns
+    -------
+    A numpy array of floats with shape `x0.shape + (n,)`.
+
+    Note that the initial value `x0` is not included in the returned array.
+    """
+
+    x0 = np.asarray(x0)
+
+    # For each element of x0, generate a sample of n numbers from a
+    # normal distribution.
+    r = norm.rvs(size=x0.shape + (n,), scale=delta * sqrt(dt))
+
+    # If `out` was not given, create an output array.
+    if out is None:
+        out = np.empty(r.shape)
+
+    # This computes the Brownian motion by forming the cumulative sum of
+    # the random samples.
+    np.cumsum(r, axis=-1, out=out)
+
+    # Add the initial condition.
+    out += np.expand_dims(x0, axis=-1)
+
+    return out
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -39,6 +111,8 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
     func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
     fourier = np.abs(np.fft.fft(func1(perturb_times)))
 
+    bandwidth = int(bandwidth)
+
     max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times) / 2)])
     max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
 
@@ -52,10 +126,10 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
     # noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
 
     noisefreq[max_neg + bandwidth: max_neg - bandwidth] = \
-        envelope("Blackman", noisefreq[max_neg + bandwidth: max_neg - bandwidth])
+        envelope("Window", noisefreq[max_neg + bandwidth: max_neg - bandwidth])
 
     noisefreq[max_pos + bandwidth: max_pos - bandwidth] = \
-        envelope("Blackman", noisefreq[max_pos + bandwidth: max_pos - bandwidth])
+        envelope("Window", noisefreq[max_pos + bandwidth: max_pos - bandwidth])
 
     noisefreq[0: max_pos - bandwidth] = 0
     noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
@@ -98,9 +172,68 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
     noisy_func1 = lambda t: func1(t) + random_amplitude
     return noisy_func1(perturb_times)
 
+def brownian_func(noise_amplitude, perturb_times, omega):
+
+    # The Wiener process parameter.
+    delta = noise_amplitude
+    # Total time.
+    T = perturb_times[-1]
+    # Number of steps.
+    N = len(perturb_times)
+    # Time step size
+    dt = T / N
+    # Number of realizations to generate.
+    m = 1
+    # Create an empty array to store the realizations.
+    x = np.empty((m, N + 1))
+    # Initial values of x.
+    x[:, 0] = 0
+
+    phase_noise = brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
+
+    #t = np.linspace(0.0, N * dt, N)
+    #for k in range(m):
+    #    plot(t, phase_noise[k])
+    #xlabel('t', fontsize=16)
+    #xlabel('t', fontsize=16)
+    #ylabel('phase', fontsize=16)
+    #grid(True)
+    #show()
+
+    func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+    #print(perturb_times)
+    #print(phase_noise[0])
+    #print(perturb_times+phase_noise)
+    return func1(perturb_times+phase_noise[0])
+
 
 def ohmic_spectrum(w, gamma1):
     if w == 0.0:  # dephasing inducing noise
         return gamma1
     else:  # relaxation inducing noise
         return gamma1  # / 2 * (w / (2 * np.pi)) * (w > 0.0)
+
+    # The Wiener process parameter.
+#delta = 2
+    # Total time.
+#T = 10.0
+    # Number of steps.
+#N = 500
+    # Time step size
+#dt = T / N
+    # Number of realizations to generate.
+#m = 1
+    # Create an empty array to store the realizations.
+#x = np.empty((m, N + 1))
+    # Initial values of x.
+#x[:, 0] = 0
+
+#brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
+
+#t = np.linspace(0.0, N * dt, N + 1)
+#for k in range(m):
+#    plot(t, x[k])
+#xlabel('t', fontsize=16)
+#ylabel('x', fontsize=16)
+#grid(True)
+#show()
