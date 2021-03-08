@@ -6,7 +6,7 @@ from scipy.stats import norm
 import numpy as np
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
-    func = lambda t: amplitude*(gamma**2/((t-omega_0)**2)+gamma**2)
+    func = lambda t: amplitude/( ((t-omega_0)/(gamma/2))**2 + 1)
     return func(frequencies)
 
 
@@ -172,10 +172,10 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
     noisy_func1 = lambda t: func1(t) + random_amplitude
     return noisy_func1(perturb_times)
 
-def brownian_func(noise_amplitude, perturb_times, omega):
+def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
 
     # The Wiener process parameter.
-    delta = noise_amplitude
+    delta = noise_amplitude/sampling_rate
     # Total time.
     T = perturb_times[-1]
     # Number of steps.
