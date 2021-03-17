@@ -6,15 +6,16 @@ import matplotlib.pyplot as plt
 
 N = 1
 
-omega = 2 * np.pi * 35 * 10 ** 0  # MHz
+omega = 2 * np.pi * 35 * 10 ** 1  # MHz
 
 Omega_R = 2 * np.pi * 5.6  # MHz
 
+gamma = 0.0 #MHz
+
 J = 0  # MHz
 
-bandwidth = 10  # MHz
 
-sampling_rate = 2 * np.pi * 65 * 10 ** 0  # MHz
+sampling_rate = 2 * np.pi * 65 * 10 ** 1  # MHz
 endtime = 1
 timesteps = int(endtime * sampling_rate)
 
@@ -25,25 +26,22 @@ pertubation_length = endtime / 1
 t1 = np.linspace(0, endtime, timesteps)
 t2 = np.linspace(0, endtime, timesteps)
 
-noise_amplitude = 0.000
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
-random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
-S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
 
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
 opts = Options(store_states=True, store_final_state=True)
 
-for noise_amplitude in np.linspace(1, 25, num=25):
-    print("Noise Amplitude", noise_amplitude)
+for gamma in np.linspace(1, 25, num=25):
+    print("Gamma", gamma)
     for bandwidth in np.linspace(1, 9, num=1):
         #print("Bandwidth", bandwidth)
         i = 1
         # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
-        S = Cubic_Spline(perturb_times[0], perturb_times[-1], brownian_func(noise_amplitude, perturb_times, omega, sampling_rate))
+        S = Cubic_Spline(perturb_times[0], perturb_times[-1], brownian_func(gamma, perturb_times, omega, sampling_rate))
 
         # print('H0...')
         # print(H0(omega, J, N))
@@ -65,7 +63,7 @@ for noise_amplitude in np.linspace(1, 25, num=25):
             i += 1
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
             S = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                             brownian_func(noise_amplitude, perturb_times, omega, sampling_rate))
+                             brownian_func(gamma, perturb_times, omega, sampling_rate))
 
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], productstateZ(0, 0, N),
                               perturb_times, e_ops=Exps, options=opts)
@@ -75,7 +73,7 @@ for noise_amplitude in np.linspace(1, 25, num=25):
 
         # func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
         # noisy_func2 = lambda t: func2(t + random_phase)
-        noisy_data2 = brownian_func(noise_amplitude, perturb_times, omega, sampling_rate)
+        noisy_data2 = brownian_func(gamma, perturb_times, omega, sampling_rate)
         S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
         states2 = states2 / i
@@ -108,66 +106,73 @@ for noise_amplitude in np.linspace(1, 25, num=25):
 
         ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], fourier[0:int(len(perturb_times)/2)], linestyle='',
                       marker='o', markersize='2', linewidth=0.0)
-        ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], lorentzian(freq, fourier[max_pos], max_pos,
-                      noise_amplitude)[0:int(len(perturb_times)/2)], linestyle='-',
-                      marker='o', markersize='0', linewidth=1.0,label="Lorentzian with FWHM gamma= %.4f" %noise_amplitude)
 
-        ax[0, 0].set_xlabel('F [MHz]')
-        ax[0, 0].set_ylabel('Coupling Amplitude')
+        ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], lorentzian(freq, fourier[max_pos], max_pos,
+                      gamma)[0:int(len(perturb_times)/2)], linestyle='-',
+                      marker='o', markersize='0', linewidth=1.0, label="Lorentzian with FWHM gamma= %.2f MHz" %gamma)
+
+        ax[0, 0].legend(loc="upper right")
+
+        ax[0, 0].set_xlabel('f [MHz]', fontsize=16)
+        ax[0, 0].set_ylabel('Coupling Amplitude', fontsize=16)
 
         #ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), linestyle='-', marker='o', markersize='0', linewidth=1.0)
-        ax[1, 1].set_xlim([0, 0.1])
+        #ax[1, 1].set_xlim([0, 0.1])
 
 
-        ax[1, 0].set_xlabel('Time Dependent Perturbation [us]')
+
 
         S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
         result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                             productstateZ(0, 0, N),
-                            perturb_times, [np.sqrt(noise_amplitude) * sigmaz(0, N)], Exps,
+                            perturb_times, [np.sqrt(gamma) * sigmaz(0, N)], Exps,
                             options=opts)
 
         expect_me = result_me.expect[:]
 
-        ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, TD")
-        ax[1, 0].plot(perturb_times, np.exp(-perturb_times*noise_amplitude), label="e^(- %.4f * t)" %noise_amplitude)
-
-        ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME")
+        ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian")
+        ax[1, 0].plot(perturb_times, np.exp(-perturb_times*gamma), label="exp(- gamma * t)")
+        ax[1, 0].set_xlabel('Time [us]', fontsize=16)
+        ax[1, 0].set_ylabel('Magnetization', fontsize=16)
+        ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
         ax[1, 0].legend(loc="right")
 
-        delta = noise_amplitude*(2*np.pi)/360
-        print(delta)
         # Total time.
         T = perturb_times[-1]
         # Number of steps.
-        N = len(perturb_times)
+        Nsteps = len(perturb_times)
         # Time step size
-        dt = T / N
+        dt = T / Nsteps
         # Number of realizations to generate.
-        m = 5
+        m = 100
         # Create an empty array to store the realizations.
-        x = np.empty((m, N + 1))
+        x = np.empty((m, Nsteps + 1))
         # Initial values of x.
         x[:, 0] = 0
 
-        phase_noise = brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
+        phase_noise = brownian(x[:, 0], Nsteps, dt, np.sqrt(gamma), out=x[:, 1:])
 
-        t = np.linspace(0.0, N * dt, N)
+        t = np.linspace(0.0, Nsteps * dt, Nsteps)
+
         for k in range(m):
-            ax[1, 1].plot(t, phase_noise[k])
-        ax[1, 1].plot(t, np.sqrt(delta*t))
-        ax[1, 1].plot(t, -np.sqrt(delta*t))
-        ax[1, 1].set_ylim([-1.2 * np.sqrt(delta*perturb_times[-1]), 1.2 * np.sqrt(delta*perturb_times[-1])])
+            ax[1, 1].plot(t, phase_noise[k], color='grey', linewidth=0.1)
+
+        ax[1, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='--', linewidth=2.0, label='Real Mean')
+        ax[1, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='blue', linestyle='--', linewidth=2.0, label='Real Standard Deviation')
+
+        ax[1, 1].plot(t, np.sqrt(gamma*t), color='black', linestyle='--', linewidth=2.0, label='Expected Standard Deviation = sqrt(gamma * t)')
+        ax[1, 1].plot(t, -np.sqrt(gamma*t), color='black', linestyle='--', linewidth=2.0)
+        ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma*T), 1.2 * np.sqrt(gamma * T)])
         ax[1, 1].set_xlabel('Time [us]', fontsize=16)
-        ax[1, 1].set_ylabel('Phase', fontsize=16)
-        #grid(True)
-        #show()
+        ax[1, 1].set_ylabel('Phase [rad]', fontsize=16)
+        ax[1, 1].legend(loc="right")
+
 
         ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), linestyle='--', marker='o', markersize='3', linewidth=1.0)
-        ax[0, 1].set_xlabel('Time [us]')
-        ax[0, 1].set_ylabel('Coupling Amplitude')
+        ax[0, 1].set_xlabel('Time [us]', fontsize=16)
+        ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
         ax[0, 1].set_xlim([0, 10/Omega_R])
         fig.tight_layout()
         #plt.show()
-        plt.savefig("Phase Noise with gamma = %.4f MHz.png" %noise_amplitude)# and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+        plt.savefig("Phase Noise with gamma = %.2f MHz.png" %gamma)# and BW %.2f.pdf" % (noise_amplitude, bandwidth))

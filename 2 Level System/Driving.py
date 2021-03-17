@@ -172,11 +172,10 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
     noisy_func1 = lambda t: func1(t) + random_amplitude
     return noisy_func1(perturb_times)
 
-def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
+def brownian_func(gamma, perturb_times, omega, sampling_rate):
 
     # The Wiener process parameter.
-    delta = noise_amplitude/sampling_rate#*(2*np.pi)/360#/sampling_rate
-    #print(delta)
+
     # Total time.
     T = perturb_times[-1]
     # Number of steps.
@@ -190,7 +189,7 @@ def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
     # Initial values of x.
     x[:, 0] = 0
 
-    phase_noise = brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
+    phase_noise = brownian(x[:, 0], N, dt, np.sqrt(gamma), out=x[:, 1:])
 
     #t = np.linspace(0.0, N * dt, N)
     #for k in range(m):
@@ -206,7 +205,7 @@ def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
     #print(perturb_times)
     #print(phase_noise[0])
     #print(perturb_times+phase_noise)
-    return func1(perturb_times+phase_noise[0])
+    return func1(perturb_times+phase_noise[0]/omega)
 
 
 def ohmic_spectrum(w, gamma1):
