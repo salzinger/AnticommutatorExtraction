@@ -175,7 +175,8 @@ def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
 def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
 
     # The Wiener process parameter.
-    delta = noise_amplitude/sampling_rate
+    delta = noise_amplitude/sampling_rate#*(2*np.pi)/360#/sampling_rate
+    #print(delta)
     # Total time.
     T = perturb_times[-1]
     # Number of steps.
@@ -194,7 +195,8 @@ def brownian_func(noise_amplitude, perturb_times, omega, sampling_rate):
     #t = np.linspace(0.0, N * dt, N)
     #for k in range(m):
     #    plot(t, phase_noise[k])
-    #xlabel('t', fontsize=16)
+    #plot(t, delta*t)
+    #plot(t, -delta*t)
     #xlabel('t', fontsize=16)
     #ylabel('phase', fontsize=16)
     #grid(True)
