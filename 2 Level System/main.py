@@ -36,7 +36,7 @@ opts = Options(store_states=True, store_final_state=True)
 
 for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base=np.e):
     print("omega: ", omega)
-    for sampling_rate in np.logspace(np.log(2 * omega), np.log(10 * omega), num=3, base=np.e):
+    for sampling_rate in np.logspace(np.log(5 * omega), np.log(10 * omega), num=3, base=np.e):
         print("sampling: ", sampling_rate)
         endtime = 1
         timesteps = int(endtime * sampling_rate)
@@ -80,7 +80,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
                 states2 += np.array(result2.states[timesteps - 1])
                 expect2 += np.array(result2.expect[:])
-                Smean += np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
+                Smean += np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate))**2)
 
             # func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
             # noisy_func2 = lambda t: func2(t + random_phase)
@@ -111,7 +111,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             fig, ax = plt.subplots(2, 2, figsize=(10, 10))
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
-            fourier = np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))#Smean
+            fourier = Smean/np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
 
             max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
             print(max_pos)
@@ -119,7 +119,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
             ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], fourier[0:int(len(perturb_times) / 2)], linestyle='',
                           marker='o', markersize='2', linewidth=0.0)
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, fourier[max_pos], max_pos,
+            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, 1, max_pos, #fourier[max_pos]
                                                                           gamma)[0:int(len(perturb_times) / 2)],
                           linestyle='-',
                           marker='o', markersize='0', linewidth=1.0,
@@ -170,7 +170,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
-            for k in range(int(m / 2)):
+            for k in range(int(m / 10)):
                 ax[1, 1].plot(t, phase_noise[k], color='grey', linewidth=0.1)
 
             ax[1, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='--', linewidth=2.0,
