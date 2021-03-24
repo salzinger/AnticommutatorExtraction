@@ -71,7 +71,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
             while i < averages + int(10 * gamma):
                 # print(i)
                 i += 1
-                # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+
                 S = Cubic_Spline(perturb_times[0], perturb_times[-1],
                                  brownian_func(gamma, perturb_times, omega, sampling_rate))
 
@@ -82,8 +82,6 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
                 expect2 += np.array(result2.expect[:])
                 Smean += np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate))**2)
 
-            # func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-            # noisy_func2 = lambda t: func2(t + random_phase)
             noisy_data2 = brownian_func(gamma, perturb_times, omega, sampling_rate)
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
@@ -188,5 +186,5 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             fig.tight_layout()
             #plt.show()
-            plt.savefig("Sampling =  %.2f, omega =  %.2f,gamma = %.2f.png" % (
-            sampling_rate, omega, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+            plt.savefig("omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
+            omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
