@@ -16,9 +16,11 @@ J = 0  # MHz
 
 averages = 100
 
-sampling_rate = 2 * np.pi * 65 * 10 ** 0  # MHz
-endtime = 1
+sampling_rate = 2 * np.pi * 165 * 10 ** 0  # MHz
+endtime = 5
 timesteps = int(endtime * sampling_rate)
+
+bath="markovian"
 
 gamma1 = 0  # MHz
 
@@ -38,7 +40,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
     print("omega: ", omega)
     for sampling_rate in np.logspace(np.log(5 * omega), np.log(10 * omega), num=3, base=np.e):
         print("sampling: ", sampling_rate)
-        endtime = 1
+        endtime = 5
         timesteps = int(endtime * sampling_rate)
         pertubation_length = endtime / 1
         t1 = np.linspace(0, endtime, timesteps)
@@ -50,7 +52,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
             i = 1
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
             S = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                             brownian_func(gamma, perturb_times, omega, sampling_rate))
+                             noisy_func(gamma, perturb_times, omega, bath))
 
             # print('H0...')
             # print(H0(omega, J, N))
@@ -68,21 +70,21 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
             ancilla_overlap = []
             Smean = np.zeros_like(perturb_times)+1j*np.zeros_like(perturb_times)
 
-            while i < averages + int(10 * gamma):
+            while i < averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
                 S = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                 brownian_func(gamma, perturb_times, omega, sampling_rate))
+                                 noisy_func(gamma, perturb_times, omega, bath))
 
                 result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], productstateZ(0, 0, N),
                                   perturb_times, e_ops=Exps, options=opts)
 
                 states2 += np.array(result2.states[timesteps - 1])
                 expect2 += np.array(result2.expect[:])
-                Smean += np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate))**2)
+                Smean += np.abs(np.fft.fft(noisy_func(gamma, perturb_times, omega, bath))**2)
 
-            noisy_data2 = brownian_func(gamma, perturb_times, omega, sampling_rate)
+            noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
             states2 = states2 / i
@@ -132,7 +134,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
                           linewidth=1.0)
             ax[0, 1].set_xlabel('Time [us]', fontsize=16)
             ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
-            ax[0, 1].set_xlim([0, 50 / omega])
+            ax[0, 1].set_xlim([0, 150 / omega])
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
@@ -186,5 +188,5 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             fig.tight_layout()
             #plt.show()
-            plt.savefig("omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
+            plt.savefig(bath + "omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
             omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
