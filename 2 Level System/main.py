@@ -14,13 +14,13 @@ gamma = 0.0  # MHz
 
 J = 0  # MHz
 
-averages = 100
+averages = 10
 
 sampling_rate = 2 * np.pi * 165 * 10 ** 0  # MHz
 endtime = 5
 timesteps = int(endtime * sampling_rate)
 
-bath="markovian"
+bath = "markovian"
 
 gamma1 = 0  # MHz
 
@@ -46,7 +46,7 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
         t1 = np.linspace(0, endtime, timesteps)
         t2 = np.linspace(0, endtime, timesteps)
         perturb_times = np.linspace(0, pertubation_length, timesteps)
-        for gamma in np.logspace(np.log(0.01 * Omega_R), np.log(10 * Omega_R), num=15, base=np.e):
+        for gamma in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=15, base=np.e):
             print("gamma: ", gamma)
             # print("Bandwidth", bandwidth)
             i = 1
@@ -111,15 +111,18 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             fig, ax = plt.subplots(2, 2, figsize=(10, 10))
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
-            fourier = Smean/np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
+            fourier = Smean/timesteps**2#np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
 
             max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
-            print(max_pos)
+            print(len(perturb_times))
+            print(len(freq))
+            print(freq)
+            print(perturb_times)
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], fourier[0:int(len(perturb_times) / 2)], linestyle='',
-                          marker='o', markersize='2', linewidth=0.0)
+            ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], fourier[0:int(len(perturb_times)/2)], linestyle='',
+                          marker='o', markersize='2', linewidth=0.0) #[0:int(len(perturb_times) / 2)]
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, 1, max_pos, #fourier[max_pos]
+            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, 0.02, omega/(2*np.pi),
                                                                           gamma)[0:int(len(perturb_times) / 2)],
                           linestyle='-',
                           marker='o', markersize='0', linewidth=1.0,
@@ -188,5 +191,5 @@ for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base
 
             fig.tight_layout()
             #plt.show()
-            plt.savefig(bath + "omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
+            plt.savefig(bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
             omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
