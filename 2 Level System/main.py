@@ -4,7 +4,7 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
-N = 1
+N = 2
 
 omega = 2 * np.pi * 35 * 10 ** 0  # MHz
 

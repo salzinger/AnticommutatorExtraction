@@ -25,7 +25,7 @@ def productstateX(m, j, N):
 def upup(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = Qobj(up) * Qobj(up).dag()
     return tensor(oplist)
 
@@ -33,7 +33,7 @@ def upup(m, N):
 def downdown(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = Qobj(down) * Qobj(down).dag()
     return tensor(oplist)
 
@@ -41,7 +41,7 @@ def downdown(m, N):
 def sigmap(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = Qobj(up) * Qobj(down).dag()
     return tensor(oplist)
 
@@ -49,28 +49,28 @@ def sigmap(m, N):
 def sigmam(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[m] = Qobj(down) * Qobj(up).dag()
     return tensor(oplist)
 
 
 def sigmaz(j, N):
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[1, 0], [0, -1]])
     return tensor(oplist)
 
 
 def sigmax(j, N):
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[0, 1], [1, 0]])
     return tensor(oplist)
 
 
 def sigmay(j, N):
     oplist = np.empty(N, dtype=object)
-    oplist = [qeye(3) for _ in oplist]
+    oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[0, -1j], [1j, 0]])
 
     return tensor(oplist)
@@ -86,6 +86,7 @@ def MagnetizationZ(N):
 def MagnetizationX(N):
     sum = 0
     for j in range(0, N):
+        print(sigmax(j, N))
         sum += sigmax(j, N)
     return sum / N
 
