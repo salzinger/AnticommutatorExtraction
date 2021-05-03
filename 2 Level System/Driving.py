@@ -6,7 +6,7 @@ from scipy.stats import norm
 import numpy as np
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
-    func = lambda t: amplitude/( ((t-omega_0)/(gamma/2))**2 + 1)
+    func = lambda omega: 2*amplitude/gamma/np.pi/(((omega-omega_0)/(gamma/2))**2 + 1)
     return func(frequencies)
 
 

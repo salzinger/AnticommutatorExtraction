@@ -22,6 +22,24 @@ def productstateX(m, j, N):
     return tensor(oplist)
 
 
+def bellstate(i, j, N):
+    blist1 = []
+    blist2 = []
+    for n in range(0, N - 2):
+        blist1.append(identity(2))
+        blist2.append(identity(2))
+
+    blist1.insert(i, basis(2, 0))
+    blist1.insert(j, basis(2, 1))
+
+    blist2.insert(i, basis(2, 1))
+    blist2.insert(j, basis(2, 0))
+
+    bell = tensor(blist1) + tensor(blist2)
+
+    return bell.unit()
+
+
 def upup(m, N):
     up, down = twobasis()
     oplist = np.empty(N, dtype=object)
@@ -86,7 +104,6 @@ def MagnetizationZ(N):
 def MagnetizationX(N):
     sum = 0
     for j in range(0, N):
-        print(sigmax(j, N))
         sum += sigmax(j, N)
     return sum / N
 
