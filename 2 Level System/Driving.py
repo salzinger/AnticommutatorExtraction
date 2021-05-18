@@ -107,7 +107,17 @@ def func(perturb_times, omega):
 
 
 def noisy_func(gamma, perturb_times, omega, bath):
-    if bath == "markovian":
+    if bath == 'Forward3MHzcsv.txt':
+        data = np.loadtxt('Forward3MHzcsv.txt')
+        data_reversed = data[::-1]
+        data = np.append(data, data_reversed)
+        #print(data)
+        #print(perturb_times)
+        #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+        func1 = lambda t: np.exp(-1j * t * omega)
+        return func1(perturb_times+data/omega)
+
+    elif bath == "markovian":
         # Total time.
         T = perturb_times[-1]
         # Number of steps.
@@ -133,11 +143,16 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #grid(True)
         #show()
 
-        func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+
         #print(perturb_times)
         #print(phase_noise[0])
         #print(perturb_times+phase_noise)
-        return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+        #lab_frame:
+        #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+        #return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+        #rotating_frame:
+        func1 = lambda t: np.exp(-1j * t * omega)
+        return func1(phase_noise[0] / omega)
     elif bath == "scale-free":
         func_array = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
         for d_omega in np.linspace(0, gamma, 100):
