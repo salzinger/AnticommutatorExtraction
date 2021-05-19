@@ -1,46 +1,26 @@
 from qutip import *
 import numpy as np
-import pandas
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
-import array
-
-def convert(s):
-  # The function that converts the string to float
-  s = s.strip().replace(',', '.')
-  return float(s)
-
-data = array.array('d') #an array of type double (float of 64 bits)
-
-with open("noise_gamma_3.csv", 'r') as f:
-    for l in f:
-        strnumbers = l.split('\t')
-        data.extend( (convert(s) for s in strnumbers if s!='') )
-        #A generator expression here.
-
-data = np.loadtxt('Forward3MHzcsv.txt')
-print(data)
-
 
 N = 1
 
-omega = 2 * np.pi * 21 * 10 ** 3  # MHz
+omega = 2 * np.pi * 35 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 24 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 5.0 * 10 ** 0  # MHz
 
-gamma = 2 * np.pi * 15.0  # MHz
+gamma = 0.0  # MHz
 
 J = 0  # MHz
 
 averages = 100
 
-sampling_rate = 2 * np.pi * 64 * 10 ** 0  # MHz
-endtime = 0.2
+sampling_rate = 2 * np.pi * 165 * 10 ** 0  # MHz
+endtime = 5
 timesteps = int(endtime * sampling_rate)
-timesteps = len(data)
 
-bath = 'Forward3MHzcsv.txt'
+bath = "markovian"
 
 gamma1 = 0  # MHz
 
@@ -54,98 +34,55 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-opts = Options(store_states=True, store_final_state=True, nsteps=50000)
+opts = Options(store_states=True, store_final_state=True)
 
-
-
-
-#print('done')
-#data1 = file.read()
-#print(data)
-print(len(data))
-
-data_reversed = data[::-1]
-
-print(len(data_reversed))
-
-plt.plot(np.linspace(0, 0.1, int(len(data))), np.cumsum(data))
-plt.plot(np.linspace(0.1, 0.2, int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
-plt.ylabel('Phase [°]')
-plt.xlabel('Time [us]')
-plt.legend()
-plt.show()
-
-data = np.append(data, data_reversed)
-
-
-for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np.e):
+for omega in np.logspace(np.log(5 * Omega_R), np.log(100 * Omega_R), num=3, base=np.e):
     print("omega: ", omega)
-    for s in np.logspace(np.log(5 * omega), np.log(10 * omega), num=3, base=np.e):
+    for sampling_rate in np.logspace(np.log(5 * omega), np.log(10 * omega), num=3, base=np.e):
         print("sampling: ", sampling_rate)
-        init_state = productstateZ(0, 0, N)
-        #timesteps = int(endtime * sampling_rate)
-        timesteps = len(data)
-        endtime=0.2
+        endtime = 5
+        timesteps = int(endtime * sampling_rate)
         pertubation_length = endtime / 1
         t1 = np.linspace(0, endtime, timesteps)
         t2 = np.linspace(0, endtime, timesteps)
         perturb_times = np.linspace(0, pertubation_length, timesteps)
-        print(len(perturb_times))
-        for g in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=15, base=np.e):
+        for gamma in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=15, base=np.e):
             print("gamma: ", gamma)
             # print("Bandwidth", bandwidth)
             i = 1
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
-
-            S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+            S = Cubic_Spline(perturb_times[0], perturb_times[-1],
                              noisy_func(gamma, perturb_times, omega, bath))
-            S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noisy_func(gamma, perturb_times, omega, bath)))
-            #S = Cubic_Spline(perturb_times[0], perturb_times[-1],
-            #                 data[0:32000]/0.4)
 
-            #print('H0...')
-            #print(H0(omega, J, N))
-            #print('H1...')
-            #print(H1(Omega_R, N))
-            #print('H2...')
-            #print(H2(Omega_R, N))
+            # print('H0...')
+            # print(H0(omega, J, N))
+            # print('H1...')
+            # print(H1(Omega_R, N))
+            # print('H2...')
+            # print(H2(Omega_R, N))
 
-            result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+            result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], productstateZ(0, 0, N),
                               perturb_times, e_ops=Exps, options=opts)
-            concmean = []
-            #for t in range(0, timesteps):
-                #concmean.append(concurrence(result2.states[t]))
 
             # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
             states2 = np.array(result2.states[timesteps - 1])
             expect2 = np.array(result2.expect[:])
             ancilla_overlap = []
             Smean = np.zeros_like(perturb_times)+1j*np.zeros_like(perturb_times)
-            Pmean=0
 
-            while i < 1 :#averages + int(2 * gamma):
+            while i < averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
-                S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                  noisy_func(gamma, perturb_times, omega, bath))
-                S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                  np.conj(noisy_func(gamma, perturb_times, omega, bath)))
-                #S = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                 #data / 0.4)
+                S = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                                 noisy_func(gamma, perturb_times, omega, bath))
 
-                result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+                result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]], productstateZ(0, 0, N),
                                   perturb_times, e_ops=Exps, options=opts)
 
                 states2 += np.array(result2.states[timesteps - 1])
                 expect2 += np.array(result2.expect[:])
-                Smean += np.abs(np.fft.fft(Omega_R/2/np.pi*noisy_func(gamma, perturb_times, omega, bath))**2)
-                Pmean += np.abs(np.sum(Omega_R*noisy_func(gamma, perturb_times, omega, bath) ** 2))/timesteps
-                #for t in range(0, timesteps):
-                #    concmean[t] += concurrence(result2.states[t])
-
-
-
+                Smean += np.abs(np.fft.fft(noisy_func(gamma, perturb_times, omega, bath))**2)
 
             noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
@@ -153,9 +90,6 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             states2 = states2 / i
             expect2 = expect2 / i
             Smean = Smean / i
-            Pmean = Pmean / i
-            concmean = np.array(concmean) / i
-
             # print(Qobj(states2))
             # print((expect2[5]+expect2[8]).mean())
             density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
@@ -175,7 +109,6 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             #                    perturb_times, [noise_amplitude * sigmap(1, 0, N) / 10, noise_amplitude * sigmam(1, 0, N) / 10], Exps,
             #                    options=opts)
 
-            #print(Pmean)
             fig, ax = plt.subplots(2, 2, figsize=(10, 10))
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
             fourier = Smean/timesteps**2#np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
@@ -189,15 +122,11 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], fourier[0:int(len(perturb_times)/2)], linestyle='',
                           marker='o', markersize='2', linewidth=0.0) #[0:int(len(perturb_times) / 2)]
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, Pmean, omega/(2*np.pi),
+            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, 0.02, omega/(2*np.pi),
                                                                           gamma)[0:int(len(perturb_times) / 2)],
                           linestyle='-',
                           marker='o', markersize='0', linewidth=1.0,
                           label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
-            print(Pmean)
-            print(np.sum(fourier[0:int(len(perturb_times))]))
-            print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
-                       gamma)[0:int(len(perturb_times))]))
 
             ax[0, 0].legend(loc="upper right")
 
@@ -212,16 +141,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
-
             result_me = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                                init_state,
+                                productstateZ(0, 0, N),
                                 perturb_times, [np.sqrt(gamma) * sigmaz(0, N)], Exps,
                                 options=opts)
 
             expect_me = result_me.expect[:]
 
             ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian")
-            #ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
             ax[1, 0].set_xlabel('Time [us]', fontsize=16)
@@ -264,5 +191,5 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
             fig.tight_layout()
             #plt.show()
-            plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
+            plt.savefig(bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
             omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
