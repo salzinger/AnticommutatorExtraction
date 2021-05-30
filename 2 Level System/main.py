@@ -26,7 +26,7 @@ N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
-Omega_R = 2 * np.pi * 24 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 25.5 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -225,10 +225,42 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
             expect_me = result_me.expect[:]
 
-            ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian")
+
+            with open('m.txt') as f:
+                linesm = f.readlines()
+            with open('mf.txt') as f:
+                linesmf = f.readlines()
+            with open('mfxy.txt') as f:
+                linesmfxy = f.readlines()
+            with open('mxy.txt') as f:
+                linesmxy = f.readlines()
+
+
+
+
+            print(linesmf)
+            print(linesm)
+            x=[]
+            y=[]
+            xy=[]
+            for element in range(1, 21):
+                x.append(float(linesmf[element][0:5]))
+                y.append(float(linesmf[element][11:18]))
+                xy.append(float(linesmfxy[element][11:18]))
+            for element in range(1, 21):
+                x.append(float(linesm[element][0:5]))
+                y.append(float(linesm[element][11:18]))
+                xy.append(float(linesmxy[element][11:18]))
+
+            print(x)
+            print(y)
+
+            ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian", color='b')
+            ax[1, 0].plot(x, y, label="DATA_z", linestyle="", markersize="5", marker="o", color='b')
+            ax[1, 0].plot(x, xy, label="DATA_xy", linestyle="", markersize="5", marker="o", color='orange')
             #ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             #ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
-            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2]**2+expect2[0]**2), label="xy-plane, Time Dependent Hamiltonian")
+            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2]**2+expect2[0]**2), label="xy-plane, Time Dependent Hamiltonian", color="orange")
             #ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             #ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             #ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
@@ -269,6 +301,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             ax[1, 1].set_xlabel('Time [us]', fontsize=16)
             ax[1, 1].set_ylabel('Phase [pi/2]', fontsize=16)
             ax[1, 1].legend(loc="lower left")
+
 
             fig.tight_layout()
             plt.show()

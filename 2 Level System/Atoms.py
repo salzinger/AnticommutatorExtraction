@@ -97,21 +97,21 @@ def MagnetizationZ(N):
     sum = 0
     for j in range(0, N):
         sum += sigmaz(j, N)
-    return sum / N
+    return sum / N / 2
 
 
 def MagnetizationX(N):
     sum = 0
     for j in range(0, N):
         sum += sigmax(j, N)
-    return sum / N
+    return sum / N / 2
 
 
 def MagnetizationY(N):
     sum = 0
     for j in range(0, N):
         sum += sigmay(j, N)
-    return sum / N
+    return sum / N / 2
 
 
 def H0(omega, J, N):
