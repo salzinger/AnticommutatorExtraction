@@ -107,7 +107,6 @@ def func(perturb_times, omega):
     return func2(perturb_times)
 
 
-
 def noisy_func(gamma, perturb_times, omega, bath):
     if bath == 'Forward3MHzcsv.txt':
         data = np.loadtxt('Forward3MHzcsv.txt')
