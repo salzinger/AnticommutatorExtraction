@@ -1,6 +1,5 @@
 from qutip import *
 import numpy as np
-import pandas
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
