@@ -4,6 +4,7 @@ from pylab import plot, show, grid, xlabel, ylabel
 from math import sqrt
 from scipy.stats import norm
 import numpy as np
+import matplotlib.pyplot as plt
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: 2*amplitude/gamma/np.pi/(((omega-omega_0)/(gamma/2))**2 + 1)
@@ -106,16 +107,27 @@ def func(perturb_times, omega):
     return func2(perturb_times)
 
 
+
 def noisy_func(gamma, perturb_times, omega, bath):
     if bath == 'Forward3MHzcsv.txt':
         data = np.loadtxt('Forward3MHzcsv.txt')
-        data_reversed = data[::-1]
+        data_reversed = -data[::-1]
+
+        data = np.cumsum(data)
+        data_reversed = np.cumsum(data_reversed)+data[-1]+180
+
         data = np.append(data, data_reversed)
+        plt.plot(np.linspace(0, 0.2, int(len(data))), data)
+        # plt.plot(np.linspace(0.1, 0.2, int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
+        plt.ylabel('Phase [°]')
+        plt.xlabel('Time [us]')
+        plt.legend()
+        #plt.show()
         #print(data)
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
-        func1 = lambda t: np.exp(-1j * t * omega)
-        return func1(perturb_times+data/omega)
+        func1 = lambda t: np.exp(-1j * t * omega)/2
+        return func1(perturb_times*1+data/omega*2*np.pi/360)
 
     elif bath == "markovian":
         # Total time.

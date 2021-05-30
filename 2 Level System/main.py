@@ -20,7 +20,7 @@ with open("noise_gamma_3.csv", 'r') as f:
         #A generator expression here.
 
 data = np.loadtxt('Forward3MHzcsv.txt')
-print(data)
+#print(data)
 
 
 N = 1
@@ -33,12 +33,12 @@ gamma = 2 * np.pi * 15.0  # MHz
 
 J = 0  # MHz
 
-averages = 100
+averages = 1
 
 sampling_rate = 2 * np.pi * 64 * 10 ** 0  # MHz
 endtime = 0.2
 timesteps = int(endtime * sampling_rate)
-timesteps = len(data)
+timesteps = 2*len(data)
 
 bath = 'Forward3MHzcsv.txt'
 
@@ -54,7 +54,7 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-opts = Options(store_states=True, store_final_state=True, nsteps=50000)
+opts = Options(store_states=True, store_final_state=True)#, nsteps=50000)
 
 
 
@@ -62,20 +62,25 @@ opts = Options(store_states=True, store_final_state=True, nsteps=50000)
 #print('done')
 #data1 = file.read()
 #print(data)
-print(len(data))
+#print(len(data))
 
-data_reversed = data[::-1]
+#data_reversed = -data[::-1]
 
-print(len(data_reversed))
 
-plt.plot(np.linspace(0, 0.1, int(len(data))), np.cumsum(data))
-plt.plot(np.linspace(0.1, 0.2, int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
-plt.ylabel('Phase [°]')
-plt.xlabel('Time [us]')
-plt.legend()
-plt.show()
 
-data = np.append(data, data_reversed)
+#print(len(data_reversed))
+
+
+#plt.clear()
+
+#data = np.append(data, data_reversed)
+
+#plt.plot(np.linspace(0, 0.2, int(len(data))), np.cumsum(data))
+#plt.plot(np.linspace(0.1, 0.2, int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
+#plt.ylabel('Phase [°]')
+#plt.xlabel('Time [us]')
+#plt.legend()
+#plt.show()
 
 
 for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np.e):
@@ -84,7 +89,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
         print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         #timesteps = int(endtime * sampling_rate)
-        timesteps = len(data)
+        timesteps = 2*len(data)
         endtime=0.2
         pertubation_length = endtime / 1
         t1 = np.linspace(0, endtime, timesteps)
@@ -177,6 +182,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
             #print(Pmean)
             fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
             fourier = Smean/timesteps**2#np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
 
@@ -221,12 +227,15 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             expect_me = result_me.expect[:]
 
             ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian")
+            #ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
+            #ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
+            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2]**2+expect2[0]**2), label="xy-plane, Time Dependent Hamiltonian")
             #ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
-            ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
-            ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
+            #ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
+            #ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
             ax[1, 0].set_xlabel('Time [us]', fontsize=16)
             ax[1, 0].set_ylabel('Magnetization', fontsize=16)
-            ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
+            #ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
             ax[1, 0].legend(loc="lower right")
 
             # Total time.
@@ -263,6 +272,6 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             ax[1, 1].legend(loc="lower left")
 
             fig.tight_layout()
-            #plt.show()
+            plt.show()
             plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
             omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
