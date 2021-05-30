@@ -135,7 +135,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
                 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                                   noisy_func(gamma, perturb_times, omega, bath))
                 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                  np.conj(noisy_func(gamma, perturb_times, omega, bath)))
+                                  np.conj(noisy_func_cc(gamma, perturb_times, omega, bath)))
                 #S = Cubic_Spline(perturb_times[0], perturb_times[-1],
                                  #data / 0.4)
 
