@@ -90,7 +90,6 @@ def sigmay(j, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(2) for _ in oplist]
     oplist[j] = Qobj([[0, -1j], [1j, 0]])
-
     return tensor(oplist)
 
 
@@ -129,6 +128,7 @@ def H1(Omega_R, N):
     H = 0
     for j in range(0, N):
         H -= Omega_R * (sigmap(j, N))
+    #print(H)
     return H
 
 

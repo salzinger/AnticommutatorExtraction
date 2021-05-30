@@ -159,11 +159,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(phase_noise[0])
         #print(perturb_times+phase_noise)
         #lab_frame:
-        #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
-        #return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+        func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+        return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
         #rotating_frame:
-        func1 = lambda t: np.exp(-1j * t * omega)
-        return func1(phase_noise[0] / omega)
+        #func1 = lambda t: np.exp(-1j * t * omega)
+        #return func1(phase_noise[0] / omega)
     elif bath == "scale-free":
         func_array = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
         for d_omega in np.linspace(0, gamma, 100):
