@@ -12,10 +12,10 @@ def convert(s):
 
 data = array.array('d') #an array of type double (float of 64 bits)
 
-with open("noise_gamma_3.csv", 'r') as f:
-    for l in f:
-        strnumbers = l.split('\t')
-        data.extend( (convert(s) for s in strnumbers if s!='') )
+#with open("noise_gamma_3.csv", 'r') as f:
+#    for l in f:
+#        strnumbers = l.split('\t')
+#        data.extend( (convert(s) for s in strnumbers if s!='') )
         #A generator expression here.
 
 data = np.loadtxt('Forward3MHzcsv.txt')
@@ -26,7 +26,7 @@ N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
-Omega_R = 2 * np.pi * 25.5 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -127,14 +127,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             Smean = np.zeros_like(perturb_times)+1j*np.zeros_like(perturb_times)
             Pmean=0
 
-            while i < 1 :#averages + int(2 * gamma):
+            while i < 2 :#averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
                 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                                   noisy_func(gamma, perturb_times, omega, bath))
                 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                                  np.conj(noisy_func_cc(gamma, perturb_times, omega, bath)))
+                                  np.conj(noisy_func(gamma, perturb_times, omega, bath)))
                 #S = Cubic_Spline(perturb_times[0], perturb_times[-1],
                                  #data / 0.4)
 
@@ -185,20 +185,31 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
             fourier = Smean/timesteps**2#np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
 
-            max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
+            #max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
             #print(len(perturb_times))
             #print(len(freq))
             #print(freq)
             #print(perturb_times)
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], fourier[0:int(len(perturb_times)/2)], linestyle='',
-                          marker='o', markersize='2', linewidth=0.0) #[0:int(len(perturb_times) / 2)]
+            #ax[0, 0].plot(freq[0:int(len(perturb_times)/2)], fourier[0:int(len(perturb_times)/2)], linestyle='',
+            #              marker='o', markersize='2', linewidth=0.0) #[0:int(len(perturb_times) / 2)]
 
-            ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, Pmean, omega/(2*np.pi),
-                                                                          gamma)[0:int(len(perturb_times) / 2)],
-                          linestyle='-',
-                          marker='o', markersize='0', linewidth=1.0,
-                          label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
+            #ax[0, 0].plot(freq[0:int(len(perturb_times) / 2)], lorentzian(freq, Pmean, omega/(2*np.pi),
+            #                                                              gamma)[0:int(len(perturb_times) / 2)],
+            #              linestyle='-',
+            #              marker='o', markersize='0', linewidth=1.0,
+            #              label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
+
+            ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
+                          marker='o', markersize='2', linewidth=0.0) #[0:int(len(perturb_times) / 2)]
+            #ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], lorentzian(freq, Pmean, omega/(2*np.pi),
+            #                                                              gamma)[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
+            #                                                                marker='o', markersize='2', linewidth=0.0)
+            #ax[0, 0].plot(freq[int(len(perturb_times)/2):int(len(perturb_times))], lorentzian(freq, Pmean, omega/(2*np.pi),
+            #                                                              gamma)[int(len(perturb_times)/2):int(len(perturb_times))],
+            #              linestyle='-',
+            #              marker='o', markersize='0', linewidth=1.0,
+            #              label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
             print(Pmean)
             print(np.sum(fourier[0:int(len(perturb_times))]))
             print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
@@ -238,8 +249,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
 
 
-            print(linesmf)
-            print(linesm)
+            #print(linesmf)
+            #print(linesm)
             x=[]
             y=[]
             xy=[]
@@ -255,12 +266,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
             print(x)
             print(y)
 
-            ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="sigma_z, Time Dependent Hamiltonian", color='b')
+            ax[1, 0].plot(perturb_times, np.real(expect2[1]), label="mag_z, Time Dependent Hamiltonian", color='b')
             ax[1, 0].plot(x, y, label="DATA_z", linestyle="", markersize="5", marker="o", color='b')
             ax[1, 0].plot(x, xy, label="DATA_xy", linestyle="", markersize="5", marker="o", color='orange')
             #ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             #ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
-            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2]**2+expect2[0]**2), label="xy-plane, Time Dependent Hamiltonian", color="orange")
+            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2]**2+expect2[0]**2), label="mag-xy-plane, Time Dependent Hamiltonian", color="orange")
             #ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             #ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             #ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
@@ -286,13 +297,13 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=3, base=np
 
             t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
-            for k in range(int(m / 10)):
-                ax[1, 1].plot(t, phase_noise[k], color='grey', linewidth=0.1)
+            #for k in range(int(m / 10)):
+            #    ax[1, 1].plot(t, phase_noise[k], color='grey', linewidth=0.1)
 
-            ax[1, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='--', linewidth=2.0,
-                          label='Real Mean')
-            ax[1, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='blue', linestyle='--', linewidth=2.0,
-                          label='Real Standard Deviation')
+            #ax[1, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='--', linewidth=2.0,
+            #              label='Real Mean')
+            #ax[1, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='blue', linestyle='--', linewidth=2.0,
+            #              label='Real Standard Deviation')
 
             ax[1, 1].plot(t, np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0,
                           label='Expected Standard Deviation = sqrt(gamma * t)')
