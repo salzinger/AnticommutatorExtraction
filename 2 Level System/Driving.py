@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
-    func = lambda omega: 2*amplitude/gamma/np.pi/(((omega-omega_0)/(gamma/2))**2 + 1)
+    func = lambda omega: 2*amplitude/gamma/np.pi/((2*(omega-omega_0)/gamma)**2 + 1)
     return func(frequencies)
 
 
@@ -116,11 +116,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
         data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
         data = np.append(data, data_reversed)
-        plt.plot(np.linspace(0, 0.2, int(len(data))), data, color="red")
+        #plt.plot(np.linspace(0, 0.2, int(len(data))), data, color="red")
         # plt.plot(np.linspace(0.1, 0.2, int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
-        plt.ylabel('Phase [°]')
-        plt.xlabel('Time [us]')
-        plt.legend()
+        #plt.ylabel('Phase [°]')
+        #plt.xlabel('Time [us]')
+        #plt.legend()
         #plt.show()
         #print(data)
         #print(perturb_times)
