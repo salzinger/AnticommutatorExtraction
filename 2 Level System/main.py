@@ -202,16 +202,17 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
             #              marker='o', markersize='2', linewidth=0.0)
 
-            f, Pxx_den = signal.welch(noisy_func(gamma, perturb_times, omega, bath), fs, nperseg=1024)
+            f, Pxx_den = signal.welch(noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times)/2-10)], fs, nperseg=1024)
 
             print("welch sum:", np.sum(Pxx_den))
-            print("lorentz sum:", np.sum(lorentzian(f, 1, -omega/(2*np.pi), 35)))
+            print("lorentz sum:", np.sum(lorentzian(f, 0.145, -omega/(2*np.pi), 40)))
 
 
             ax[0, 0].plot(f, Pxx_den, linestyle='',
-                          marker='o', markersize='2', linewidth=0.55)
-            ax[0, 0].plot(f, lorentzian(f, 1, -omega/(2*np.pi), 35), linestyle='',
-                          marker='o', markersize='2', linewidth=0.55)
+                          marker='o', markersize='2', linewidth=0.55, label="psd")
+            ax[0, 0].plot(f, lorentzian(f, 0.145, -omega/(2*np.pi), 40), linestyle='',
+                          marker='o', markersize='2', linewidth=0.55, label="lorentzian")
+
             ax[0, 0].set_xlim([-21500, -20500])
             # [0:int(len(perturb_times) / 2)]
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], lorentzian(freq, Pmean, omega/(2*np.pi),
