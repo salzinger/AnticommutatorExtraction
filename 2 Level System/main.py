@@ -81,9 +81,9 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 
 
 for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np.e):
-    print("omega: ", omega)
+    #print("omega: ", omega)
     for s in np.logspace(np.log(5 * omega), np.log(10 * omega), num=1, base=np.e):
-        print("sampling: ", sampling_rate)
+        #print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
         timesteps = 2 * len(data)
@@ -95,7 +95,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
         fs = timesteps / endtime
         # print(len(perturb_times))
         for g in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=1, base=np.e):
-            print("gamma: ", gamma)
+            #print("gamma: ", gamma)
             # print("Bandwidth", bandwidth)
             i = 1
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -202,16 +202,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
             #              marker='o', markersize='2', linewidth=0.0)
 
-            f, Pxx_den = signal.welch(noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times)/2-10)], fs, nperseg=1024)
-
+            f, Pxx_den = signal.welch(sqrt(2)*2*noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times)/2-10)], fs, nperseg=1024)
+            f1, Pxx_den1 = signal.welch(
+                sqrt(2) * 2 * func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)], fs,
+                nperseg=1024)
             print("welch sum:", np.sum(Pxx_den))
-            print("lorentz sum:", np.sum(lorentzian(f, 0.145, -omega/(2*np.pi), 40)))
+            print("welch sum no noise:", np.sum(Pxx_den1))
+            print("lorentz sum:", np.sum(lorentzian(f, 2*0.147, -omega/(2*np.pi), 40)))
 
 
             ax[0, 0].plot(f, Pxx_den, linestyle='',
-                          marker='o', markersize='2', linewidth=0.55, label="psd")
-            ax[0, 0].plot(f, lorentzian(f, 0.145, -omega/(2*np.pi), 40), linestyle='',
-                          marker='o', markersize='2', linewidth=0.55, label="lorentzian")
+                          marker='o', markersize='2', linewidth=0.55, label="psd", color="b")
+            ax[0, 0].plot(f1, Pxx_den1, linestyle='',
+                          marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
+            ax[0, 0].plot(f, np.ones_like(f)*np.max(Pxx_den)/2, linestyle='-',
+                          marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
+            ax[0, 0].plot(f, lorentzian(f, 0.147, -omega/(2*np.pi), 40), linestyle='',
+                          marker='o', markersize='2', linewidth=0.55, label="lorentzian", color="orange")
+            ax[0, 0].plot(f, np.ones_like(f)*np.max(lorentzian(f, 0.147, -omega/(2*np.pi), 40))/2, linestyle='-',
+                          marker='o', markersize='0', linewidth=0.55, label="half_lorentz", color="orange")
+            ax[0, 0].axvspan(-21020, -20980, facecolor='g', alpha=0.5)
 
             ax[0, 0].set_xlim([-21500, -20500])
             # [0:int(len(perturb_times) / 2)]
@@ -223,21 +233,21 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #              linestyle='-',
             #              marker='o', markersize='0', linewidth=1.0,
             #              label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
-            print("Pmean=", Pmean)
-            print("sum fourier", np.sum(fourier[0:int(len(perturb_times))]))
-            print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
-                                    gamma)[0:int(len(perturb_times))]))
+            #print("Pmean=", Pmean)
+            #print("sum fourier", np.sum(fourier[0:int(len(perturb_times))]))
+            #print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
+            #                        gamma)[0:int(len(perturb_times))]))
 
             ax[0, 0].legend(loc="upper right")
 
             ax[0, 0].set_xlabel('f [MHz]', fontsize=16)
             ax[0, 0].set_ylabel('PSD [V**2/Hz]', fontsize=16)
 
-            ax[0, 1].plot(perturb_times, np.real(S2(perturb_times)), linestyle='--', marker='o', markersize='3',
+            ax[0, 1].plot(perturb_times, np.real(2*noisy_func(gamma, perturb_times, omega, bath)), linestyle='--', marker='o', markersize='3',
                           linewidth=1.0)
             ax[0, 1].set_xlabel('Time [us]', fontsize=16)
             ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
-            ax[0, 1].set_xlim([0, 150 / omega])
+            ax[0, 1].set_xlim([0.099, 0.101])
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 

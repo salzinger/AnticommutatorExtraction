@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
-    func = lambda omega: 2*amplitude/gamma/np.pi/((2*(omega-omega_0)/gamma)**2 + 1)
+    func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
     return func(frequencies)
 
 
@@ -103,7 +103,7 @@ def envelope(shape, function):
 
 
 def func(perturb_times, omega):
-    func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+    func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega)# - 0.5j * np.exp(1j * t * 1 * omega)
     return func2(perturb_times)
 
 
