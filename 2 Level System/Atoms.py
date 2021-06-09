@@ -16,7 +16,7 @@ def productstateZ(up_atom, down_atom, N):
 
 
 def productstateX(m, j, N):
-    ancilla, up, down = twobasis()
+    up, down = twobasis()
     oplist = np.empty(N, dtype=object)
     oplist = [Qobj((up + down)).unit() for _ in oplist]
     return tensor(oplist)

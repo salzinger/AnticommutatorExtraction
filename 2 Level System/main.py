@@ -81,9 +81,9 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 
 
 for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np.e):
-    #print("omega: ", omega)
+    # print("omega: ", omega)
     for s in np.logspace(np.log(5 * omega), np.log(10 * omega), num=1, base=np.e):
-        #print("sampling: ", sampling_rate)
+        # print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
         timesteps = 2 * len(data)
@@ -143,15 +143,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 states2 += np.array(result2.states[timesteps - 1])
                 expect2 += np.array(result2.expect[:])
 
-
                 Smean += np.abs(
                     np.fft.fft(Omega_R * noisy_func(gamma, perturb_times, omega, bath)) ** 2)  # /2/np.pi/timesteps
                 Pmean += np.abs(np.sum(Omega_R * noisy_func(gamma, perturb_times, omega, bath) ** 2))  # /timesteps
                 # for t in range(0, timesteps):
                 #    concmean[t] += concurrence(result2.states[t])
 
-            #noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
-            #S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
+            # noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
+            # S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
             states2 = states2 / i
             expect2 = expect2 / i
@@ -202,24 +201,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
             #              marker='o', markersize='2', linewidth=0.0)
 
-            f, Pxx_den = signal.welch(sqrt(2)*2*noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times)/2-10)], fs, nperseg=1024)
+            f, Pxx_den = signal.welch(
+                sqrt(2) * 2 * noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)], fs,
+                nperseg=1024)
             f1, Pxx_den1 = signal.welch(
                 sqrt(2) * 2 * func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)], fs,
                 nperseg=1024)
             print("welch sum:", np.sum(Pxx_den))
             print("welch sum no noise:", np.sum(Pxx_den1))
-            print("lorentz sum:", np.sum(lorentzian(f, 2*0.147, -omega/(2*np.pi), 40)))
-
+            print("lorentz sum:", np.sum(lorentzian(f, 2 * 0.147, -omega / (2 * np.pi), 40)))
 
             ax[0, 0].plot(f, Pxx_den, linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="psd", color="b")
             ax[0, 0].plot(f1, Pxx_den1, linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
-            ax[0, 0].plot(f, np.ones_like(f)*np.max(Pxx_den)/2, linestyle='-',
+            ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
-            ax[0, 0].plot(f, lorentzian(f, 0.147, -omega/(2*np.pi), 40), linestyle='',
+            ax[0, 0].plot(f, lorentzian(f, 0.147, -omega / (2 * np.pi), 40), linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="lorentzian", color="orange")
-            ax[0, 0].plot(f, np.ones_like(f)*np.max(lorentzian(f, 0.147, -omega/(2*np.pi), 40))/2, linestyle='-',
+            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.147, -omega / (2 * np.pi), 40)) / 2,
+                          linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_lorentz", color="orange")
             ax[0, 0].axvspan(-21020, -20980, facecolor='g', alpha=0.5)
 
@@ -233,9 +234,9 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #              linestyle='-',
             #              marker='o', markersize='0', linewidth=1.0,
             #              label="Lorentzian with FWHM gamma= %.2f MHz" % gamma)
-            #print("Pmean=", Pmean)
-            #print("sum fourier", np.sum(fourier[0:int(len(perturb_times))]))
-            #print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
+            # print("Pmean=", Pmean)
+            # print("sum fourier", np.sum(fourier[0:int(len(perturb_times))]))
+            # print(np.sum(lorentzian(freq, Pmean, omega / (2 * np.pi),
             #                        gamma)[0:int(len(perturb_times))]))
 
             ax[0, 0].legend(loc="upper right")
@@ -243,7 +244,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[0, 0].set_xlabel('f [MHz]', fontsize=16)
             ax[0, 0].set_ylabel('PSD [V**2/Hz]', fontsize=16)
 
-            ax[0, 1].plot(perturb_times, np.real(2*noisy_func(gamma, perturb_times, omega, bath)), linestyle='--', marker='o', markersize='3',
+            ax[0, 1].plot(perturb_times, np.real(2 * noisy_func(gamma, perturb_times, omega, bath)), linestyle='--',
+                          marker='o', markersize='3',
                           linewidth=1.0)
             ax[0, 1].set_xlabel('Time [us]', fontsize=16)
             ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
@@ -285,8 +287,10 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # print(y)
 
             ax[1, 0].plot(perturb_times, np.real(expect2[1]), color='b')
-            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o", color='b')
-            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", linestyle="",
+            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
+                          color='b')
+            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+                          linestyle="",
                           markersize="5", marker="v", color='orange')
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             # ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
@@ -324,14 +328,13 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[1, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='blue', linestyle='--', linewidth=2.0,
             #              label='Real Standard Deviation')
 
-            #ax[1, 1].plot(t, np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0,
+            # ax[1, 1].plot(t, np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0,
             #              label='Expected Standard Deviation = sqrt(gamma * t)')
-            #ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
-            #ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
-            #ax[1, 1].set_xlabel('Time [us]', fontsize=16)
-            #ax[1, 1].set_ylabel('Phase [pi/2]', fontsize=16)
-            #ax[1, 1].legend(loc="lower left")
-
+            # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
+            # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
+            # ax[1, 1].set_xlabel('Time [us]', fontsize=16)
+            # ax[1, 1].set_ylabel('Phase [pi/2]', fontsize=16)
+            # ax[1, 1].legend(loc="lower left")
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -356,7 +359,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 y10.append(float(linesm10[element][8:18]))
                 y30.append(float(linesm30[element][8:18]))
 
-            t1 = np.linspace(0, endtime/2, int(timesteps/10))
+            t1 = np.linspace(0, endtime / 2, int(timesteps / 10))
 
             result_m0 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                                 init_state,
@@ -370,13 +373,13 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                 t1, [np.sqrt(3) * sigmaz(0, N), np.sqrt(3) * sigmaz(0, N)], Exps,
                                 options=opts)
             result_m10 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                                init_state,
-                                t1, [np.sqrt(10) * sigmaz(0, N), np.sqrt(10) * sigmaz(0, N)], Exps,
-                                options=opts)
+                                 init_state,
+                                 t1, [np.sqrt(10) * sigmaz(0, N), np.sqrt(10) * sigmaz(0, N)], Exps,
+                                 options=opts)
             result_m30 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                                init_state,
-                                t1, [np.sqrt(30) * sigmaz(0, N), np.sqrt(30) * sigmaz(0, N)], Exps,
-                                options=opts)
+                                 init_state,
+                                 t1, [np.sqrt(30) * sigmaz(0, N), np.sqrt(30) * sigmaz(0, N)], Exps,
+                                 options=opts)
 
             ax[1, 1].plot(x0, y0, marker="o", color='b', label='$\gamma = 0$ MHz', linestyle='')
             ax[1, 1].plot(t1, np.real(m0[1]), color='b', linestyle='-')
@@ -386,15 +389,80 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[1, 1].plot(t1, result_m10.expect[1], color='orange', linestyle='-')
             ax[1, 1].plot(x0, y30, marker="s", color='r', label='$\gamma = 30$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m30.expect[1], color='r', linestyle='-')
-            #ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
-            #ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
+            # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
+            # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
             ax[1, 1].set_xlabel('Time [us]', fontsize=16)
             ax[1, 1].set_ylabel('Magnetization', fontsize=16)
             ax[1, 1].legend(loc="lower center")
-
-
 
             fig.tight_layout()
             plt.show()
             plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
                 omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+
+opts = Options(store_states=True, store_final_state=True)
+
+Commutatorlist = []
+Anticommutatorlist = []
+
+t1 = np.linspace(0, endtime/2.25, int(timesteps / 10))
+
+t2 = t1
+
+result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                    productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
+
+result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                      result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+
+Perturb_incoherent = identity(2) - MagnetizationZ(N)
+Perturb_coherent = MagnetizationX(N)
+Measure = MagnetizationZ(N)
+
+result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+
+result_AB_comm = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                    Perturb_coherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+
+for t in range(0, len(t2)):
+    prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
+
+    prod_AB_comm = result_t1t2.states[t - 1].dag() * Measure * result_AB_comm.states[t - 1]
+
+    prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+
+    prod_BA_comm = result_AB_comm.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+
+    Commutator = prod_AB_comm - prod_BA_comm
+
+    AntiCommutator = prod_AB + prod_BA
+
+    Commutatorlist.append(Commutator[0][0][0])
+    Anticommutatorlist.append(AntiCommutator[0][0][0])
+    # print('Commutator:', 1j * Commutator[0][0])
+    # print('AntiCommutator: ', AntiCommutator[0][0])
+
+# freq = np.fft.fftfreq(t2.shape[-1])
+# plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', markersize='5', label="Commutator")
+# plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5',
+#         label="Anticommutator")
+# plt.xlim(-1 / 2, 1 / 2)
+# plt.legend()
+# plt.show()
+
+plt.plot(t1, result_t1.expect[1], label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
+#plt.plot(t2, 100*np.imag(Commutatorlist), label="Im(Commutator)", color="b")
+#plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o",markersize="1", color="r")
+#plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
+#plt.legend()
+plt.xlabel('t_measure')
+plt.show()
+
+#plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
+plt.plot(t2, np.imag(Commutatorlist), label="Im(Commutator)", color="b")
+plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o",markersize="1", color="r")
+#plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
+plt.legend()
+plt.xlabel('t_measure - t_perturb')
+plt.show()
