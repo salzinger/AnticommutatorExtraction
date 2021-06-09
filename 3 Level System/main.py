@@ -64,19 +64,19 @@ for t in range(0, timesteps):
     # print('Commutator:', 1j * Commutator[0][0])
     # print('AntiCommutator: ', AntiCommutator[0][0])
 
-freq = np.fft.fftfreq(t2.shape[-1])
-plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', markersize='5', label="Commutator")
-plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5',
-         label="Anticommutator")
-plt.xlim(-1 / 2, 1 / 2)
-plt.legend()
+#freq = np.fft.fftfreq(t2.shape[-1])
+#plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', markersize='5', label="Commutator")
+#plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5',
+#         label="Anticommutator")
+#plt.xlim(-1 / 2, 1 / 2)
+#plt.legend()
 # plt.show()
 
 plt.plot(t2, np.real(Commutatorlist), label="Commutator")
 plt.plot(t2, np.real(Anticommutatorlist), label="Anticommutator")
 plt.legend()
 plt.xlabel('t_measure - t_perturb')
-# plt.show()
+plt.show()
 
 
 spectra_cb = [ohmic_spectrum]

@@ -95,7 +95,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
         fs = timesteps / endtime
         # print(len(perturb_times))
         for g in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=1, base=np.e):
-            #print("gamma: ", gamma)
+            print("gamma: ", gamma)
             # print("Bandwidth", bandwidth)
             i = 1
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
@@ -297,7 +297,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[1, 0].set_xlabel('Time [us]', fontsize=16)
             ax[1, 0].set_ylabel('Magnetization', fontsize=16)
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
-            ax[1, 0].legend(loc="lower right")
+            ax[1, 0].legend(loc="lower center")
 
             # Total time.
             T = perturb_times[-1]
@@ -390,7 +390,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
             ax[1, 1].set_xlabel('Time [us]', fontsize=16)
             ax[1, 1].set_ylabel('Magnetization', fontsize=16)
-            ax[1, 1].legend(loc="lower left")
+            ax[1, 1].legend(loc="lower center")
 
 
 
