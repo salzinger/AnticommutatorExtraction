@@ -461,7 +461,7 @@ plt.show()
 
 #plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
 plt.plot(t2, np.imag(Commutatorlist), label="Im(Commutator)", color="b")
-plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o",markersize="1", color="r")
+plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o", markersize="1", color="r")
 #plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
 plt.legend()
 plt.xlabel('t_measure - t_perturb')
