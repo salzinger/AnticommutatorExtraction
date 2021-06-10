@@ -116,10 +116,9 @@ def noisy_func(gamma, perturb_times, omega, bath):
         data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
         data = np.append(data, data_reversed)
-        #plt.plot(np.linspace(0, 0.2, int(len(data))), data, color="black", linewidth="0.4")
-        #plt.plot(np.linspace(0.1, 0.2, 2*int(len(data))), np.cumsum(-data_reversed)+np.cumsum(data)[-1])
-        #plt.ylabel('Phase [°]')
-        #plt.xlabel('Time [us]')
+        #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
+        #plt.ylabel('Phase [$\pi$]', fontsize=16)
+        #plt.xlabel('Time [us]', fontsize=16)
         #plt.legend()
         #plt.show()
         #print(data)

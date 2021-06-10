@@ -34,7 +34,7 @@ gamma = 2 * np.pi * 15.0  # MHz
 
 J = 0  # MHz
 
-averages = 1
+averages = 150
 
 sampling_rate = 2 * np.pi * 64 * 10 ** 0  # MHz
 endtime = 0.2
@@ -126,7 +126,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             Pmean = 0
 
-            while i < 2:  # averages + int(2 * gamma):
+            while i <2:  # averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
@@ -209,7 +209,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 nperseg=1024)
             print("welch sum:", np.sum(Pxx_den))
             print("welch sum no noise:", np.sum(Pxx_den1))
-            print("lorentz sum:", np.sum(lorentzian(f, 2 * 0.147, -omega / (2 * np.pi), 40)))
+            print("lorentz sum:", np.sum(lorentzian(f, 2 * 0.16, -omega / (2 * np.pi), 40)))
 
             ax[0, 0].plot(f, Pxx_den, linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="psd", color="b")
@@ -217,9 +217,9 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                           marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
             ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
-            ax[0, 0].plot(f, lorentzian(f, 0.147, -omega / (2 * np.pi), 40), linestyle='',
+            ax[0, 0].plot(f, lorentzian(f, 0.16, -omega / (2 * np.pi), 40), linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="lorentzian", color="orange")
-            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.147, -omega / (2 * np.pi), 40)) / 2,
+            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.16, -omega / (2 * np.pi), 40)) / 2,
                           linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_lorentz", color="orange")
             ax[0, 0].axvspan(-21020, -20980, facecolor='g', alpha=0.5)
@@ -244,12 +244,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[0, 0].set_xlabel('f [MHz]', fontsize=16)
             ax[0, 0].set_ylabel('PSD [V**2/Hz]', fontsize=16)
 
-            ax[0, 1].plot(perturb_times, np.real(2 * noisy_func(gamma, perturb_times, omega, bath)), linestyle='--',
-                          marker='o', markersize='3',
-                          linewidth=1.0)
-            ax[0, 1].set_xlabel('Time [us]', fontsize=16)
-            ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
-            ax[0, 1].set_xlim([0.099, 0.101])
+            #ax[0, 1].plot(perturb_times, np.real(2 * noisy_func(gamma, perturb_times, omega, bath)), linestyle='--',
+            #              marker='o', markersize='3',
+            #              linewidth=1.0)
+            #ax[0, 1].set_xlabel('Time [us]', fontsize=16)
+            #ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
+            #ax[0, 1].set_xlim([0.099, 0.101])
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
@@ -286,15 +286,15 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # print(x)
             # print(y)
 
-            ax[1, 0].plot(perturb_times, np.real(expect2[1]), color='b')
+            ax[1, 0].plot(perturb_times, np.real(expect2[1]), color='#85bb65')
             ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
-                          color='b')
+                          color='#85bb65')
             ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
                           linestyle="",
-                          markersize="5", marker="v", color='orange')
+                          markersize="5", marker="v", color='black')
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             # ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
-            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2] ** 2 + expect2[0] ** 2), color="orange", linestyle="--")
+            ax[1, 0].plot(perturb_times, np.sqrt(expect2[2] ** 2 + expect2[0] ** 2), color="black", linestyle="--")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             # ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             # ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
@@ -309,32 +309,58 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Nsteps = len(perturb_times)
             # Time step size
             dt = T / Nsteps
-            # Number of realizations to generate.
-            m = averages
             # Create an empty array to store the realizations.
-            x = np.empty((m, Nsteps + 1))
+            x = np.empty((averages, Nsteps + 1))
             # Initial values of x.
             x[:, 0] = 0
 
-            phase_noise = brownian(x[:, 0], Nsteps, dt, np.sqrt(gamma), out=x[:, 1:])
+            for gamma in [3, 10, 30]:
 
-            t = np.linspace(0.0, Nsteps * dt, Nsteps)
+                    phase_noise = brownian(x[:, 0], Nsteps, dt, np.sqrt(gamma), out=x[:, 1:])
 
-            # for k in range(int(m / 10)):
-            #    ax[1, 1].plot(t, phase_noise[k], color='grey', linewidth=0.1)
+                    t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
-            # ax[1, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='--', linewidth=2.0,
-            #              label='Real Mean')
-            # ax[1, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='blue', linestyle='--', linewidth=2.0,
-            #              label='Real Standard Deviation')
+                    for k in range(0, int(averages / 20)):
+                        if gamma == 3:
+                            ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.05)
+                        elif gamma == 10:
+                            ax[0, 1].plot(t, phase_noise[k], color='orange', linewidth=0.05)
+                        elif gamma == 30:
+                            ax[0, 1].plot(t, phase_noise[k], color='red', linewidth=0.05)
 
-            # ax[1, 1].plot(t, np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0,
-            #              label='Expected Standard Deviation = sqrt(gamma * t)')
-            # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
-            # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
-            # ax[1, 1].set_xlabel('Time [us]', fontsize=16)
-            # ax[1, 1].set_ylabel('Phase [pi/2]', fontsize=16)
-            # ax[1, 1].legend(loc="lower left")
+                    if gamma == 3:
+                       # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
+
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#85bb65', linestyle='-', linewidth=2.0,
+                                 label='$\gamma = 3$ MHz')
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=2.0)
+                                      #,label='Expected Standard Deviation = sqrt(gamma * t)')
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=2.0)
+
+                    if gamma == 10:
+                       # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
+
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='orange', linestyle='-', linewidth=2.0,
+                                 label='$\gamma = 10$ MHz')
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='orange', linestyle='--', linewidth=2.0)
+                                      #,label='Expected Standard Deviation = sqrt(gamma * t)')
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='orange', linestyle='--', linewidth=2.0)
+
+                    if gamma == 30:
+                        #ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='red', linestyle='-', linewidth=2.0,
+                                 label='$\gamma = 30$ MHz')
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='red', linestyle='--', linewidth=2.0)
+                                 #,label='Expected Standard Deviation = sqrt(gamma * t)')
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='red', linestyle='--', linewidth=2.0)
+
+
+
+            ax[0, 1].set_ylim([-1.2 * np.sqrt(15 * T), 1.2 * np.sqrt(15 * T)])
+            ax[0, 1].set_xlim([0, 0.1])
+            ax[0, 1].set_xlabel('Time [us]', fontsize=16)
+            ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=16)
+            ax[0, 1].legend(loc="lower left")
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -383,8 +409,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             ax[1, 1].plot(x0, y0, marker="o", color='b', label='$\gamma = 0$ MHz', linestyle='')
             ax[1, 1].plot(t1, np.real(m0[1]), color='b', linestyle='-')
-            ax[1, 1].plot(x0, y3, marker="^", color='g', label='$\gamma = 3$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m3.expect[1], color='g', linestyle='-')
+            ax[1, 1].plot(x0, y3, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
+            ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
             ax[1, 1].plot(x0, y10, marker="v", color='orange', label='$\gamma = 10$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m10.expect[1], color='orange', linestyle='-')
             ax[1, 1].plot(x0, y30, marker="s", color='r', label='$\gamma = 30$ MHz', linestyle='')
@@ -393,7 +419,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
             ax[1, 1].set_xlabel('Time [us]', fontsize=16)
             ax[1, 1].set_ylabel('Magnetization', fontsize=16)
-            ax[1, 1].legend(loc="lower center")
+            ax[1, 1].legend(loc="upper center")
 
             fig.tight_layout()
             plt.show()
