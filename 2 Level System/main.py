@@ -126,7 +126,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             Pmean = 0
 
-            while i <2:  # averages + int(2 * gamma):
+            while i < 2:  # averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
@@ -200,13 +200,20 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
             #              marker='o', markersize='2', linewidth=0.0)
+            long = np.append(noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)], noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+            long_nn = np.append(func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)],
+                                func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+
+            for x in range(0, 1000):
+                long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+                long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
 
             f, Pxx_den = signal.welch(
-                sqrt(2) * 2 * noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)], fs,
-                nperseg=1024)
+                long, fs,
+                nperseg=6800408)
             f1, Pxx_den1 = signal.welch(
-                sqrt(2) * 2 * func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)], fs,
-                nperseg=1024)
+                long_nn, fs,
+                nperseg=6800408)
             print("welch sum:", np.sum(Pxx_den))
             print("welch sum no noise:", np.sum(Pxx_den1))
             print("lorentz sum:", np.sum(lorentzian(f, 2 * 0.16, -omega / (2 * np.pi), 40)))
@@ -217,9 +224,9 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                           marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
             ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
-            ax[0, 0].plot(f, lorentzian(f, 0.16, -omega / (2 * np.pi), 40), linestyle='',
+            ax[0, 0].plot(f, lorentzian(f, 0.26, -omega / (2 * np.pi), 40), linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="lorentzian", color="orange")
-            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.16, -omega / (2 * np.pi), 40)) / 2,
+            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.26, -omega / (2 * np.pi), 40)) / 2,
                           linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_lorentz", color="orange")
             ax[0, 0].axvspan(-21020, -20980, facecolor='g', alpha=0.5)
@@ -322,37 +329,37 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
                     for k in range(0, int(averages / 20)):
                         if gamma == 3:
-                            ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.05)
+                            ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.1)
                         elif gamma == 10:
-                            ax[0, 1].plot(t, phase_noise[k], color='orange', linewidth=0.05)
+                            ax[0, 1].plot(t, phase_noise[k], color='#CC7722', linewidth=0.00)
                         elif gamma == 30:
-                            ax[0, 1].plot(t, phase_noise[k], color='red', linewidth=0.05)
+                            ax[0, 1].plot(t, phase_noise[k], color='black', linewidth=0.00)
 
                     if gamma == 3:
                        # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
 
-                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#85bb65', linestyle='-', linewidth=2.0,
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#85bb65', linestyle='-', linewidth=1.0,
                                  label='$\gamma = 3$ MHz')
-                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
                                       #,label='Expected Standard Deviation = sqrt(gamma * t)')
-                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
                     if gamma == 10:
                        # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
 
-                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='orange', linestyle='-', linewidth=2.0,
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#CC7722', linestyle='-', linewidth=1.0,
                                  label='$\gamma = 10$ MHz')
-                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='orange', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
                                       #,label='Expected Standard Deviation = sqrt(gamma * t)')
-                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='orange', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
 
                     if gamma == 30:
                         #ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
-                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='red', linestyle='-', linewidth=2.0,
+                        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-', linewidth=1.0,
                                  label='$\gamma = 30$ MHz')
-                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='red', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
                                  #,label='Expected Standard Deviation = sqrt(gamma * t)')
-                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='red', linestyle='--', linewidth=2.0)
+                        ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
 
 
@@ -407,14 +414,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                  t1, [np.sqrt(30) * sigmaz(0, N), np.sqrt(30) * sigmaz(0, N)], Exps,
                                  options=opts)
 
-            ax[1, 1].plot(x0, y0, marker="o", color='b', label='$\gamma = 0$ MHz', linestyle='')
-            ax[1, 1].plot(t1, np.real(m0[1]), color='b', linestyle='-')
+            ax[1, 1].plot(x0, y0, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
+            ax[1, 1].plot(t1, np.real(m0[1]), color='#008b8b', linestyle='-')
             ax[1, 1].plot(x0, y3, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
-            ax[1, 1].plot(x0, y10, marker="v", color='orange', label='$\gamma = 10$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m10.expect[1], color='orange', linestyle='-')
-            ax[1, 1].plot(x0, y30, marker="s", color='r', label='$\gamma = 30$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m30.expect[1], color='r', linestyle='-')
+            ax[1, 1].plot(x0, y10, marker="v", color='#CC7722', label='$\gamma = 10$ MHz', linestyle='')
+            ax[1, 1].plot(t1, result_m10.expect[1], color='#CC7722', linestyle='-')
+            ax[1, 1].plot(x0, y30, marker="s", color='#800020', label='$\gamma = 30$ MHz', linestyle='')
+            ax[1, 1].plot(t1, result_m30.expect[1], color='#800020', linestyle='-')
             # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
             # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
             ax[1, 1].set_xlabel('Time [us]', fontsize=16)
@@ -428,12 +435,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 opts = Options(store_states=True, store_final_state=True)
 
+Omega_R = 2 * np.pi * 13 * 10 ** 0  # MHz
+
 Commutatorlist = []
 Anticommutatorlist = []
 
-t1 = np.linspace(0, endtime/2.25, int(timesteps / 10))
+t1 = np.linspace(0, endtime/8.8, int(timesteps / 10))
 
-t2 = t1
+t2 = np.linspace(0, endtime, int(timesteps / 10))
 
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
@@ -442,7 +451,7 @@ result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]
                       result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
 Perturb_incoherent = identity(2) - MagnetizationZ(N)
-Perturb_coherent = MagnetizationX(N)
+Perturb_coherent = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
 result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
@@ -477,18 +486,18 @@ for t in range(0, len(t2)):
 # plt.legend()
 # plt.show()
 
-plt.plot(t1, result_t1.expect[1], label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
+plt.plot(t1, result_t1.expect[1], label="r$\langle \sigma_z(t1) \rangle$", linestyle="", marker="o",markersize="1", color="b")
 #plt.plot(t2, 100*np.imag(Commutatorlist), label="Im(Commutator)", color="b")
 #plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o",markersize="1", color="r")
 #plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
 #plt.legend()
-plt.xlabel('t_measure')
+plt.xlabel('$t_1$')
 plt.show()
 
 #plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
-plt.plot(t2, np.imag(Commutatorlist), label="Im(Commutator)", color="b")
-plt.plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)", linestyle="",marker="o", markersize="1", color="r")
+plt.plot(t2, np.imag(Commutatorlist), label=r"$\langle \sigma_z(t_1) \sigma_z(t_2) - \sigma_z(t_2) \sigma_z(t_1)  \rangle$ ", color="b", linestyle="", marker="o", markersize="1")
+plt.plot(t2, np.real(Anticommutatorlist), label=r"$\langle \sigma_z(t_1)\sigma_z(t_2) + \sigma_z(t_2)\sigma_z(t_1) \rangle$", linestyle="", marker="o", markersize="1", color="r")
 #plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
 plt.legend()
-plt.xlabel('t_measure - t_perturb')
+plt.xlabel('$t_2 - t_1$')
 plt.show()
