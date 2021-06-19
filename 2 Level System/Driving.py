@@ -5,6 +5,20 @@ from math import sqrt
 from scipy.stats import norm
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.fft import fft, fftfreq
+
+
+def get_fft(data, x=None):
+    if x is None:
+        x = np.arange(len(data))
+    # build frequency array
+    n_samples = len(data)
+    fs = (x[1] - x[0])
+    f = fftfreq(n_samples, fs)
+
+    # compute fft
+    ff = fft(data) / n_samples * 2
+    return f, ff
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)

@@ -204,19 +204,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             long_nn = np.append(func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)],
                                 func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
 
-            for x in range(0, 1000):
-                long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
-                long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+            #for x in range(0, 1000):
+            #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+            #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+            long = sqrt(2)*noisy_func(3, np.linspace(0, 10, 10**7), omega, "markovian")
+            long_nn = sqrt(2)*func(np.linspace(0, 10, 10**7), omega)
+
+            fs = 10**7/10
 
             f, Pxx_den = signal.welch(
                 long, fs,
-                nperseg=6800408)
+                nperseg=10**7+1)
             f1, Pxx_den1 = signal.welch(
                 long_nn, fs,
-                nperseg=6800408)
+                nperseg=10**7+1)
+
+            rydfft = get_fft(long)
+
             print("welch sum:", np.sum(Pxx_den))
             print("welch sum no noise:", np.sum(Pxx_den1))
-            print("lorentz sum:", np.sum(lorentzian(f, 2 * 0.16, -omega / (2 * np.pi), 40)))
+            print("lorentz sum:", np.sum(lorentzian(f, 0.5, omega / (2 * np.pi), 3)))
 
             ax[0, 0].plot(f, Pxx_den, linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="psd", color="b")
@@ -224,14 +231,19 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                           marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
             ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
-            ax[0, 0].plot(f, lorentzian(f, 0.26, -omega / (2 * np.pi), 40), linestyle='',
+            ax[0, 0].plot(f, lorentzian(f, 0.26, -omega / (2 * np.pi), 3), linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="lorentzian", color="orange")
-            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.26, -omega / (2 * np.pi), 40)) / 2,
+            ax[0, 0].plot(f, np.ones_like(f) * np.max(lorentzian(f, 0.5, omega / (2 * np.pi), 3)) / 2,
                           linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="half_lorentz", color="orange")
-            ax[0, 0].axvspan(-21020, -20980, facecolor='g', alpha=0.5)
+            ax[0, 0].plot(rydfft[0]*10**6, np.abs(rydfft[1])**2,
+                          linestyle='-',
+                          marker='o', markersize='0', linewidth=0.55, label="rydfft", color="black")
 
-            ax[0, 0].set_xlim([-21500, -20500])
+            ax[0, 0].axvspan(20998.5, 21001.5, facecolor='g', alpha=0.5)
+
+
+            ax[0, 0].set_xlim([20990, 21010])
             # [0:int(len(perturb_times) / 2)]
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], lorentzian(freq, Pmean, omega/(2*np.pi),
             #                                                              gamma)[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
