@@ -20,6 +20,27 @@ def get_fft(data, x=None):
     ff = fft(data) / n_samples * 2
     return f, ff
 
+def average_psd(gamma,omega,fs,averages):
+    long = sqrt(2) * noisy_func(gamma, np.linspace(0, 10, 10 ** 7), omega, "markovian")
+
+    F, P = signal.welch(
+        long, fs,
+        nperseg=10 ** 7 + 1)
+
+    for x in range(0, averages-1):
+        #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+        #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+        long = sqrt(2) * noisy_func(gamma, np.linspace(0, 10, 10 ** 7), omega, "markovian")
+
+        f, Pxx_den = signal.welch(
+            long, fs,
+            nperseg=10 ** 7 + 1)
+
+        F += f
+        P += Pxx_den
+
+    return F / averages, P / averages
+
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
     return func(frequencies)
