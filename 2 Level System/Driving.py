@@ -21,7 +21,7 @@ def get_fft(data, x=None):
     return f, ff
 
 def average_psd(gamma,omega,fs,averages):
-    long = sqrt(2) * noisy_func(gamma, np.linspace(0, 10, 10 ** 7), omega, "markovian")
+    long = sqrt(2) * noisy_func(gamma, np.linspace(0, 1, 10 ** 6), omega, "markovian")
 
     F, P = signal.welch(
         long, fs,
@@ -30,7 +30,7 @@ def average_psd(gamma,omega,fs,averages):
     for x in range(0, averages-1):
         #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
         #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
-        long = sqrt(2) * noisy_func(gamma, np.linspace(0, 10, 10 ** 7), omega, "markovian")
+        long = sqrt(2) * noisy_func(gamma, np.linspace(0, 1, 10 ** 6), omega, "markovian")
 
         f, Pxx_den = signal.welch(
             long, fs,

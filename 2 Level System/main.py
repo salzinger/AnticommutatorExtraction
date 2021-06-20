@@ -209,7 +209,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
             #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
             long = sqrt(2) * noisy_func(3, np.linspace(0, 10, 10 ** 7), omega, "markovian")
-            long_nn = sqrt(2) * func(np.linspace(0, 10, 10 ** 7), omega)
+            long_nn = sqrt(2) * func(np.linspace(0, 1, 10 ** 6), omega)
 
             fs = 10 ** 7 / 10
 
@@ -234,21 +234,21 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             ax[0, 0].plot(gamma3[0], gamma3[1], linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
-            ax[0, 0].plot(gamma3[0], lorentzian(f, 1, omega / (2 * np.pi), 3), linestyle='-',
+            ax[0, 0].plot(gamma3[0], lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=3$ MHz",
                           color="#85bb65")
             ax[0, 0].plot(gamma10[0], gamma10[1], linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="PSD $\gamma=10$ MHz", color="#CC7722")
-            ax[0, 0].plot(gamma10[0], lorentzian(f, 1, omega / (2 * np.pi), 10), linestyle='-',
+            ax[0, 0].plot(gamma10[0], lorentzian(gamma10[0], 1, omega / (2 * np.pi), 10), linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=10$ MHz",
                           color="#CC7722")
             ax[0, 0].plot(gamma30[0], gamma30[1], linestyle='',
                           marker='o', markersize='2', linewidth=0.55, label="PSD $\gamma=30$ MHz", color="#800020")
-            ax[0, 0].plot(gamma30[0], lorentzian(f, 1, omega / (2 * np.pi), 30), linestyle='-',
+            ax[0, 0].plot(gamma30[0], lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=30$ MHz",
                           color="#800020")
-            # ax[0, 0].plot(f1, Pxx_den1, linestyle='',
-            #              marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="r")
+            ax[0, 0].plot(f1, Pxx_den1, linestyle='',
+                         marker='o', markersize='2', linewidth=0.55, label="psd_no_noise", color="#008b8b")
             # ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
             #              marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
 
