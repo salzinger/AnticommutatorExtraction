@@ -204,8 +204,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             long_real = np.append(half, half[::-1])
             #long_nn = np.append(func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)],
             #                    func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
-            samples = 8 * 10 ** 6
-            sample_time = 8
+            samples = 2 * 10 ** 6
+            sample_time = 2
             #for x in range(0, 4):
             #    long_real = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
                 #long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
@@ -242,7 +242,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             gamma30 = average_psd(30, omega, samples, sample_time, 2)
 
             ax[0, 0].plot(-gamma3[0], gamma3[1], linestyle='',
-                          marker='^', markersize='2', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
+                          marker='^', markersize='4', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
 
             #ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
                #           marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
@@ -251,12 +251,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                           marker='^', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=3$ MHz",
                           color="#85bb65")
             ax[0, 0].plot(-gamma10[0], gamma10[1], linestyle='',
-                          marker='v', markersize='2', linewidth=0.55, label="PSD $\gamma=10$ MHz", color="#CC7722")
+                          marker='v', markersize='4', linewidth=0.55, label="PSD $\gamma=10$ MHz", color="#CC7722")
             ax[0, 0].plot(gamma10[0], 0.5*lorentzian(gamma10[0], 1, omega / (2 * np.pi), 10), linestyle='-',
                           marker='v', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=10$ MHz",
                           color="#CC7722")
             ax[0, 0].plot(-gamma30[0], gamma30[1], linestyle='',
-                          marker='s', markersize='2', linewidth=0.55, label="PSD $\gamma=30$ MHz", color="#800020")
+                          marker='s', markersize='4', linewidth=0.55, label="PSD $\gamma=30$ MHz", color="#800020")
             ax[0, 0].plot(gamma30[0], 0.5*lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=30$ MHz",
                           color="#800020")
@@ -488,25 +488,25 @@ Anticommutatorlist = []
 
 #t1 = np.linspace(0, 0.08, int(timesteps / 10))
 
-t1 = np.linspace(0, endtime/8.1, int(timesteps / 10))
+t1 = np.linspace(0, 0.08, int(timesteps / 10))
 
-t2 = np.linspace(0, endtime, int(timesteps / 10))
+t2 = np.linspace(0.08, 0.2+0.08, int(timesteps / 10))
 
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
 
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                      result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
+                      result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
 Perturb_incoherent = identity(2) - MagnetizationZ(N)
 Perturb_coherent = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
 result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
+                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
 result_AB_comm = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                         Perturb_coherent * result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
+                         Perturb_coherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
 for t in range(0, len(t2)):
     prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
@@ -542,7 +542,7 @@ coh = []
 inc = []
 
 for element in range(1, 22):
-    x0.append(float(linesun[element][0:5]))
+    x0.append(float(linesun[element][0:5])+0.08)
     un.append(float(linesun[element][8:18])-0.5)
     coh.append(float(linesun[element][8:18]) - float(linescoh[element][8:18]))
     inc.append(float(linesun[element][8:18]) - float(linesinc[element][8:18]))
@@ -572,6 +572,8 @@ plt.show()
 plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
 plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', markersize="5")
 plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
+plt.plot(t1, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+         markersize="0", color="#008b8b")
 plt.plot(t2, result_t1t2.expect[1],
          label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
