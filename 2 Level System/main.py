@@ -214,6 +214,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             fs = samples / sample_time
 
+
+            f_real, Pxx_real = signal.welch(
+                np.sqrt(2)*noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)], fs,
+                nperseg=samples)
+
+
             f, Pxx_den = signal.welch(
                 long, fs,
                 nperseg=samples)
@@ -225,14 +231,20 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             print("welch sum:", np.sum(Pxx_den))
             print("welch sum no noise:", np.sum(Pxx_den1))
+            print("real sum:", np.sum(Pxx_real))
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
 
-            gamma3 = average_psd(3, omega, samples, sample_time, 20)
-            gamma10 = average_psd(10, omega, samples, sample_time, 20)
-            gamma30 = average_psd(30, omega, samples, sample_time, 20)
+
+            gamma3 = average_psd(3, omega, samples, sample_time, 2)
+            gamma10 = average_psd(10, omega, samples, sample_time, 2)
+            gamma30 = average_psd(30, omega, samples, sample_time, 2)
 
             ax[0, 0].plot(gamma3[0], gamma3[1], linestyle='',
                           marker='^', markersize='4', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
+
+            ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
+                          marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
+
             ax[0, 0].plot(gamma3[0], lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           marker='^', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=3$ MHz",
                           color="#85bb65")
@@ -415,6 +427,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             y3 = []
             y10 = []
             y30 = []
+
             for element in range(1, 22):
                 x0.append(float(linesm0[element][0:5]))
                 y0.append(float(linesm0[element][8:18]))
@@ -465,12 +478,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 opts = Options(store_states=True, store_final_state=True)
 
-Omega_R = 2 * np.pi * 13 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 10 * 10 ** 0  # MHz
 
 Commutatorlist = []
 Anticommutatorlist = []
 
-t1 = np.linspace(0, endtime / 8.8, int(timesteps / 10))
+#t1 = np.linspace(0, 0.08, int(timesteps / 10))
+
+t1 = np.linspace(0, endtime/8.1, int(timesteps / 10))
 
 t2 = np.linspace(0, endtime, int(timesteps / 10))
 
@@ -478,17 +493,17 @@ result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
 
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                      result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+                      result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
 
 Perturb_incoherent = identity(2) - MagnetizationZ(N)
 Perturb_coherent = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
 result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
 
 result_AB_comm = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                         Perturb_coherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+                         Perturb_coherent * result_t1.states[len(t1) - 1], t2+t1, [], Exps, options=opts)
 
 for t in range(0, len(t2)):
     prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
@@ -508,6 +523,29 @@ for t in range(0, len(t2)):
     # print('Commutator:', 1j * Commutator[0][0])
     # print('AntiCommutator: ', AntiCommutator[0][0])
 
+with open('56S_unperturb.txt') as f:
+    linesunp = f.readlines()
+with open('56S_unperturbed.txt') as f:
+    linesun = f.readlines()
+with open('56S_coherent_perturb.txt') as f:
+    linescoh = f.readlines()
+with open('56S_incoherent_perturb.txt') as f:
+    linesinc = f.readlines()
+
+x0 = []
+un = []
+unp = []
+coh = []
+inc = []
+
+for element in range(1, 22):
+    x0.append(float(linesun[element][0:5]))
+    un.append(float(linesun[element][8:18])-0.5)
+    coh.append(float(linesun[element][8:18]) - float(linescoh[element][8:18]))
+    inc.append(float(linesun[element][8:18]) - float(linesinc[element][8:18]))
+    unp.append(float(linesunp[element][8:18]))
+
+print(x0)
 # freq = np.fft.fftfreq(t2.shape[-1])
 # plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', markersize='5', label="Commutator")
 # plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5',
@@ -515,6 +553,7 @@ for t in range(0, len(t2)):
 # plt.xlim(-1 / 2, 1 / 2)
 # plt.legend()
 # plt.show()
+
 
 plt.plot(t1, result_t1.expect[1], label="r$\langle \sigma_z(t1) \rangle$", linestyle="", marker="o", markersize="1",
          color="b")
@@ -526,13 +565,25 @@ plt.xlabel('$t_1$')
 plt.show()
 
 # plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
-plt.plot(t2, np.imag(Commutatorlist),
-         label=r"$\langle \sigma_z(t_1) \sigma_z(t_2) - \sigma_z(t_2) \sigma_z(t_1)  \rangle$ ", color="b",
+
+plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
+plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', markersize="5")
+plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
+plt.plot(t2, result_t1t2.expect[1],
+         label=r"Unperturbed_Expect", linestyle="-", marker="o",
+         markersize="0", color="#008b8b")
+#plt.plot(x0, un-inc, color='#008b8b', linestyle='-')
+plt.plot(t2, -np.imag(Commutatorlist),
+         label=r"$- i \langle \sigma_z(t_1) \sigma_z(t_2) - \sigma_z(t_2) \sigma_z(t_1)  \rangle$ ", color="b",
          linestyle="", marker="o", markersize="1")
 plt.plot(t2, np.real(Anticommutatorlist),
          label=r"$\langle \sigma_z(t_1)\sigma_z(t_2) + \sigma_z(t_2)\sigma_z(t_1) \rangle$", linestyle="", marker="o",
          markersize="1", color="r")
+
+
+
 # plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
 plt.legend()
 plt.xlabel('$t_2 - t_1$')
+#plt.xlim([0, .18])
 plt.show()
