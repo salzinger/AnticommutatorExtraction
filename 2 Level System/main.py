@@ -200,24 +200,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], fourier[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
             #              marker='o', markersize='2', linewidth=0.0)
-            #long = np.append(noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)],
-            #                 noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+            half = noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)]
+            long_real = np.append(half, half[::-1])
             #long_nn = np.append(func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)],
             #                    func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
-            samples = 2*10 ** 6
-            sample_time = 2
-            # for x in range(0, 1000):
-            #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
-            #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+            samples = 8 * 10 ** 6
+            sample_time = 8
+            #for x in range(0, 4):
+            #    long_real = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+                #long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+
             long = sqrt(2) * noisy_func(3, np.linspace(0, sample_time, samples), omega, "markovian")
             long_nn = sqrt(2) * func(np.linspace(0, sample_time, samples), omega)
 
             fs = samples / sample_time
 
+            print(len(long_real))
 
             f_real, Pxx_real = signal.welch(
-                np.sqrt(2)*noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)], fs,
-                nperseg=samples)
+                sqrt(2) * long_real, len(long_real)/0.2,
+                nperseg=10**7)
 
 
             f, Pxx_den = signal.welch(
@@ -239,27 +241,27 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             gamma10 = average_psd(10, omega, samples, sample_time, 2)
             gamma30 = average_psd(30, omega, samples, sample_time, 2)
 
-            ax[0, 0].plot(gamma3[0], gamma3[1], linestyle='',
-                          marker='^', markersize='4', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
+            ax[0, 0].plot(-gamma3[0], gamma3[1], linestyle='',
+                          marker='^', markersize='2', linewidth=0.55, label="PSD $\gamma=3$ MHz", color="#85bb65")
 
-            ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
-                          marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
+            #ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
+               #           marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
 
-            ax[0, 0].plot(gamma3[0], lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
+            ax[0, 0].plot(gamma3[0], 0.5*lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           marker='^', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=3$ MHz",
                           color="#85bb65")
-            ax[0, 0].plot(gamma10[0], gamma10[1], linestyle='',
-                          marker='v', markersize='4', linewidth=0.55, label="PSD $\gamma=10$ MHz", color="#CC7722")
-            ax[0, 0].plot(gamma10[0], lorentzian(gamma10[0], 1, omega / (2 * np.pi), 10), linestyle='-',
+            ax[0, 0].plot(-gamma10[0], gamma10[1], linestyle='',
+                          marker='v', markersize='2', linewidth=0.55, label="PSD $\gamma=10$ MHz", color="#CC7722")
+            ax[0, 0].plot(gamma10[0], 0.5*lorentzian(gamma10[0], 1, omega / (2 * np.pi), 10), linestyle='-',
                           marker='v', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=10$ MHz",
                           color="#CC7722")
-            ax[0, 0].plot(gamma30[0], gamma30[1], linestyle='',
-                          marker='s', markersize='4', linewidth=0.55, label="PSD $\gamma=30$ MHz", color="#800020")
-            ax[0, 0].plot(gamma30[0], lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
+            ax[0, 0].plot(-gamma30[0], gamma30[1], linestyle='',
+                          marker='s', markersize='2', linewidth=0.55, label="PSD $\gamma=30$ MHz", color="#800020")
+            ax[0, 0].plot(gamma30[0], 0.5*lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
                           marker='o', markersize='0', linewidth=0.55, label="Lorentzian $\gamma=30$ MHz",
                           color="#800020")
-            ax[0, 0].plot(f1, Pxx_den1, linestyle='',
-                          marker='o', markersize='4', linewidth=0.55, label="psd_no_noise", color="#008b8b")
+            #ax[0, 0].plot(f1, Pxx_den1, linestyle='',
+            #              marker='o', markersize='4', linewidth=0.55, label="psd_no_noise", color="#008b8b")
             # ax[0, 0].plot(f, np.ones_like(f) * np.max(Pxx_den) / 2, linestyle='-',
             #              marker='o', markersize='0', linewidth=0.55, label="half_psd", color="b")
 
@@ -273,6 +275,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # ax[0, 0].axvspan(20998.5, 21001.5, facecolor='g', alpha=0.5)
 
             ax[0, 0].set_xlim([20980, 21020])
+            #ax[0, 0].set_xlim([-21020, -20980])
             # [0:int(len(perturb_times) / 2)]
             # ax[0, 0].plot(freq[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], lorentzian(freq, Pmean, omega/(2*np.pi),
             #                                                              gamma)[int(len(perturb_times)/2)+2000: int(len(perturb_times))-4000], linestyle='',
@@ -368,7 +371,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
                 t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
-                for k in range(0, int(averages / 20)):
+                for k in range(0, int(averages / 10)):
                     if gamma == 3:
                         ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.1)
                     elif gamma == 10:
