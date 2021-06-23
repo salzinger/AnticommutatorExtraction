@@ -95,6 +95,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
         # print(len(perturb_times))
         for g in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=1, base=np.e):
 
+            gamma = 3
+
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                               noisy_func(gamma, perturb_times, omega, bath))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
@@ -479,7 +481,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
-            ################### TD VS MASTER EQUATION ############################################ 444444444444444444
+            ################### MASTER EQUATION ############################################ 444444444444444444
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -551,7 +553,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
                 omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
-            ################### END OF TD VS MASTER EQUATION ############################################4444444444444444
+            ################### MASTER EQUATION ############################################4444444444444444
 
 
 
@@ -580,13 +582,17 @@ t1 = np.linspace(0, 0.08, int(timesteps / 10))
 
 t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
 
+S = Cubic_Spline(t1[0], t1[-1], func(t1, omega))
+
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
+
+S = Cubic_Spline(t2[0], t2[-1], func(t2, omega))
 
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                       result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
-Perturb_incoherent = identity(2) - MagnetizationZ(N)
+Perturb_incoherent = MagnetizationZ(N)
 Perturb_coherent = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
