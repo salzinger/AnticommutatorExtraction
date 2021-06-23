@@ -323,6 +323,19 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111
 
+
+
+
+
+
+
+
+
+
+
+
+
+
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
 
             timesteps = 2 * len(data)
@@ -370,6 +383,19 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[1, 0].legend(loc="lower center")
 
             #################### END OF SINGLE TRAJECTORY ######################################## 2222222222222222222
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ################### PHASE WALKS ############################################ 33333333333333333333333333333333
 
@@ -432,13 +458,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                     # ,label='Expected Standard Deviation = sqrt(gamma * t)')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
-            ax[0, 1].set_ylim([-1.2 * np.sqrt(15 * T), 1.2 * np.sqrt(15 * T)])
+            ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
             ax[0, 1].set_xlim([0, 0.1])
             ax[0, 1].set_xlabel('Time [us]', fontsize=16)
             ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=16)
             ax[0, 1].legend(loc="lower left")
 
             ################### END OF PHASE WALKS ############################################ 3333333333333333333333
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             ################### TD VS MASTER EQUATION ############################################ 444444444444444444
 
@@ -513,6 +552,18 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
             ################### END OF TD VS MASTER EQUATION ############################################4444444444444444
+
+
+
+
+
+
+
+
+
+
+
+
 
 ################### COMMUTATOR / ANTICOMMUTATOR ############################################ 5555555555555555555555555
 
