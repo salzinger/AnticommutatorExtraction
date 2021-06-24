@@ -114,6 +114,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
             bath = "markovian"
+            gamma = 3
 
             timesteps = 1 * len(data)
             endtime = 0.1
@@ -479,7 +480,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
-            ################### TD VS MASTER EQUATION ############################################ 444444444444444444
+            ################### MASTER EQUATION ############################################ 444444444444444444
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -551,7 +552,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
                 omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
-            ################### END OF TD VS MASTER EQUATION ############################################4444444444444444
+            ################### MASTER EQUATION ############################################4444444444444444
 
 
 
@@ -574,21 +575,21 @@ Omega_R = 2 * np.pi * 10 * 10 ** 0  # MHz
 Commutatorlist = []
 Anticommutatorlist = []
 
-# t1 = np.linspace(0, 0.08, int(timesteps / 10))
+t = np.linspace(0, 0.2+0.08, int(timesteps / 10))
+S = Cubic_Spline(t[0], t[-1], func(t, omega))
 
 t1 = np.linspace(0, 0.08, int(timesteps / 10))
-
-t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
-
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
 
+t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                       result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
-Perturb_incoherent = identity(2) - MagnetizationZ(N)
+Perturb_incoherent = MagnetizationZ(N)
 Perturb_coherent = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
+
 
 result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
@@ -661,9 +662,13 @@ plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', marke
 plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
 plt.plot(t1, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
-plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2)),
+plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - 0.08)),
          label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="black")
+plt.plot(t2, np.cos(Omega_R * t1[-1]) + np.cos(Omega_R * (t1[-1] + t2 - 0.08)),
+         label=r"$cos(\Omega_R*t_1)+cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+         markersize="0", color="r")
+
 plt.plot(t2, result_t1t2.expect[1],
          label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
