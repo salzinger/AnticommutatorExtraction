@@ -115,6 +115,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             bath = "markovian"
 
+            gamma = 3
+
             timesteps = 1 * len(data)
             endtime = 0.1
             pertubation_length = endtime / 1
@@ -479,7 +481,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
-            ################### TD VS MASTER EQUATION ############################################ 444444444444444444
+            ################### MASTER EQUATION ############################################ 444444444444444444
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -532,7 +534,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[1, 1].plot(x0, y0, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
             ax[1, 1].plot(t1, np.real(m0[1]), color='#008b8b', linestyle='-')
 
-            ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='#85bb65', label="Time Dependant"),
+            ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='black', label="Time Dependant"),
 
             ax[1, 1].plot(x0, y3, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
@@ -662,12 +664,15 @@ for element in range(1, 22):
 plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
 plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', markersize="5")
 plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
+
 plt.plot(t1, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
+
 plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - 0.08)),
          label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="black")
-plt.plot(t2, np.cos(Omega_R * t1[-1]) + np.cos(Omega_R * (t1[-1] + t2 - 0.08)),
+plt.plot(t2, 3/4 + np.cos(2 * Omega_R * t1[-1]) / 8 - np.cos(Omega_R * t1[-1]) / 2
+                 + np.cos(2 * Omega_R * (t1[-1] + t2 - 0.08))/8 - np.cos(Omega_R * (t1[-1] + t2 - 0.08)) / 2,
          label=r"$cos(\Omega_R*t_1)+cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="r")
 
