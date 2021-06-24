@@ -577,14 +577,11 @@ Anticommutatorlist = []
 # t1 = np.linspace(0, 0.08, int(timesteps / 10))
 
 t1 = np.linspace(0, 0.08, int(timesteps / 10))
-S = Cubic_Spline(t1[0], t1[-1], func(t1, omega))
+
+t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
 
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
-
-
-t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
-S = Cubic_Spline(t2[0], t2[-1], func(t1, omega))
 
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                       result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
@@ -664,7 +661,7 @@ plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', marke
 plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
 plt.plot(t1, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
-plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2-0.08)),
+plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2)),
          label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="black")
 plt.plot(t2, result_t1t2.expect[1],
