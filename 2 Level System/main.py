@@ -114,7 +114,6 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
             bath = "markovian"
-            gamma = 3
 
             timesteps = 1 * len(data)
             endtime = 0.1
@@ -480,7 +479,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
-            ################### MASTER EQUATION ############################################ 444444444444444444
+            ################### TD VS MASTER EQUATION ############################################ 444444444444444444
 
             with open('m0.txt') as f:
                 linesm0 = f.readlines()
@@ -575,12 +574,15 @@ Omega_R = 2 * np.pi * 10 * 10 ** 0  # MHz
 Commutatorlist = []
 Anticommutatorlist = []
 
-t = np.linspace(0, 0.2+0.08, int(timesteps / 10))
-S = Cubic_Spline(t[0], t[-1], func(t, omega))
+t1 = np.linspace(0, 0.2+0.08, int(timesteps / 10))
 
 t1 = np.linspace(0, 0.08, int(timesteps / 10))
+
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
+
+t2 = np.linspace(0, 0.2 + 0.08, int(timesteps / 10))
+S = Cubic_Spline(t2[0], t2[-1], func(t2, omega))
 
 t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
