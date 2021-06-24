@@ -148,7 +148,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             Pmean = 0
 
-            while i < 20:  # averages + int(2 * gamma):
+            while i < 2:  # averages + int(2 * gamma):
                 # print(i)
                 i += 1
 
@@ -571,25 +571,30 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 opts = Options(store_states=True, store_final_state=True)
 
-Omega_R = 2 * np.pi * 10 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 11 * 10 ** 0  # MHz
 
 Commutatorlist = []
 Anticommutatorlist = []
 
-t1 = np.linspace(0, 0.08, int(timesteps / 10))
-S = Cubic_Spline(t1[0], t1[-1], func(t1, omega))
+#t1 = np.linspace(0, 0.08, int(timesteps / 10))
+#S = Cubic_Spline(t1[0], t1[-1], func(t1, omega))
 
-t1 = np.linspace(0, endtime, int(timesteps / 10))
+sampling_rate = 10**5
 
-S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
+perturbation = 0.067
+
+full_time = np.linspace(0, 0.2 + perturbation, int((0.2 + perturbation)*sampling_rate))
+S = Cubic_Spline(full_time[0], full_time[-1], func(full_time, omega))
+
+t1 = np.linspace(0, perturbation, int(perturbation*sampling_rate))
+t2 = np.linspace(perturbation, 0.2 + perturbation, int(0.2*sampling_rate))
+
 
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                    productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
+                    productstateZ(0, N - 1, N), full_time, [], Exps, options=opts)
 
-t2 = np.linspace(0, 0.2 + 0.08, int(timesteps / 10))
-S = Cubic_Spline(t2[0], t2[-1], func(t2, omega))
+print(result_t1.expect[1])
 
-t2 = np.linspace(0.08, 0.2 + 0.08, int(timesteps / 10))
 result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                       result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
@@ -638,10 +643,10 @@ coh = []
 inc = []
 
 for element in range(1, 22):
-    x0.append(float(linesun[element][0:5]) + 0.08)
+    x0.append(float(linesun[element][0:5]) + perturbation)
     un.append(float(linesun[element][8:18]) - 0.5)
-    coh.append(float(linesun[element][8:18]) - float(linescoh[element][8:18]))
-    inc.append(float(linesun[element][8:18]) - float(linesinc[element][8:18]))
+    coh.append((float(linesun[element][8:18]) - float(linescoh[element][8:18]))/(40*0.0075))
+    inc.append((float(linesun[element][8:18]) - float(linesinc[element][8:18]))/(40*0.0075))
     unp.append(float(linesunp[element][8:18]))
 
 # freq = np.fft.fftfreq(t2.shape[-1])
@@ -665,33 +670,37 @@ for element in range(1, 22):
 # plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
 
 plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
-plt.plot(x0, coh, marker="o", color='b', label='Commutator', linestyle='', markersize="5")
-plt.plot(x0, inc, marker="o", color='r', label='Anti-Commutator', linestyle='', markersize="5")
 
-plt.plot(t1, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
 
-plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - 0.08)),
+
+plt.plot(x0, coh, marker="o", color='black', label='Unperturbed - Coherent Pertubation', linestyle='', markersize="5")
+plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
          label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="black")
-plt.plot(t2, 3/4 + np.cos(2 * Omega_R * t1[-1]) / 8 - np.cos(Omega_R * t1[-1]) / 2
-                 + np.cos(2 * Omega_R * (t1[-1] + t2 - 0.08))/8 - np.cos(Omega_R * (t1[-1] + t2 - 0.08)) / 2,
-         label=r"$cos(\Omega_R*t_1)+cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+
+
+plt.plot(x0, inc, marker="o", color='r', label='Unperturbed -Incoherent Pertubation ', linestyle='', markersize="5")
+plt.plot(t2, 3/8 + np.cos(2 * Omega_R * t1[-1]) / 8 + np.cos(Omega_R * t1[-1]) / 2
+                 + np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+         label=r"$\frac{3}{8} + \frac{cos(2 \Omega_R  t_1)}{8} + \frac{cos(\Omega_R t_1}{2} + cos(\Omega_R (t_1 + t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="r")
 
-plt.plot(t2, result_t1t2.expect[1],
-         label=r"Unperturbed_Expect", linestyle="-", marker="o",
-         markersize="0", color="#008b8b")
+
+#plt.plot(t2, result_t1t2.expect[1],
+#         label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
 # plt.plot(x0, un-inc, color='#008b8b', linestyle='-')
-plt.plot(t2, -np.imag(Commutatorlist),
-         label=r"$- i \langle \sigma_z(t_1) \sigma_z(t_2) - \sigma_z(t_2) \sigma_z(t_1)  \rangle$ ", color="b",
-         linestyle="", marker="o", markersize="1")
-plt.plot(t2, np.real(Anticommutatorlist),
-         label=r"$\langle \sigma_z(t_1)\sigma_z(t_2) + \sigma_z(t_2)\sigma_z(t_1) \rangle$", linestyle="", marker="o",
-         markersize="1", color="r")
+#plt.plot(t2, -np.imag(Commutatorlist),
+#         label=r"$- i \langle \sigma_z(t_1) \sigma_z(t_2) - \sigma_z(t_2) \sigma_z(t_1)  \rangle$ ", color="b",
+#         linestyle="", marker="o", markersize="1")
+#plt.plot(t2, np.real(Anticommutatorlist),
+#         label=r"$\langle \sigma_z(t_1)\sigma_z(t_2) + \sigma_z(t_2)\sigma_z(t_1) \rangle$", linestyle="", marker="o",
+#         markersize="1", color="r")
 
 # plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
 plt.legend()
-plt.xlabel('$t_2 - t_1$')
+plt.xlabel('$t$')
 # plt.xlim([0, .18])
 plt.show()
