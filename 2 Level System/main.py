@@ -576,9 +576,12 @@ Omega_R = 2 * np.pi * 10 * 10 ** 0  # MHz
 Commutatorlist = []
 Anticommutatorlist = []
 
-t1 = np.linspace(0, 0.2+0.08, int(timesteps / 10))
-
 t1 = np.linspace(0, 0.08, int(timesteps / 10))
+S = Cubic_Spline(t1[0], t1[-1], func(t1, omega))
+
+t1 = np.linspace(0, endtime, int(timesteps / 10))
+
+S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
 result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     productstateZ(0, N - 1, N), t1, [], Exps, options=opts)
