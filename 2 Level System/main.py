@@ -590,40 +590,40 @@ t1 = np.linspace(0, perturbation, int(perturbation*sampling_rate))
 t2 = np.linspace(perturbation, 0.2 + perturbation, int(0.2*sampling_rate))
 
 
-result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                    productstateZ(0, N - 1, N), full_time, [], Exps, options=opts)
+#result_t1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+#                    productstateZ(0, N - 1, N), full_time, [], Exps, options=opts)
 
-print(result_t1.expect[1])
+#print(result_t1.expect[1])
 
-result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                      result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+#result_t1t2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+#                      result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
-Perturb_incoherent = MagnetizationZ(N)
-Perturb_coherent = MagnetizationZ(N)
-Measure = MagnetizationZ(N)
+#Perturb_incoherent = MagnetizationZ(N)
+#Perturb_coherent = MagnetizationZ(N)
+#Measure = MagnetizationZ(N)
 
 
-result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                    Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+#result_AB = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                    #Perturb_incoherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
-result_AB_comm = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
-                         Perturb_coherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
+#result_AB_comm = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
+                     #    Perturb_coherent * result_t1.states[len(t1) - 1], t2, [], Exps, options=opts)
 
-for t in range(0, len(t2)):
-    prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
+#for t in range(0, len(t2)):
+#    prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
 
-    prod_AB_comm = result_t1t2.states[t - 1].dag() * Measure * result_AB_comm.states[t - 1]
+#    prod_AB_comm = result_t1t2.states[t - 1].dag() * Measure * result_AB_comm.states[t - 1]
 
-    prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+ #   prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
 
-    prod_BA_comm = result_AB_comm.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+ #   prod_BA_comm = result_AB_comm.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
 
-    Commutator = prod_AB_comm - prod_BA_comm
+ #   Commutator = prod_AB_comm - prod_BA_comm
 
-    AntiCommutator = prod_AB + prod_BA
+ #   AntiCommutator = prod_AB + prod_BA
 
-    Commutatorlist.append(Commutator[0][0][0])
-    Anticommutatorlist.append(AntiCommutator[0][0][0])
+  #  Commutatorlist.append(Commutator[0][0][0])
+  #  Anticommutatorlist.append(AntiCommutator[0][0][0])
     # print('Commutator:', 1j * Commutator[0][0])
     # print('AntiCommutator: ', AntiCommutator[0][0])
 
@@ -671,7 +671,10 @@ for element in range(1, 22):
 
 plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
 
-plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+
+plt.plot(full_time, -0.5*np.cos(Omega_R * full_time), label=r"Unperturbed_Expect", linestyle="-", marker="o",
          markersize="0", color="#008b8b")
 
 
