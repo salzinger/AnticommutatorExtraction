@@ -684,16 +684,16 @@ plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturba
          markersize="0", color="black")
 
 
-plt.plot(t2,  0.905*np.cos(Omega_R *(t1[-1] + t2)) + 0.02375*np.cos(2 * Omega_R * (t1[-1] + t2)) - 0.5*np.cos(Omega_R * t1[-1]) + 0.125*np.cos(Omega_R * t1[-1]) + 0.44625,
+plt.plot(t2,  0.905*np.cos(Omega_R *(t1[-1] + t2  - perturbation)) + 0.02375*np.cos(2 * Omega_R * (t1[-1] + t2  - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + 0.125*np.cos(Omega_R * t1[-1]) + 0.44625,
          label=r"$3lvl 0.9$ ", linestyle="-", marker="o",
          markersize="0", color="pink")
 
-plt.plot(t2, 0.0225 * (22.6667 + 36.4444 * np.cos(Omega_R * (t1[-1] + t2)) + 2 * np.cos(2 * Omega_R * (t1[-1] + t2)) -
+plt.plot(t2, 0.0225 * (22.6667 + 36.4444 * np.cos(Omega_R * (t1[-1] + t2  - perturbation)) + 2 * np.cos(2 * Omega_R * (t1[-1] + t2)) -
                        22.2222 * np.cos(Omega_R * t1[-1]) + 5.55556 * np.cos(2 * Omega_R * t1[-1])),
          label=r"$3lvl 0.8$ ", linestyle="-", marker="o",
          markersize="0", color="orange")
 
-plt.plot(t2, 0.9 * np.cos(Omega_R * (t1[-1] + t2)) - 0.5 * np.cos(Omega_R * t1[-1]) + 0.125 * np.cos(2 * Omega_R * t1[-1]) + 0.465,
+plt.plot(t2, 0.9 * np.cos(Omega_R * (t1[-1] + t2  - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + 0.125 * np.cos(2 * Omega_R * t1[-1]) + 0.465,
          label=r"$3lvl -0.1$ ", linestyle="-", marker="o",
          markersize="0", color="#800020")
 
@@ -703,9 +703,9 @@ plt.plot(t2, 3/8 + np.cos(2 * Omega_R * t1[-1]) / 8 + np.cos(Omega_R * t1[-1]) /
          label=r"$\frac{3}{8} + \frac{cos(2 \Omega_R  t_1)}{8} + \frac{cos(\Omega_R t_1}{2} + cos(\Omega_R (t_1 + t_2))$ ", linestyle="-", marker="o",
          markersize="0", color="r")
 
-z = 0.4
+z = 0.5
 
-plt.plot(t2, 1/8 *((8 - 8 * z)*np.cos(Omega_R * (t1[-1] + t2)) - 4 *np.cos(Omega_R * t1[-1]) + np.cos(2* Omega_R * t1[-1]) - 8 * z**2 + 8 * z + 3),
+plt.plot(t2, ((1 - 1 * z) * np.cos(Omega_R * (t1[-1] + t2 - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + np.cos(2 * Omega_R * t1[-1]) / 8 - z**2 + z + 3/8),
 label = r"$3lvl -z$ ", linestyle = "-", marker = "o",
 markersize = "0", color = "b")
 
