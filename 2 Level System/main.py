@@ -27,11 +27,11 @@ N = 2
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
-Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 25.7 * 10 ** (0)  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
-J = 30  # MHz
+J = 0*2 * np.pi * 25.7 * 10 ** (0)  # MHz
 
 averages = 150
 
@@ -119,11 +119,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             gamma = 0
 
             timesteps = 1 * len(data)
-            endtime = 0.1
+            endtime = 1
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-            S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(gamma, perturb_times, omega, bath))
+            S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                              noisy_func(gamma, perturb_times, omega, bath))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                               np.conj(noisy_func(gamma, perturb_times, omega, bath)))
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
