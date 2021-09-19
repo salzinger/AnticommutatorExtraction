@@ -23,7 +23,7 @@ data = np.loadtxt('Forward3MHzcsv.txt')
 # print(data)
 
 
-N = 1
+N = 2
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
@@ -31,7 +31,7 @@ Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
-J = 0  # MHz
+J = 30  # MHz
 
 averages = 150
 
@@ -41,6 +41,7 @@ timesteps = int(endtime * sampling_rate)
 timesteps = 2 * len(data)
 
 bath = 'Forward3MHzcsv.txt'
+#bath = 'Markovian'
 
 gamma1 = 0  # MHz
 
@@ -115,7 +116,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             bath = "markovian"
 
-            gamma = 3
+            gamma = 0
 
             timesteps = 1 * len(data)
             endtime = 0.1
@@ -148,8 +149,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             Pmean = 0
 
-            while i < 2:  # averages + int(2 * gamma):
-                # print(i)
+            while i < 3:  # averages + int(2 * gamma):
+                print(i)
                 i += 1
 
                 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
@@ -200,6 +201,29 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #                    options=opts)
 
             # print(Pmean)
+
+            fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+
+            #timesteps = 2 * len(data)
+            #endtime = 0.2
+            #pertubation_length = endtime / 1
+            #perturb_times = np.linspace(0, pertubation_length, timesteps)
+
+            ax[0, 0].plot(perturb_times, np.real(expect2[1]), color='#85bb65')
+            ax[0, 0].set_xlabel('Time [us]', fontsize=16)
+            ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
+            # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
+            ax[0, 0].legend(loc="lower center")
+            plt.show()
+
+
+
+
+
+
+
+
+
 
             #################### SPECTRA ######################################## 11111111111111111111111111111111111111111111111111111111111
 
