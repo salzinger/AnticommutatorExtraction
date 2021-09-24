@@ -364,12 +364,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             for element in range(1, 21):
                 x.append(float(linesm[element][0:5]))
                 y.append(float(linesm[element][11:18]))
-                xy.append(float(linesmxy[element][11:18]))
+                xy.append(float(linesmxy[element][12:18]))
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
-            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
+            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle /2$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
-            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}/2$",
                           linestyle="",
                           markersize="5", marker="v", color='black')
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
@@ -423,13 +423,13 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
                 t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
-                for k in range(0, int(averages / 10)):
+                for k in range(0, int(averages / 100)):
                     if gamma == 3:
                         ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.1)
                     elif gamma == 10:
-                        ax[0, 1].plot(t, phase_noise[k], color='#CC7722', linewidth=0.00)
+                        ax[0, 1].plot(t, phase_noise[k], color='#CC7722', linewidth=0.1)
                     elif gamma == 30:
-                        ax[0, 1].plot(t, phase_noise[k], color='black', linewidth=0.00)
+                        ax[0, 1].plot(t, phase_noise[k], color='#800020', linewidth=0.1)
 
                 if gamma == 3:
                     # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
@@ -437,8 +437,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                     ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#85bb65', linestyle='-',
                                   linewidth=1.0,
                                   label='$\gamma = 3$ MHz')
-                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
-                    # ,label='Expected Standard Deviation = sqrt(gamma * t)')
+                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0
+                    ,label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
                 if gamma == 10:
@@ -448,7 +448,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                   linewidth=1.0,
                                   label='$\gamma = 10$ MHz')
                     ax[0, 1].plot(t, np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
-                    # ,label='Expected Standard Deviation = sqrt(gamma * t)')
+                    #,label='$\sqrt{10 MHz t}$')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
 
                 if gamma == 30:
@@ -456,14 +456,16 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                     ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-',
                                   linewidth=1.0,
                                   label='$\gamma = 30$ MHz')
-                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
-                    # ,label='Expected Standard Deviation = sqrt(gamma * t)')
+                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0
+                     ,label='$\sqrt{30 MHz  t}$')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
             ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
-            ax[0, 1].set_xlim([0, 0.1])
+            ###ax[0, 1].set_xlim([0, 0.1])
             ax[0, 1].set_xlabel('Time [us]', fontsize=16)
             ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=16)
+            #ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
+            #ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
             ax[0, 1].legend(loc="lower left")
 
             ################### END OF PHASE WALKS ############################################ 3333333333333333333333
@@ -629,24 +631,69 @@ t2 = np.linspace(perturbation, 0.2 + perturbation, int(0.2*sampling_rate))
 
 with open('56S_unperturb.txt') as f:
     linesunp = f.readlines()
+
+
+
 with open('56S_unperturbed.txt') as f:
-    linesun = f.readlines()
+    linesun56S = f.readlines()
 with open('56S_coherent_perturb.txt') as f:
-    linescoh = f.readlines()
+    linescoh56S = f.readlines()
 with open('56S_incoherent_perturb.txt') as f:
-    linesinc = f.readlines()
+    linesinc56S = f.readlines()
+
+with open('55P_unperturbed.txt') as f:
+    linesun55P = f.readlines()
+with open('55P_coherent_perturb.txt') as f:
+    linescoh55P = f.readlines()
+with open('55P_incoherent_perturb.txt') as f:
+    linesinc55P = f.readlines()
+
+
+with open('56P_coherent_perturb.txt') as f:
+    linescoh56P = f.readlines()
+with open('56P_incoherent_perturb.txt') as f:
+    linesinc56P = f.readlines()
 
 x0 = []
-un = []
+un56S = []
+un55P = []
 unp = []
-coh = []
-inc = []
+un=[]
+
+coh56S = []
+coh56P = []
+coh55P = []
+coh=[]
+comm=[]
+
+inc56S = []
+inc56P = []
+inc55P = []
+inc=[]
+anti=[]
 
 for element in range(1, 22):
-    x0.append(float(linesun[element][0:5]) + perturbation)
-    un.append(float(linesun[element][8:18]) - 0.5)
-    coh.append((float(linesun[element][8:18]) - float(linescoh[element][8:18]))/(40*0.0075))
-    inc.append((float(linesun[element][8:18]) - float(linesinc[element][8:18]))/(40*0.0075))
+    x0.append(float(linesun56S[element][0:5]) + 0*perturbation)
+
+    un56S.append(float(linesun56S[element][8:18]))
+    un55P.append(float(linesun55P[element][8:18]))
+    un.append(float(linesun56S[element][8:18])-float(linesun55P[element][8:18]))
+
+    #coh.append((float(linesun[element][8:18]) - float(linescoh[element][8:18]))/(40*0.0075))
+    coh56S.append(float(linescoh56S[element][8:18]))
+    coh56P.append(float(linescoh56P[element][8:18]))
+    coh55P.append(float(linescoh55P[element][8:18]))
+    coh.append(float(linescoh56S[element][8:18])-float(linescoh55P[element][8:18]))
+    comm.append(float(linesun56S[element][8:18])-float(linesun55P[element][8:18])-(float(linescoh56S[element][8:18])-float(linescoh55P[element][8:18])))
+
+   #inc.append((float(linesun[element][8:18]) - float(linesinc[element][8:18]))/(40*0.0075))
+    inc56S.append(float(linesinc56S[element][8:18]))
+    inc55P.append(float(linesinc55P[element][8:18]))
+    inc56P.append(float(linesinc56P[element][8:18]))
+    inc.append(float(linesinc56S[element][8:18])-float(linesinc55P[element][8:18]))
+    anti.append(float(linesun56S[element][8:18]) - float(linesun55P[element][8:18]) - (
+                float(linesinc56S[element][8:18]) - float(linesinc55P[element][8:18])))
+
     unp.append(float(linesunp[element][8:18]))
 
 # freq = np.fft.fftfreq(t2.shape[-1])
@@ -669,45 +716,64 @@ for element in range(1, 22):
 
 # plt.plot(t2, np.real(Commutatorlist), label="Re(Commutator)", linestyle="",marker="o",markersize="1", color="b")
 
-plt.plot(x0, un, marker="o", color='#008b8b', label='Unperturbed', linestyle='')
+plt.plot(x0, un56S, marker="o", color='#008b8b', linestyle='', label="56S")
+plt.plot(x0, un55P, marker="o", color='orange', linestyle='', label="55P")
+#plt.plot(x0, unp, marker="o", color='#800020', label='Unperturbed', linestyle='')
 
 #plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
 #         markersize="0", color="#008b8b")
 
-plt.plot(full_time, -0.5*np.cos(Omega_R * full_time), label=r"Unperturbed_Expect", linestyle="-", marker="o",
+plt.plot(full_time, -0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
          markersize="0", color="#008b8b")
-
-
-plt.plot(x0, coh, marker="o", color='black', label='Unperturbed - Coherent Pertubation', linestyle='', markersize="5")
-plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
-         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
-         markersize="0", color="black")
-
-
-plt.plot(t2,  0.905*np.cos(Omega_R *(t1[-1] + t2 - perturbation)) + 0.02375*np.cos(2 * Omega_R * (t1[-1] + t2  - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + 0.125*np.cos(Omega_R * t1[-1]) + 0.44625,
-         label=r"$3lvl 0.9$ ", linestyle="-", marker="o",
-         markersize="0", color="pink")
-
-plt.plot(t2, 0.0225 * (22.6667 + 36.4444 * np.cos(Omega_R * (t1[-1] + t2  - perturbation)) + 2 * np.cos(2 * Omega_R * (t1[-1] + t2  - perturbation)) -
-                       22.2222 * np.cos(Omega_R * t1[-1]) + 5.55556 * np.cos(2 * Omega_R * t1[-1])),
-         label=r"$3lvl 0.8$ ", linestyle="-", marker="o",
+plt.plot(full_time, 0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
          markersize="0", color="orange")
 
-plt.plot(t2, 0.9 * np.cos(Omega_R * (t1[-1] + t2  - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + 0.125 * np.cos(2 * Omega_R * t1[-1]) + 0.465,
-         label=r"$3lvl -0.1$ ", linestyle="-", marker="o",
-         markersize="0", color="#800020")
 
-plt.plot(x0, inc, marker="o", color='r', label='Unperturbed -Incoherent Pertubation ', linestyle='', markersize="5")
-plt.plot(t2, 3/8 + np.cos(2 * Omega_R * t1[-1]) / 8 + np.cos(Omega_R * t1[-1]) / 2
-                 + np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
-         label=r"$\frac{3}{8} + \frac{cos(2 \Omega_R  t_1)}{8} + \frac{cos(\Omega_R t_1}{2} + cos(\Omega_R (t_1 + t_2))$ ", linestyle="-", marker="o",
-         markersize="0", color="r")
+plt.plot(x0, coh56S, marker="o", color='blue', label='56S Perturbed', linestyle='--', markersize="5")
+plt.plot(x0, coh55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
+#plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+#         markersize="0", color="black")
 
-z = 0
+plt.legend()
+plt.xlabel('Time [us]', fontsize=16)
+plt.ylabel('Population', fontsize=16)
+# plt.xlim([0, .18])
+plt.show()
 
-plt.plot(t2, ((1 - 1 * z) * np.cos(Omega_R * (t1[-1] + t2 - perturbation)) - 0.5 * np.cos(Omega_R * t1[-1]) + np.cos(2 * Omega_R * t1[-1]) / 8 - z**2 + z + 3/8),
-label = r"$3lvl -z$ ", linestyle = "-", marker = "o",
-markersize = "0", color = "b")
+
+#plt.plot(x0, inc56S, marker="o", color='#800020', label='56S incoherent Perturbed', linestyle='--', markersize="5")
+
+plt.plot(x0, un56S, marker="o", color='#008b8b', linestyle='', label="56S")
+plt.plot(x0, un55P, marker="o", color='orange', linestyle='', label="55P")
+#plt.plot(x0, unp, marker="o", color='#800020', label='Unperturbed', linestyle='')
+
+#plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+
+plt.plot(full_time, -0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
+         markersize="0", color="#008b8b")
+plt.plot(full_time, 0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
+         markersize="0", color="orange")
+
+
+plt.plot(x0, inc56S, marker="o", color='blue', label='56S Perturbed', linestyle='--', markersize="5")
+plt.plot(x0, inc55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
+plt.plot(x0, inc56P, marker="o", color='purple', label='55P Perturbed', linestyle='--', markersize="5")
+#plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+#         markersize="0", color="black")
+
+plt.legend()
+plt.xlabel('Time [us]', fontsize=16)
+plt.ylabel('Population', fontsize=16)
+# plt.xlim([0, .18])
+plt.show()
+#plt.plot(t2, 3/8 + np.cos(2 * Omega_R * t1[-1]) / 8 + np.cos(Omega_R * t1[-1]) / 2
+#                 + np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$\frac{3}{8} + \frac{cos(2 \Omega_R  t_1)}{8} + \frac{cos(\Omega_R t_1}{2} + cos(\Omega_R (t_1 + t_2))$ ", linestyle="-", marker="o",
+#         markersize="0", color="r")
+
 
 #plt.plot(t2, result_t1t2.expect[1],
 #         label=r"Unperturbed_Expect", linestyle="-", marker="o",
@@ -721,7 +787,84 @@ markersize = "0", color = "b")
 #         markersize="1", color="r")
 
 # plt.plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)", color="r")
+
+plt.plot(x0, un, marker="o", color='#008b8b', linestyle='', label=r"Unperturbed")
+#plt.plot(x0, un55P, marker="o", color='orange', linestyle='', label="55P")
+#plt.plot(x0, unp, marker="o", color='#800020', label='Unperturbed', linestyle='')
+
+#plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+
+plt.plot(full_time, -np.cos(Omega_R * full_time), linestyle="-", marker="o",
+         markersize="0", color="#008b8b")
+#plt.plot(full_time, 0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
+#         markersize="0", color="orange")
+
+
+plt.plot(x0, coh, marker="o", color='blue', label='Perturbed', linestyle='--', markersize="5")
+#plt.plot(x0, coh55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
+#plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
 plt.legend()
-plt.xlabel('$t$')
+plt.xlabel('Time [us]', fontsize=16)
+plt.ylabel(r'$\langle \sigma_z \rangle$', fontsize=16)
+# plt.xlim([0, .18])
+plt.show()
+
+
+
+plt.plot(x0, un, marker="o", color='#008b8b', linestyle='', label=r"Unperturbed")
+#plt.plot(x0, un55P, marker="o", color='orange', linestyle='', label="55P")
+#plt.plot(x0, unp, marker="o", color='#800020', label='Unperturbed', linestyle='')
+
+#plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+
+plt.plot(full_time, -np.cos(Omega_R * full_time), linestyle="-", marker="o",
+         markersize="0", color="#008b8b")
+#plt.plot(full_time, 0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
+#         markersize="0", color="orange")
+
+
+plt.plot(x0, inc, marker="o", color='blue', label='Perturbed', linestyle='--', markersize="5")
+#plt.plot(x0, coh55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
+#plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+plt.legend()
+plt.xlabel('Time [us]', fontsize=16)
+plt.ylabel(r'$\langle \sigma_z \rangle$', fontsize=16)
+# plt.xlim([0, .18])
+plt.show()
+
+
+
+#plt.plot(x0, un, marker="o", color='#008b8b', linestyle='', label=r"Unperturbed")
+#plt.plot(x0, un55P, marker="o", color='orange', linestyle='', label="55P")
+#plt.plot(x0, unp, marker="o", color='#800020', label='Unperturbed', linestyle='')
+
+#plt.plot(full_time, result_t1.expect[1], label=r"Unperturbed_Expect", linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+
+#plt.plot(full_time, -np.cos(Omega_R * full_time), linestyle="-", marker="o",
+#         markersize="0", color="#008b8b")
+#plt.plot(full_time, 0.5*np.cos(Omega_R * full_time)+0.5, linestyle="-", marker="o",
+#         markersize="0", color="orange")
+
+full_time = np.linspace(0, 0.2, int((0.2)*sampling_rate))
+
+
+plt.plot(x0, comm, marker="o", color='orange', label='Coherent Perturbation', linestyle='', markersize="5")
+plt.plot(full_time, -np.sin(Omega_R * full_time+0.005)*0.55, linestyle="-", marker="o",
+         markersize="0", color="orange")
+
+plt.plot(x0, anti, marker="o", color='blue', label='Incoherent Perturbation', linestyle='--', markersize="5")
+plt.plot(full_time, np.cos(Omega_R * full_time+0.25)*0.25, linestyle="-", marker="o",
+         markersize="0", color="blue")
+#plt.plot(x0, coh55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
+#plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
+#         label=r"$cos(\Omega_R*t_1)-cos(\Omega_R*(t_1+t_2))$ ", linestyle="-", marker="o",
+plt.legend()
+plt.xlabel('Time [us]', fontsize=16)
+plt.ylabel(r'$\langle \sigma_z \rangle - \langle \sigma_z \rangle_{pert}$', fontsize=16)
 # plt.xlim([0, .18])
 plt.show()
