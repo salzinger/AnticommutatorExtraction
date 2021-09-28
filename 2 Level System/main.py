@@ -23,11 +23,11 @@ data = np.loadtxt('Forward3MHzcsv.txt')
 # print(data)
 
 
-N = 2
+N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
-Omega_R = 2 * np.pi * 25.7 * 10 ** (0)  # MHz
+Omega_R = 2 * np.pi * 25.7 * 10 ** (1)  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -150,7 +150,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             Pmean = 0
 
-            while i < 3:  # averages + int(2 * gamma):
+            while i < 1:  # averages + int(2 * gamma):
                 print(i)
                 i += 1
 
@@ -215,6 +215,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
             ax[0, 0].legend(loc="lower center")
+            ax[0, 0].set_ylim([-0.501, -0.499])
             plt.show()
 
 

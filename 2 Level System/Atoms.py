@@ -120,7 +120,7 @@ def H0(omega, J, N):
         H += 1 * omega / 2 * sigmaz(j, N)
         for i in range(0, N):
             if i != j:
-                H += J * (sigmax(i, N) * sigmax(j, N) + sigmay(i, N) * sigmay(j, N))
+                H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N))
     return H
 
 
