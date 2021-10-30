@@ -1,4 +1,5 @@
 import numpy as np
+from qutip import *
 
 import matplotlib.pyplot as plt
 
@@ -20,53 +21,90 @@ def evo_state(t, g_0=0, e_0=1, d=0, Omega=np.pi):
 
 
 def exp(state, pauli):
-    return np.vdot(state, np.dot(pauli, state))
+    return np.real(np.round(np.vdot(state, np.dot(pauli, state)), decimals=4))
 
 
 t = np.linspace(0, 8, 160)
 
 print("From down after pi/2")
 
-print(evo_state(1/2))
+#print(evo_state(1/2))
 
-print("x:", exp(evo_state(1/2), sigma_x))
-print("y:", exp(evo_state(1/2), sigma_y))
-print("z:", exp(evo_state(1/2), sigma_z))
+x1 = exp(evo_state(1/2), sigma_x)
+y1 = exp(evo_state(1/2), sigma_y)
+z1 = exp(evo_state(1/2), sigma_z)
+
+print("x:", x1)
+print("y:", y1)
+print("z:", z1)
+
 
 print("From y onwards")
 
-state = evo_state(0.005, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=2*np.pi*10, Omega=0.0)
+state = evo_state(0.04, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*10, Omega=0.0)
 
-print(state)
+#print(state)
 
 #print(np.vdot(evo_state(1), np.dot(sigma_z, evo_state(1))))
 
 #print(np.vdot(evo_state(1), np.dot(sigma_z, evo_state(1))))
 
 #print(evo_state(1 / 2, e_0=evo_state(1 / 2)[1], g_0=evo_state(1 / 2)[0]))
-print("x:", exp(state, sigma_x))
-print("y:", exp(state, sigma_y))
-print("z:", exp(state, sigma_z))
+
+x2 = exp(state, sigma_x)
+y2 = exp(state, sigma_y)
+z2 = exp(state, sigma_z)
+
+print("x:", x2)
+print("y:", y2)
+print("z:", z2)
 
 state1 = evo_state(1/2, state[0][0], state[1][0], d=0, Omega=np.pi)
 
-print(state1)
-
-print("x:", exp(state1, sigma_x))
-print("y:", exp(state1, sigma_y))
-print("z:", exp(state1, sigma_z))
+#print(state1)
 
 
-plt.plot(t, np.real(evo_state(t)[1][0]), linestyle="-", label="Re[c_e]")
+print("Dynamics afterwards")
 
-plt.plot(t, np.imag(evo_state(t)[1][0]), linestyle="dotted", label="Im[c_e]")
 
-plt.plot(t, np.real(evo_state(t)[0][0]), marker=".", linestyle="", label="Re[c_g]")
+x3 = exp(state1, sigma_x)
+y3 = exp(state1, sigma_y)
+z3 = exp(state1, sigma_z)
 
-plt.plot(t, np.imag(evo_state(t)[0][0]), linestyle="--", label="Im[c_g]")
+print("x:", x3)
+print("y:", y3)
+print("z:", z3)
 
-plt.legend()
 
-plt.xlabel("$\Omega t [\pi]$")
+
+c = Bloch()
+c.make_sphere()
+vec1 = [np.real(x1), np.real(y1), np.real(z1)]
+vec2 = [np.real(x2), np.real(y2), np.real(z2)]
+vec3 = [np.real(x3), np.real(y3), np.real(z3)]
+th = np.linspace(0, 2*np.pi, 20)
+
+xz = np.ones(20)*np.real(x3)
+yz = np.sin(th)*np.real(z3)
+zz = np.cos(th)*np.real(z3)
+c.add_points([xz, yz, zz])
+
+c.add_vectors(vec1)
+c.add_vectors(vec2)
+c.add_vectors(vec3)
+c.render()
+c.clear()
+
+#plt.plot(t, np.real(evo_state(t)[1][0]), linestyle="-", label="Re[c_e]")
+
+#plt.plot(t, np.imag(evo_state(t)[1][0]), linestyle="dotted", label="Im[c_e]")
+
+#plt.plot(t, np.real(evo_state(t)[0][0]), marker=".", linestyle="", label="Re[c_g]")
+
+#plt.plot(t, np.imag(evo_state(t)[0][0]), linestyle="--", label="Im[c_g]")
+
+#plt.legend()
+
+#plt.xlabel("$\Omega t [\pi]$")
 
 plt.show()
