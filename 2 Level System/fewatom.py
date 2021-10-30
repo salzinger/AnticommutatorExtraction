@@ -3,7 +3,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 import array
 
-N = 4
+N = 3
 
 omega = 2 * np.pi * 20 * 10 ** (-10)  # MHz
 
@@ -15,7 +15,7 @@ J = 1 * np.pi/N * 10 * 10 ** (-1)  # MHz
 
 bath = "markovian"
 
-endtime = 1
+endtime = 10
 
 timesteps= 1000
 
@@ -26,7 +26,7 @@ t2 = np.linspace(0, endtime, timesteps)
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-Exps = [MagnetizationX(N), MagnetizationY(N),MagnetizationZ(N), sigmaz(0, N) , sigmaz(1, N), sigmaz(N - 1, N), upup(0, N), upup(1, N) , upup(N - 1, N),
+Exps = [MagnetizationX(N), MagnetizationY(N),MagnetizationZ(N), sigmaz(0, N), sigmaz(1, N), sigmaz(N - 1, N), upup(0, N), upup(1, N), upup(N - 2, N),  upup(N-1, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
@@ -46,8 +46,8 @@ print('H0...')
 print(H0(omega, J, N))
 print('H1...')
 print(H1(Omega_R, N))
-print('H2...')
-print(H2(Omega_R, N))
+#print('H2...')
+#print(H2(Omega_R, N))
 
 result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
@@ -124,7 +124,8 @@ ax[0, 0].plot(perturb_times, np.real(expect2[2]), color='#85bb65',label="mag_z")
 ax[0, 0].plot(perturb_times, np.real(expect2[0]), color='black',label="mag_x")
 ax[0, 0].plot(perturb_times, np.real(expect2[6]), color='red', label="upup 1st_atom")
 ax[0, 0].plot(perturb_times, np.real(expect2[7]), color='blue', label="upup 2nd_atom")
-ax[0, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup 3rd_atom")
+ax[0, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup secondlast atom")
+ax[0, 0].plot(perturb_times, np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
 ax[0, 0].set_xlabel('Time [us]', fontsize=16)
 ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
