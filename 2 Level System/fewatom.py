@@ -8,7 +8,7 @@ omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 2 * np.pi  # MHz
 
-gamma = 0.05 * np.pi  # MHz
+gamma = 1 * np.pi  # MHz
 
 J = 0 * np.pi / N  # MHz
 
@@ -48,15 +48,15 @@ noise = noisy_func(gamma, perturb_times, omega, bath)
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise)
 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise))
 
-result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
 # for t in range(0, timesteps):
 # concmean.append(concurrence(result2.states[t]))
 
 # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
-states2 = np.array(result2.states[timesteps - 1])
-expect2 = np.array(result2.expect[:])
+states1 = np.array(result1.states[timesteps - 1])
+expect1 = np.array(result1.expect[:])
 ancilla_overlap = []
 Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
 Pmean = 0
@@ -73,11 +73,11 @@ while i < 100:  # averages + int(2 * gamma):
     # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
     # data / 0.4)
 
-    result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+    result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
-    states2 += np.array(result2.states[timesteps - 1])
-    expect2 += np.array(result2.expect[:])
+    states1 += np.array(result1.states[timesteps - 1])
+    expect1 += np.array(result1.expect[:])
 
     #Smean += np.abs(np.fft.fft(Omega_R * noise ** 2)) # /2/np.pi/timesteps
     #Pmean += np.abs(np.sum(Omega_R * noise ** 2)) # /timesteps
@@ -87,16 +87,16 @@ while i < 100:  # averages + int(2 * gamma):
 # noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
 # S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
-states2 = states2 / i
-expect2 = expect2 / i
+states1 = states1 / i
+expect1 = expect1 / i
 Smean = Smean / i
 Pmean = Pmean / i
 concmean = np.array(concmean) / i
 
 # print(Qobj(states2))
 # print((expect2[5]+expect2[8]).mean())
-density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
-                       [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
+density_matrix = Qobj([[expect1[5][timesteps - 1], expect1[6][timesteps - 1]],
+                       [expect1[7][timesteps - 1], expect1[8][timesteps - 1]]])
 # print(density_matrix)
 # result3 = mesolve(H0(omega, J, N), Qobj(states2), t2, [], e_ops=Exps, options=opts)
 
@@ -114,22 +114,22 @@ density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
 
 # print(Pmean)
 
-fig, ax = plt.subplots(3, 2, figsize=(10, 10))
+fig, ax = plt.subplots(4, 2, figsize=(10, 10))
 
-ax[0, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
-ax[0, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
+ax[0, 1].plot(perturb_times, np.real(expect1[2]), color='#85bb65', label="mag_z")
+ax[0, 1].plot(perturb_times, np.real(expect1[0]), color='black', label="mag_x")
 # ax[0, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 # ax[0, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 ax[0, 1].legend(loc="lower center")
 # ax[0, 1].plot(perturb_times, (0)*np.ones_like(perturb_times), color='black', linestyle="--")
-ax[0, 1].set_xlabel('Time [us]', fontsize=16)
-ax[0, 1].set_ylabel('Magnetization', fontsize=16)
-ax[0, 0].plot(perturb_times, np.real(expect2[6]), color='red', label="upup 1st_atom")
-ax[0, 0].plot(perturb_times, np.real(expect2[7]), color='blue', label="upup 2nd_atom")
-ax[0, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
-ax[0, 0].plot(perturb_times, np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
-ax[0, 0].set_xlabel('Time [us]', fontsize=16)
-ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
+#ax[0, 1].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[0, 1].set_ylabel('Magnetization', fontsize=12)
+ax[0, 0].plot(perturb_times, np.real(expect1[6]), color='red', label="upup 1st_atom")
+ax[0, 0].plot(perturb_times, np.real(expect1[7]), color='blue', label="upup 2nd_atom")
+ax[0, 0].plot(perturb_times, np.real(expect1[8]), color='green', label="upup secondlast atom", linestyle="--")
+ax[0, 0].plot(perturb_times, np.real(expect1[9]), color='orange', label="upup last atom", linestyle="--")
+#ax[0, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[0, 0].set_ylabel('Expectation Value', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[0, 0].legend(loc="lower center")
 # ax[0, 0].set_ylim([-0.501, -0.499])
@@ -171,10 +171,10 @@ S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
 S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
 S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
-result2 = mesolve([H0(omega, J, N), [Omega_R * sigmap(0, N), S11], [Omega_R * sigmam(0, N), S12],
-                                    [Omega_R * sigmap(1, N), S21], [Omega_R * sigmam(1, N), S22],
-                                    [Omega_R * sigmap(2, N), S31], [Omega_R * sigmam(2, N), S32],
-                                    [Omega_R * sigmap(3, N), S41], [Omega_R * sigmam(3, N), S42],
+result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
+                                    [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
+                                    [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
+                                    [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
                    ], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
@@ -190,7 +190,7 @@ Pmean = 0
 
 i = 1
 
-while i < 100:  # averages + int(2 * gamma):
+while i < 1000:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise1 = noisy_func(gamma, perturb_times, omega, bath)
@@ -259,14 +259,14 @@ ax[1, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 ax[1, 1].legend(loc="lower center")
 # ax[0, 1].plot(perturb_times, (0)*np.ones_like(perturb_times), color='black', linestyle="--")
-ax[1, 1].set_xlabel('Time [us]', fontsize=16)
-ax[1, 1].set_ylabel('Magnetization', fontsize=16)
+#ax[1, 1].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[1, 1].set_ylabel('Magnetization', fontsize=12)
 ax[1, 0].plot(perturb_times, np.real(expect2[6]), color='red', label="upup 1st_atom")
 ax[1, 0].plot(perturb_times, np.real(expect2[7]), color='blue', label="upup 2nd_atom")
 ax[1, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
 ax[1, 0].plot(perturb_times, np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
-ax[1, 0].set_xlabel('Time [us]', fontsize=16)
-ax[1, 0].set_ylabel('Expectation Value', fontsize=16)
+#ax[1, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[1, 0].set_ylabel('Expectation Value', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[1, 0].legend(loc="lower center")
 
@@ -290,22 +290,22 @@ noise = noisy_func(gamma, perturb_times, omega, bath)
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise)
 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise))
 
-result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+result3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
 # for t in range(0, timesteps):
 # concmean.append(concurrence(result2.states[t]))
 
 # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
-states2 = np.array(result2.states[timesteps - 1])
-expect2 = np.array(result2.expect[:])
+states3 = np.array(result3.states[timesteps - 1])
+expect3 = np.array(result3.expect[:])
 ancilla_overlap = []
 Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
 Pmean = 0
 
 i = 1
 
-while i < 100:  # averages + int(2 * gamma):
+while i < 1000:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -315,11 +315,11 @@ while i < 100:  # averages + int(2 * gamma):
     # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
     # data / 0.4)
 
-    result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+    result3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
-    states2 += np.array(result2.states[timesteps - 1])
-    expect2 += np.array(result2.expect[:])
+    states3 += np.array(result3.states[timesteps - 1])
+    expect3 += np.array(result3.expect[:])
 
     #Smean += np.abs(np.fft.fft(Omega_R * noise ** 2)) # /2/np.pi/timesteps
     #Pmean += np.abs(np.sum(Omega_R * noise ** 2)) # /timesteps
@@ -329,16 +329,16 @@ while i < 100:  # averages + int(2 * gamma):
 # noisy_data2 = noisy_func(gamma, perturb_times, omega, bath)
 # S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_data2)
 
-states2 = states2 / i
-expect2 = expect2 / i
+states3 = states3 / i
+expect3 = expect3 / i
 Smean = Smean / i
 Pmean = Pmean / i
 concmean = np.array(concmean) / i
 
 # print(Qobj(states2))
 # print((expect2[5]+expect2[8]).mean())
-density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
-                       [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
+density_matrix = Qobj([[expect3[5][timesteps - 1], expect3[6][timesteps - 1]],
+                       [expect3[7][timesteps - 1], expect3[8][timesteps - 1]]])
 # print(density_matrix)
 # result3 = mesolve(H0(omega, J, N), Qobj(states2), t2, [], e_ops=Exps, options=opts)
 
@@ -357,21 +357,42 @@ density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
 # print(Pmean)
 
 
-ax[2, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
-ax[2, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
+ax[2, 1].plot(perturb_times, np.real(expect3[2]), color='#85bb65', label="mag_z")
+ax[2, 1].plot(perturb_times, np.real(expect3[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 ax[2, 1].legend(loc="lower center")
 # ax[0, 1].plot(perturb_times, (0)*np.ones_like(perturb_times), color='black', linestyle="--")
-ax[2, 1].set_xlabel('Time [us]', fontsize=16)
-ax[2, 1].set_ylabel('Magnetization', fontsize=16)
-ax[2, 0].plot(perturb_times, np.real(expect2[6]), color='red', label="upup 1st_atom")
-ax[2, 0].plot(perturb_times, np.real(expect2[7]), color='blue', label="upup 2nd_atom")
-ax[2, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
-ax[2, 0].plot(perturb_times, np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
-ax[2, 0].set_xlabel('Time [us]', fontsize=16)
-ax[2, 0].set_ylabel('Expectation Value', fontsize=16)
+#ax[2, 1].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[2, 1].set_ylabel('Magnetization', fontsize=12)
+ax[2, 0].plot(perturb_times, np.real(expect3[6]), color='red', label="upup 1st_atom")
+ax[2, 0].plot(perturb_times, np.real(expect3[7]), color='blue', label="upup 2nd_atom")
+ax[2, 0].plot(perturb_times, np.real(expect3[8]), color='green', label="upup secondlast atom", linestyle="--")
+ax[2, 0].plot(perturb_times, np.real(expect3[9]), color='orange', label="upup last atom", linestyle="--")
+#ax[2, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[2, 0].set_ylabel('Expectation Value', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[2, 0].legend(loc="lower center")
+
+
+
+
+
+ax[3, 1].plot(perturb_times, np.real(expect3[2])-np.real(expect2[2]), color='#85bb65', label="mag_z")
+ax[3, 1].plot(perturb_times, np.real(expect3[0])-np.real(expect2[0]), color='black', label="mag_x")
+# ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
+# ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
+ax[3, 1].legend(loc="lower center")
+# ax[0, 1].plot(perturb_times, (0)*np.ones_like(perturb_times), color='black', linestyle="--")
+ax[3, 1].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[3, 1].set_ylabel('Diff Magnetization', fontsize=12)
+ax[3, 0].plot(perturb_times, np.real(expect3[6])-np.real(expect2[6]), color='red', label="upup 1st_atom")
+ax[3, 0].plot(perturb_times, np.real(expect3[7])-np.real(expect2[7]), color='blue', label="upup 2nd_atom")
+ax[3, 0].plot(perturb_times, np.real(expect3[8])-np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
+ax[3, 0].plot(perturb_times, np.real(expect3[9])-np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
+ax[3, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
+ax[3, 0].set_ylabel('Diff Expectation Value', fontsize=12)
+# ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
+ax[3, 0].legend(loc="lower center")
 
 plt.show()
