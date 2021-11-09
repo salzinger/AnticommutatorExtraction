@@ -44,7 +44,7 @@ def upup(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = Qobj(up * up.conj().T)
+    oplist[m] = Qobj(up) * Qobj(up).dag()
     return tensor(oplist)
 
 
@@ -52,7 +52,7 @@ def downdown(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = Qobj(down * down.conj().T)
+    oplist[m] = Qobj(down) * Qobj(down).dag()
     return tensor(oplist)
 
 
@@ -61,9 +61,9 @@ def sigmap(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = Qobj(ancilla * up.conj().T)
+        oplist[m] = Qobj(ancilla) * Qobj(up).dag()
     else:
-        oplist[m] = Qobj(up * down.conj().T)
+        oplist[m] = Qobj(up) * Qobj(down).dag()
     return tensor(oplist)
 
 
@@ -72,9 +72,9 @@ def sigmam(ancilla_coupling, m, N):
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
     if ancilla_coupling:
-        oplist[m] = Qobj(up * ancilla.conj().T)
+        oplist[m] = Qobj(up) * Qobj(ancilla).dag()
     else:
-        oplist[m] = Qobj(down * up.conj().T)
+        oplist[m] = Qobj(down) * Qobj(up).dag()
     return tensor(oplist)
 
 

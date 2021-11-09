@@ -1,5 +1,5 @@
-from Atoms import *
-from Driving import *
+from Atoms3lvl import *
+from Driving3lvl import *
 import matplotlib.pyplot as plt
 
 N = 4
@@ -25,9 +25,9 @@ t2 = np.linspace(0, endtime, timesteps)
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, N), sigmaz(1, N), sigmaz(N - 1, N),
+Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, 0, N), sigmaz(0, 1, N), sigmaz(0,  - 1, N),
         upup(0, N), upup(1, N), upup(N - 2, N), upup(N - 1, N),
-        sigmap(0, N), sigmam(0, N), downdown(0, N)]
+        sigmap(0, 0, N), sigmam(0, 0, N), downdown(0, N)]
 
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 init_state = productstateZ(0, 1, N)
@@ -171,10 +171,10 @@ S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
 S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
 S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
-result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
-                                    [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
-                                    [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
-                                    [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
+result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
+                                    [-Omega_R * sigmap(1, 1, N), S21], [-Omega_R * sigmam(1, 1, N), S22],
+                                    [-Omega_R * sigmap(1, 2, N), S31], [-Omega_R * sigmam(1, 2, N), S32],
+                                    [-Omega_R * sigmap(1, 3, N), S41], [-Omega_R * sigmam(1, 3, N), S42],
                    ], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
@@ -207,10 +207,10 @@ while i < 10:  # averages + int(2 * gamma):
     S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
     S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
-    result2 = mesolve([H0(omega, J, N), [Omega_R * sigmap(0, N), S11], [Omega_R * sigmam(0, N), S12],
-                                        [Omega_R * sigmap(1, N), S21], [Omega_R * sigmam(1, N), S22],
-                                        [Omega_R * sigmap(2, N), S31], [Omega_R * sigmam(2, N), S32],
-                                        [Omega_R * sigmap(3, N), S41], [Omega_R * sigmam(3, N), S42],
+    result2 = mesolve([H0(omega, J, N), [Omega_R * sigmap(1, 0, N), S11], [Omega_R * sigmam(1, 0, N), S12],
+                                        [Omega_R * sigmap(1, 1, N), S21], [Omega_R * sigmam(1, 1, N), S22],
+                                        [Omega_R * sigmap(1, 2, N), S31], [Omega_R * sigmam(1, 2, N), S32],
+                                        [Omega_R * sigmap(1, 3, N), S41], [Omega_R * sigmam(1, 3, N), S42],
                        ], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 

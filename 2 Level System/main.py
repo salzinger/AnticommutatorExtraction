@@ -27,15 +27,15 @@ N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 
-Omega_R = 2 * np.pi * 25.7 * 10 ** (1)  # MHz
+Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
-J = 0*2 * np.pi * 25.7 * 10 ** (0)  # MHz
+J = 0 * 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 averages = 150
 
-sampling_rate = 2 * np.pi * 64 * 10 ** 0  # MHz
+sampling_rate = 2 * np.pi * 64 * 10 ** 3  # MHz
 endtime = 0.2
 timesteps = int(endtime * sampling_rate)
 timesteps = 2 * len(data)
@@ -203,20 +203,20 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             # print(Pmean)
 
-            fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+            #fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
             #timesteps = 2 * len(data)
             #endtime = 0.2
             #pertubation_length = endtime / 1
             #perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-            ax[0, 0].plot(perturb_times, np.real(expect2[1]), color='#85bb65')
-            ax[0, 0].set_xlabel('Time [us]', fontsize=16)
-            ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
+            #ax[0, 0].plot(perturb_times, np.real(expect2[1]), color='#85bb65')
+            #ax[0, 0].set_xlabel('Time [us]', fontsize=16)
+            #ax[0, 0].set_ylabel('Expectation Value', fontsize=16)
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
-            ax[0, 0].legend(loc="lower center")
-            ax[0, 0].set_ylim([-0.501, -0.499])
-            plt.show()
+            #ax[0, 0].legend(loc="lower center")
+            #ax[0, 0].set_ylim([-0.501, -0.499])
+            #plt.show()
 
 
 
@@ -597,6 +597,9 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 ################### COMMUTATOR / ANTICOMMUTATOR ############################################ 5555555555555555555555555
 
+
+'''
+
 opts = Options(store_states=True, store_final_state=True)
 
 Omega_R = 2 * np.pi * 11 * 10 ** 0  # MHz
@@ -884,7 +887,7 @@ plt.plot(full_time, -np.sin(Omega_R * full_time+0.005)*0.55, linestyle="-", mark
          markersize="0", color="orange")
 
 plt.plot(x0, anti, marker="o", color='blue', label='Incoherent Perturbation', linestyle='--', markersize="5")
-plt.plot(full_time, np.cos(Omega_R * full_time+0.25)*0.25, linestyle="-", marker="o",
+plt.plot(full_time, np.cos(Omega_R * full_time+0.5)*0.25, linestyle="-", marker="o",
          markersize="0", color="blue")
 #plt.plot(x0, coh55P, marker="o", color='red', label='55P Perturbed', linestyle='--', markersize="5")
 #plt.plot(t2, np.cos(Omega_R * t1[-1]) - np.cos(Omega_R * (t1[-1] + t2 - perturbation)),
@@ -894,3 +897,4 @@ plt.xlabel('Time [us]', fontsize=16)
 plt.ylabel(r'$\langle \sigma_z \rangle - \langle \sigma_z \rangle_{pert}$', fontsize=16)
 # plt.xlim([0, .18])
 plt.show()
+'''
