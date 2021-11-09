@@ -132,22 +132,22 @@ def MagnetizationY(N):
 def H0(omega, J, N):
     H = 0
     for j in range(0, N):
-        H += 1 * omega / 2 * sigmaz(1, j, N)
+        H += 1 * omega / 2 * sigmaz(0, j, N)
         for i in range(0, N):
             if i != j:
-                H += J * (sigmax(0, i, N) * sigmax(0, j, N) + sigmay(0, i, N) * sigmay(0, j, N))
+                H += J * (sigmap(0, i, N) * sigmam(0, j, N) + sigmam(0, i, N) * sigmap(0, j, N)) / (np.abs(i-j))**3
     return H
 
 
 def H1(Omega_R, N):
     H = 0
     for j in range(0, N):
-        H -= Omega_R * (sigmap(1, j, N))
+        H -= Omega_R * (sigmap(0, j, N))
     return H
 
 
 def H2(Omega_R, N):
     H = 0
     for j in range(0, N):
-        H -= Omega_R * (sigmam(1, j, N))
+        H -= Omega_R * (sigmam(0, j, N))
     return H

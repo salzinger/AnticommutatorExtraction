@@ -2,13 +2,13 @@ from Atoms3lvl import *
 from Driving3lvl import *
 import matplotlib.pyplot as plt
 
-N = 4
+N = 1
 
-omega = 2 * np.pi * 10 ** (-10)  # MHz
+omega = 2 * np.pi * 10 ** (1)  # MHz
 
 Omega_R = 2 * np.pi  # MHz
 
-gamma = 1 * np.pi  # MHz
+gamma = 0 * np.pi  # MHz
 
 J = 0 * np.pi / N  # MHz
 
@@ -25,22 +25,24 @@ t2 = np.linspace(0, endtime, timesteps)
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, 0, N), sigmaz(0, 1, N), sigmaz(0,  - 1, N),
-        upup(0, N), upup(1, N), upup(N - 2, N), upup(N - 1, N),
+Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, 0, N), sigmaz(0, 0, N), sigmaz(0, N - 1, N),
+        upup(0, N), upup(0, N), upup(N - 2, N), upup(N - 1, N),
         sigmap(0, 0, N), sigmam(0, 0, N), downdown(0, N)]
 
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
-init_state = productstateZ(0, 1, N)
+init_state = productstateZ(0, 0, N)
 
 pertubation_length = endtime / 1
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-#print('H0...')
-#print(H0(omega, J, N))
-#print('H1...')
-#print(H1(Omega_R, N))
-# print('H2...')
-# print(H2(Omega_R, N))
+print(init_state)
+
+print('H0...')
+print(H0(omega, J, N))
+print('H1...')
+print(H1(Omega_R, N))
+print('H2...')
+print(H2(Omega_R, N))
 
 
 noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -63,7 +65,7 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 1:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -155,7 +157,7 @@ Omega_R = 2 * np.pi  # MHz
 
 #gamma = 0.01 * np.pi  # MHz
 
-J = 1 * np.pi / N  # MHz
+J = 0 * np.pi / N  # MHz
 
 noise1 = noisy_func(gamma, perturb_times, omega, bath)
 noise2 = noisy_func(gamma, perturb_times, omega, bath)
@@ -171,12 +173,19 @@ S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
 S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
 S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
-result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
-                                    [-Omega_R * sigmap(1, 1, N), S21], [-Omega_R * sigmam(1, 1, N), S22],
-                                    [-Omega_R * sigmap(1, 2, N), S31], [-Omega_R * sigmam(1, 2, N), S32],
-                                    [-Omega_R * sigmap(1, 3, N), S41], [-Omega_R * sigmam(1, 3, N), S42],
-                   ], init_state,
-                  perturb_times, e_ops=Exps, options=opts)
+if N==1:
+
+    result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
+                       ], init_state,
+                      perturb_times, e_ops=Exps, options=opts)
+
+else:
+    result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
+                                        [-Omega_R * sigmap(1, 1, N), S21], [-Omega_R * sigmam(1, 1, N), S22],
+                                        [-Omega_R * sigmap(1, 2, N), S31], [-Omega_R * sigmam(1, 2, N), S32],
+                                        [-Omega_R * sigmap(1, 3, N), S41], [-Omega_R * sigmam(1, 3, N), S42],
+                       ], init_state,
+                      perturb_times, e_ops=Exps, options=opts)
 concmean = []
 # for t in range(0, timesteps):
 # concmean.append(concurrence(result2.states[t]))
@@ -190,7 +199,7 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 1:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise1 = noisy_func(gamma, perturb_times, omega, bath)
@@ -283,7 +292,7 @@ Omega_R = 2 * np.pi  # MHz
 
 #gamma = 0.01 * np.pi  # MHz
 
-J = 1 * np.pi / N  # MHz
+J = 0 * np.pi / N  # MHz
 
 noise = noisy_func(gamma, perturb_times, omega, bath)
 
@@ -305,7 +314,7 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 1:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -395,5 +404,4 @@ ax[3, 0].set_ylabel('Diff Expectation Value', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[3, 0].legend(loc="lower center")
 
-print(np.real(expect3[6]))
 plt.show()

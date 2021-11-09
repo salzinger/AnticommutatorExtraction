@@ -1,6 +1,116 @@
-import numpy as np
 from scipy import signal
 from scipy.signal import butter, lfilter
+from pylab import plot, show, grid, xlabel, ylabel
+from math import sqrt
+from scipy.stats import norm
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.fft import fft, fftfreq
+
+
+def get_fft(data, x=None):
+    if x is None:
+        x = np.arange(len(data))
+    # build frequency array
+    n_samples = len(data)
+    fs = (x[1] - x[0])
+    f = fftfreq(n_samples, fs)
+
+    # compute fft
+    ff = fft(data) / n_samples * 2
+    return f, ff
+
+def average_psd(gamma,omega,samples,sample_time,averages):
+    long = sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
+    fs = samples / sample_time
+    F, P = signal.welch(
+        long, fs,
+        nperseg=samples)
+    i=1
+    for x in range(0, averages-1):
+        i+=1
+        print(i)
+        #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
+        #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
+        long = sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
+
+        f, Pxx_den = signal.welch(
+            long, fs,
+            nperseg=samples)
+
+        F += f
+        P += Pxx_den
+
+    return F / averages, P / averages
+
+def lorentzian(frequencies, amplitude, omega_0, gamma):
+    func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
+    return func(frequencies)
+
+
+def brownian(x0, n, dt, delta, out=None):
+    """
+    Generate an instance of Brownian motion (i.e. the Wiener process):
+
+        X(t) = X(0) + N(0, delta**2 * t; 0, t)
+
+    where N(a,b; t0, t1) is a normally distributed random variable with mean a and
+    variance b.  The parameters t0 and t1 make explicit the statistical
+    independence of N on different time intervals; that is, if [t0, t1) and
+    [t2, t3) are disjoint intervals, then N(a, b; t0, t1) and N(a, b; t2, t3)
+    are independent.
+
+    Written as an iteration scheme,
+
+        X(t + dt) = X(t) + N(0, delta**2 * dt; t, t+dt)
+
+
+    If `x0` is an array (or array-like), each value in `x0` is treated as
+    an initial condition, and the value returned is a numpy array with one
+    more dimension than `x0`.
+
+    Arguments
+    ---------
+    x0 : float or numpy array (or something that can be converted to a numpy array
+         using numpy.asarray(x0)).
+        The initial condition(s) (i.e. position(s)) of the Brownian motion.
+    n : int
+        The number of steps to take.
+    dt : float
+        The time step.
+    delta : float
+        delta determines the "speed" of the Brownian motion.  The random variable
+        of the position at time t, X(t), has a normal distribution whose mean is
+        the position at time t=0 and whose variance is delta**2*t.
+    out : numpy array or None
+        If `out` is not None, it specifies the array in which to put the
+        result.  If `out` is None, a new numpy array is created and returned.
+
+    Returns
+    -------
+    A numpy array of floats with shape `x0.shape + (n,)`.
+
+    Note that the initial value `x0` is not included in the returned array.
+    """
+
+    x0 = np.asarray(x0)
+
+    # For each element of x0, generate a sample of n numbers from a
+    # normal distribution.
+    r = norm.rvs(size=x0.shape + (n,), scale=delta * sqrt(dt))
+
+    # If `out` was not given, create an output array.
+    if out is None:
+        out = np.empty(r.shape)
+
+    # This computes the Brownian motion by forming the cumulative sum of
+    # the random samples.
+    np.cumsum(r, axis=-1, out=out)
+
+    # Add the initial condition.
+    out += np.expand_dims(x0, axis=-1)
+
+    return out
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -34,70 +144,134 @@ def func(perturb_times, omega):
     return func2(perturb_times)
 
 
-def noisy_func(noise_amplitude, perturb_times, omega, bandwidth):
-    ########  STARTING FUNCTION  #####################
-    func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
-    fourier = np.abs(np.fft.fft(func1(perturb_times)))
+def noisy_func(gamma, perturb_times, omega, bath):
+    if bath == 'Forward3MHzcsv.txt':
+        data = np.loadtxt('Forward3MHzcsv.txt')
+        data_reversed = -data[::-1]
 
-    max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times) / 2)])
-    max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
+        data = np.cumsum(data)
+        data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
-    ########### AMPLITUDE NOISE ################
-    random_amplitude = np.random.normal(0, noise_amplitude, size=len(perturb_times))
+        data = np.append(data, data_reversed)
+        #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
+        #plt.ylabel('Phase [$\pi$]', fontsize=16)
+        #plt.xlabel('Time [us]', fontsize=16)
+        #plt.legend()
+        #plt.show()
+        #print(data)
+        #print(perturb_times)
+        #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+        func1 = lambda t: np.exp(-1j * t * omega)/2
+        return func1(perturb_times*1+data/omega*2*np.pi/360)
 
-    #######  FILTERING  ####################
-    # random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
-    '''
-    noisefreq = np.fft.fft(random_amplitude)
-    #noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
+    elif bath == "markovian":
+        # Total time.
+        T = perturb_times[-1]
+        # Number of steps.
+        N = len(perturb_times)
+        # Time step size
+        dt = T / N
+        # Number of realizations to generate.
+        m = 1
+        # Create an empty array to store the realizations.
+        x = np.empty((m, N + 1))
+        # Initial values of x.
+        x[:, 0] = 0
 
-    noisefreq[max_neg + bandwidth: max_neg - bandwidth] =\
-        envelope("Blackman", noisefreq[max_neg + bandwidth: max_neg - bandwidth])
+        phase_noise = brownian(x[:, 0], N, dt, np.sqrt(gamma), out=x[:, 1:])
 
-    noisefreq[max_pos + bandwidth: max_pos - bandwidth] =\
-        envelope("Blackman", noisefreq[max_pos + bandwidth: max_pos - bandwidth])
+        #t = np.linspace(0.0, N * dt, N)
+        #for k in range(m):
+        #    plot(t, phase_noise[k])
+        #plot(t, delta*t)
+        #plot(t, -delta*t)
+        #xlabel('t', fontsize=16)
+        #ylabel('phase', fontsize=16)
+        #grid(True)
+        #show()
 
-    noisefreq[0: max_pos - bandwidth] = 0
-    noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
-    noisefreq[max_neg + bandwidth: len(perturb_times)] = 0
 
-    #noisefreq[max_neg - bandwidth] = 1000
-    #noisefreq[max_neg + bandwidth] = 1000
-    #noisefreq[max_pos + bandwidth] = 1000
-    #noisefreq[max_pos - bandwidth] = 1000
-    random_amplitude = np.fft.ifft(noisefreq)
-    '''
+        #print(perturb_times)
+        #print(phase_noise[0])
+        #print(perturb_times+phase_noise)
+        #lab_frame:
+        #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+        func1 = lambda t: np.exp(-1j * t * omega)/2
+        return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+        #rotating_frame:
+        #func1 = lambda t: np.exp(-1j * t * omega)
+        #return func1(phase_noise[0] / omega)
+    elif bath == "scale-free":
+        func_array = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
+        for d_omega in np.linspace(0, gamma, 100):
+            func = lambda t: 0.5j * np.exp(-1j * t * (omega - d_omega)) - 0.5j * np.exp(1j * t * (omega - d_omega))
+            func_array += func(perturb_times)
+        return func_array
+    elif bath == "random":
+        ########  STARTING FUNCTION  #####################
+        func1 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
+        fourier = np.abs(np.fft.fft(func1(perturb_times)))
 
-    ######### FREQUENCY NOISE #####################
-    # random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
+        bandwidth = int(gamma)
 
-    ########### PHASE NOISE ##############
-    random_phase = np.zeros_like(perturb_times)
-    i = 0
-    time = np.random.randint(0, len(perturb_times) - 1)
-    times = [time]
-    random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
+        max_neg = len(perturb_times) - np.argmax(fourier[0: int(len(perturb_times) / 2)])
+        max_pos = int(len(perturb_times) / 2) - np.argmax(fourier[int(len(perturb_times) / 2): len(perturb_times)])
 
-    number_of_jumps = []
-    while i < 2:
-        i += 1
+        ########### AMPLITUDE NOISE ################
+        random_amplitude = np.random.normal(0, gamma, size=len(perturb_times))
+
+        #######  FILTERING  ####################
+        # random_amplitude = butter_bandpass_filter(random_amplitude, 25, 45, len(random_amplitude)/perturb_times[-1], order=6)
+
+        noisefreq = np.fft.fft(random_amplitude)
+        # noisefreq = np.max(fourier)*np.ones_like(perturb_times)/100#
+
+        noisefreq[max_neg + bandwidth: max_neg - bandwidth] = \
+            envelope("Window", noisefreq[max_neg + bandwidth: max_neg - bandwidth])
+
+        noisefreq[max_pos + bandwidth: max_pos - bandwidth] = \
+            envelope("Window", noisefreq[max_pos + bandwidth: max_pos - bandwidth])
+
+        noisefreq[0: max_pos - bandwidth] = 0
+        noisefreq[max_pos + bandwidth: max_neg - bandwidth] = 0
+        noisefreq[max_neg + bandwidth: len(perturb_times)] = 0
+
+        # noisefreq[max_neg - bandwidth] = 1000
+        # noisefreq[max_neg + bandwidth] = 1000
+        # noisefreq[max_pos + bandwidth] = 1000
+        # noisefreq[max_pos - bandwidth] = 1000
+        random_amplitude = np.fft.ifft(noisefreq)
+
+        ######### FREQUENCY NOISE #####################
+        # random_frequency = np.random.uniform(low=0.8, high=1.2, size=perturb_times.shape[0])
+
+        ########### PHASE NOISE ##############
+        random_phase = np.zeros_like(perturb_times)
+        i = 0
         time = np.random.randint(0, len(perturb_times) - 1)
-        # print(times)
-        if np.min(np.abs(times - np.full_like(times, time))) > len(perturb_times) / 100:
-            random_phase[time] = noise_amplitude * np.random.uniform(-np.pi, np.pi)
-            # random_amplitude[time] = noise_amplitude * np.random.uniform(-1, 1)
-            times.append(time)
-    # random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
-    # print(len(times))
-    for t in range(0, len(random_phase) - 1):
-        if random_phase[t] == 0:  # divmod(t, np.random.randint(200, 300))[1] != 0:
-            # random_amplitude[t+1] = random_amplitude[t]
-            random_phase[t + 1] = random_phase[t]
-            # random_phase[t] = random_phase[t-1]
-            # random_frequency[t + 1] = random_frequency[t]
+        times = [time]
+        random_phase[time] = gamma * np.random.uniform(-np.pi, np.pi)
 
-    noisy_func1 = lambda t: func1(t) + random_amplitude
-    return noisy_func1(perturb_times)
+        number_of_jumps = []
+        while i < 2:
+            i += 1
+            time = np.random.randint(0, len(perturb_times) - 1)
+            # print(times)
+            if np.min(np.abs(times - np.full_like(times, time))) > len(perturb_times) / 100:
+                random_phase[time] = gamma * np.random.uniform(-np.pi, np.pi)
+                # random_amplitude[time] = noise_amplitude * np.random.uniform(-1, 1)
+                times.append(time)
+        # random_phase = noise_amplitude * np.random.uniform(low=- np.pi, high=np.pi, size=perturb_times.shape[0])# + np.pi
+        # print(len(times))
+        for t in range(0, len(random_phase) - 1):
+            if random_phase[t] == 0:  # divmod(t, np.random.randint(200, 300))[1] != 0:
+                # random_amplitude[t+1] = random_amplitude[t]
+                random_phase[t + 1] = random_phase[t]
+                # random_phase[t] = random_phase[t-1]
+                # random_frequency[t + 1] = random_frequency[t]
+
+        noisy_func1 = lambda t: func1(t) + random_amplitude
+        return noisy_func1(perturb_times)
 
 
 def ohmic_spectrum(w, gamma1):
@@ -105,3 +279,28 @@ def ohmic_spectrum(w, gamma1):
         return gamma1
     else:  # relaxation inducing noise
         return gamma1  # / 2 * (w / (2 * np.pi)) * (w > 0.0)
+
+    # The Wiener process parameter.
+#delta = 2
+    # Total time.
+#T = 10.0
+    # Number of steps.
+#N = 500
+    # Time step size
+#dt = T / N
+    # Number of realizations to generate.
+#m = 1
+    # Create an empty array to store the realizations.
+#x = np.empty((m, N + 1))
+    # Initial values of x.
+#x[:, 0] = 0
+
+#brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
+
+#t = np.linspace(0.0, N * dt, N + 1)
+#for k in range(m):
+#    plot(t, x[k])
+#xlabel('t', fontsize=16)
+#ylabel('x', fontsize=16)
+#grid(True)
+#show()
