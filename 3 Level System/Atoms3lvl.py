@@ -10,8 +10,8 @@ def productstateZ(up_atom, down_atom, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [down for _ in oplist]
-    oplist[up_atom] = Qobj(up)
     oplist[down_atom] = Qobj(down)
+    oplist[up_atom] = Qobj(up)
     return tensor(oplist)
 
 
@@ -36,7 +36,7 @@ def anan(m, N):
     ancilla, up, down = threebasis()
     oplist = np.empty(N, dtype=object)
     oplist = [qeye(3) for _ in oplist]
-    oplist[m] = Qobj(ancilla * ancilla.conj().T)
+    oplist[m] = Qobj(ancilla) * Qobj(ancilla).dag()
     return tensor(oplist)
 
 
@@ -112,21 +112,21 @@ def MagnetizationZ(N):
     sum = 0
     for j in range(0, N):
         sum += sigmaz(0, j, N)
-    return -sum / N
+    return -sum / N / 2
 
 
 def MagnetizationX(N):
     sum = 0
     for j in range(0, N):
         sum += sigmax(0, j, N)
-    return sum / N
+    return sum / N / 2
 
 
 def MagnetizationY(N):
     sum = 0
     for j in range(0, N):
         sum += sigmay(0, j, N)
-    return sum / N
+    return sum / N / 2
 
 
 def H0(omega, J, N):
@@ -142,12 +142,12 @@ def H0(omega, J, N):
 def H1(Omega_R, N):
     H = 0
     for j in range(0, N):
-        H -= Omega_R * (sigmap(0, j, N))
+        H -= Omega_R * (sigmap(1, j, N))
     return H
 
 
 def H2(Omega_R, N):
     H = 0
     for j in range(0, N):
-        H -= Omega_R * (sigmam(0, j, N))
+        H -= Omega_R * (sigmam(1, j, N))
     return H
