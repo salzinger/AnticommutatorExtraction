@@ -26,11 +26,13 @@ data = np.loadtxt('Forward3MHzcsv.txt')
 N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
-#omega = 2 * np.pi * 21 * 10 ** (-13)  # MHz
+#omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
+
+#omega = 0  # MHz
 
 Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+#Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -397,15 +399,18 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 xy.append(float(linesmxy[element][12:18]))
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
-            #ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label='x')
-            #ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label='y')
-            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle /2$", linestyle="", markersize="5", marker="o",
+            ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="0.01")
+            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label=r"$y$", linewidth="0.01")
+            ax[1, 0].plot(x, y, label=r"$z$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
-            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}/2$",
+            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
                           linestyle="",
                           markersize="5", marker="v", color='black')
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             # ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
+            #ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + expect_single[1] ** 2), color="black",
+            #              linestyle="--")
+
             ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2), color="black",
                           linestyle="--")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")

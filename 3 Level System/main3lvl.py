@@ -1,8 +1,8 @@
 from qutip import *
 from qutip.solver import Options, Result, config, _solver_safety_check, Qobj
 import matplotlib.pyplot as plt
-from Atoms import *
-from Driving import *
+from Atoms3lvl import *
+from Driving3lvl import *
 import numpy as np
 
 N = 2

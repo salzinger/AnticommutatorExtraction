@@ -208,8 +208,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(data)
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
-        func1 = lambda t: np.exp(-1j * t * omega)/2
-        return func1(perturb_times*1+data/omega*2*np.pi/360)
+        if omega == 0:
+            return np.exp(-1j * data)/2
+        else:
+            func1 = lambda t: np.exp(-1j * t * omega)/2
+            return func1(perturb_times*1+data/omega*2*np.pi/360)
 
     elif bath == "fbm":
         # Total time.
