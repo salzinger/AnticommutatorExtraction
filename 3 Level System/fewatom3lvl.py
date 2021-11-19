@@ -8,7 +8,7 @@ omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 2 * np.pi  # MHz
 
-gamma = 0.01 * np.pi  # MHz
+gamma = 0.05 * np.pi  # MHz
 
 J = 0 * np.pi / N  # MHz
 
