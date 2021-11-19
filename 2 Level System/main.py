@@ -28,7 +28,11 @@ N = 1
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
+#omega = 0  # MHz
+
 Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+
+#Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -348,7 +352,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[0, 0].legend(loc="upper right")
 
             ax[0, 0].set_xlabel('f [MHz]', fontsize=16)
-            ax[0, 0].set_ylabel('PSD [V**2/Hz]', fontsize=16)
+            ax[0, 0].set_ylabel('PSD [V^2/Hz]', fontsize=16)
 
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111
 
@@ -395,15 +399,18 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 xy.append(float(linesmxy[element][12:18]))
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
-            ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label='x', linewidth="0.01")
-            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label='y', linewidth="0.01")
-            ax[1, 0].plot(x, y, label=r"$\langle \sigma_z \rangle /2$", linestyle="", markersize="5", marker="o",
+            ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="0.01")
+            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label=r"$y$", linewidth="0.01")
+            ax[1, 0].plot(x, y, label=r"$z$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
-            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}/2$",
+            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
                           linestyle="",
                           markersize="5", marker="v", color='black')
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             # ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
+            #ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + expect_single[1] ** 2), color="black",
+            #              linestyle="--")
+
             ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2), color="black",
                           linestyle="--")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
@@ -451,15 +458,21 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
                 phase_noise = brownian(x[:, 0], Nsteps, dt, np.sqrt(gamma), out=x[:, 1:])
 
+                #phase_noise = davies_harte(perturb_times[-1], len(perturb_times), 0.1, np.sqrt(gamma))
+                #print(phase_noise[0:len(perturb_times)])
+
                 t = np.linspace(0.0, Nsteps * dt, Nsteps)
 
                 for k in range(0, int(averages / 100)):
                     if gamma == 3:
                         ax[0, 1].plot(t, phase_noise[k], color='#85bb65', linewidth=0.1)
+                        #ax[0, 1].plot(t, phase_noise, color='#85bb65', linewidth=0.1)
                     elif gamma == 10:
                         ax[0, 1].plot(t, phase_noise[k], color='#CC7722', linewidth=0.1)
+                        #ax[0, 1].plot(t, phase_noise, color='#CC7722', linewidth=0.1)
                     elif gamma == 30:
                         ax[0, 1].plot(t, phase_noise[k], color='#800020', linewidth=0.1)
+                        #ax[0, 1].plot(t, phase_noise, color='#800020', linewidth=0.1)
 
                 if gamma == 3:
                     # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
