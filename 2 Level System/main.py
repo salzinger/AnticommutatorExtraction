@@ -28,11 +28,11 @@ N = 1
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
-#omega = 0  # MHz
+omega = 0  # MHz
 
 Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-#Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 24.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -44,6 +44,8 @@ sampling_rate = 2 * np.pi * 64 * 10 ** 3  # MHz
 endtime = 0.2
 timesteps = int(endtime * sampling_rate)
 timesteps = 2 * len(data)
+
+print(timesteps)
 
 bath = 'Forward3MHzcsv.txt'
 #bath = 'Markovian'
@@ -87,7 +89,7 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 
 for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np.e):
     # print("omega: ", omega)
-    for s in np.logspace(np.log(5 * omega), np.log(10 * omega), num=1, base=np.e):
+    for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
         # print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
@@ -135,12 +137,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             #                 data[0:32000]/0.4)
 
-            # print('H0...')
-            # print(H0(omega, J, N))
-            # print('H1...')
-            # print(H1(Omega_R, N))
-            # print('H2...')
-            # print(H2(Omega_R, N))
+            print('H0...')
+            print(H0(omega, J, N))
+            print('H1...')
+            print(H1(Omega_R, N))
+            print('H2...')
+            print(H2(Omega_R, N))
 
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                               perturb_times, e_ops=Exps, options=opts)
@@ -401,6 +403,10 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
             ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="0.01")
             ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label=r"$y$", linewidth="0.01")
+            #ax[1, 0].plot(perturb_times, np.arccos(2 * expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)) / (2 * np.pi), color='red',
+            #              label=r"$Phase$", linewidth="1")
+           # ax[1, 0].plot(perturb_times, np.arcsin(2 * np.real(expect_single[0]) / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2+0.001)) / (2 * np.pi), color='blue',
+           #               label=r"$Phase$", linewidth="1")
             ax[1, 0].plot(x, y, label=r"$z$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
             ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",

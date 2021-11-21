@@ -200,6 +200,8 @@ def noisy_func(gamma, perturb_times, omega, bath):
         data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
         data = np.append(data, data_reversed)
+
+        print(len(data))
         #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
         #plt.ylabel('Phase [$\pi$]', fontsize=16)
         #plt.xlabel('Time [us]', fontsize=16)
@@ -209,10 +211,10 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return np.exp(-1j * data)/2
+            return np.exp(-1j * data * 2 * np.pi/360)/2
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
-            return func1(perturb_times*1+data/omega*2*np.pi/360)
+            return func1(perturb_times+data/omega*2*np.pi/360)
 
     elif bath == "fbm":
         # Total time.
@@ -267,8 +269,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times+phase_noise)
         #lab_frame:
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
-        func1 = lambda t: np.exp(-1j * t * omega)/2
-        return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+        if omega == 0:
+            return np.exp(-1j * phase_noise[0])/2
+        else:
+            func1 = lambda t: np.exp(-1j * t * omega)/2
+            return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
         #rotating_frame:
         #func1 = lambda t: np.exp(-1j * t * omega)
         #return func1(phase_noise[0] / omega)
