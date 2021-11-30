@@ -201,7 +201,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
 
         data = np.append(data, data_reversed)
 
-        print(len(data))
+        #print(len(data))
         #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
         #plt.ylabel('Phase [$\pi$]', fontsize=16)
         #plt.xlabel('Time [us]', fontsize=16)
