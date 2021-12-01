@@ -28,11 +28,11 @@ N = 1
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
-#omega = 0  # MHz
-
-Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+omega = 0  # MHz
 
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
+
+Omega_R = 2 * np.pi * 24.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -44,6 +44,8 @@ sampling_rate = 2 * np.pi * 64 * 10 ** 3  # MHz
 endtime = 0.2
 timesteps = int(endtime * sampling_rate)
 timesteps = 2 * len(data)
+
+print(timesteps)
 
 bath = 'Forward3MHzcsv.txt'
 #bath = 'Markovian'
@@ -87,7 +89,7 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 
 for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np.e):
     # print("omega: ", omega)
-    for s in np.logspace(np.log(5 * omega), np.log(10 * omega), num=1, base=np.e):
+    for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
         # print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
@@ -135,12 +137,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             #                 data[0:32000]/0.4)
 
-            # print('H0...')
-            # print(H0(omega, J, N))
-            # print('H1...')
-            # print(H1(Omega_R, N))
-            # print('H2...')
-            # print(H2(Omega_R, N))
+            print('H0...')
+            print(H0(omega, J, N))
+            print('H1...')
+            print(H1(Omega_R, N))
+            print('H2...')
+            print(H2(Omega_R, N))
 
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                               perturb_times, e_ops=Exps, options=opts)
@@ -230,7 +232,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
-
+            '''
 
             #################### SPECTRA ######################################## 11111111111111111111111111111111111111111111111111111111111
 
@@ -358,15 +360,9 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
 
+            '''
 
-
-
-
-
-
-
-
-
+            fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
 
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
@@ -379,6 +375,34 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             with open('m.txt') as f:
                 linesm = f.readlines()
+
+            with open('magn_z_forward.txt') as f:
+                linesmagnzforward = f.readlines()
+            with open('magn_z_forward_error.txt') as f:
+                linesmagnzforwarderror = f.readlines()
+            with open('magn_z_backward.txt') as f:
+                linesmagnzbackward = f.readlines()
+            with open('magn_z_backward_error.txt') as f:
+                linesmagnzbackwarderror = f.readlines()
+
+            with open('phase_amp_forward.txt') as f:
+                    linesphase_ampforward = f.readlines()
+            with open('phase_amp_forward_error.txt') as f:
+                    linesphase_ampforwarderror = f.readlines()
+            with open('phase_amp_backward.txt') as f:
+                    linesphase_ampbackward = f.readlines()
+            with open('phase_amp_backward_error.txt') as f:
+                    linesphase_ampbackwarderror = f.readlines()
+
+            with open('phase_forward.txt') as f:
+                    linesphase_forward = f.readlines()
+            with open('phase_forward_error.txt') as f:
+                    linesphase_forwarderror = f.readlines()
+            with open('phase_backward.txt') as f:
+                    linesphase_backward = f.readlines()
+            with open('phase_backward_error.txt') as f:
+                    linesphase_backwarderror = f.readlines()
+
             with open('mf.txt') as f:
                 linesmf = f.readlines()
             with open('mfxy.txt') as f:
@@ -387,25 +411,105 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 linesmxy = f.readlines()
 
             x = []
+            z = []
+            zerror = []
+            amp = []
+            amperror = []
+            phase = []
+            phaseerror = []
             y = []
             xy = []
-            for element in range(1, 21):
+
+
+            for element in range(1, 20):
                 x.append(float(linesmf[element][0:5]))
                 y.append(float(linesmf[element][11:18]))
                 xy.append(float(linesmfxy[element][11:18]))
+
+            for element in range(0, 19):
+                z.append(float(linesmagnzforward[element][5:11]))
+                zerror.append(float(linesmagnzforwarderror[element][5:11]))
+                amp.append(float(linesphase_ampforward[element][5:11]))
+                amperror.append(float(linesphase_ampforwarderror[element][5:11]))
+                phase.append(float(linesphase_forward[element][5:11])/360)
+                phaseerror.append(float(linesphase_forwarderror[element][5:11])/360)
+
+
+
+            for element in range(1, 21):
+                z.append(float(linesmagnzbackward[element][11:18]))
+                zerror.append(float(linesmagnzbackwarderror[element][11:18]))
+                amp.append(float(linesphase_ampbackward[element][11:18]))
+                amperror.append(float(linesphase_ampbackwarderror[element][11:18]))
+                phase.append(float(linesphase_backward[element][11:18])/360)
+                phaseerror.append(float(linesphase_backwarderror[element][11:18])/360)
+
             for element in range(1, 21):
                 x.append(float(linesm[element][0:5]))
                 y.append(float(linesm[element][11:18]))
                 xy.append(float(linesmxy[element][12:18]))
 
+
+            phaseerror[0]-=0.5
+
+
+            data = np.loadtxt('Forward3MHzcsv.txt')
+
+            data_reversed = -data[::-1]
+
+            data = np.cumsum(data)
+
+            data_reversed = np.cumsum(data_reversed) + data[-1] + 180
+
+            data = np.append(data/360, data_reversed/360)
+
+
+            ax[0, 0].errorbar(perturb_times, data, label="phase drift",
+                              linewidth="0.4",
+                              color='#85bb65')
+
+            ax[0, 0].errorbar(x, phase, phaseerror, label="xy-plane phase",
+                          linestyle="--",
+                          markersize="5", marker="v", color='black')
+            #ax[0, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            #              linestyle="",
+            #              markersize="5", marker="v", color='black')
+            #ax[0, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2), color="black",
+            #              linestyle="--")
+            #ax[1, 0].plot(x, amp*np.cos(phase), color="b", label=r"$x$", markersize="5", marker="o",
+            #              linestyle="")
+
+            #ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
+            #              label=r"$Phase$", linewidth="1")
+            ax[0, 0].plot(perturb_times, np.arcsin(np.real(expect_single[2]) / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 +0.00001)) / (np.pi) +0.1, color='black',
+                           linewidth="1")
+
+            ax[0, 0].set_xlabel('Time [us]', fontsize=16)
+            ax[0, 0].set_ylabel('Phase [$2\pi$]', fontsize=16)
+            ax[0, 0].legend(loc="lower center")
+
+
+            for n in range(0,len(phase)):
+                phase[n]=phase[n]*2*np.pi
+
+
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
-            ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="0.01")
-            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='red', label=r"$y$", linewidth="0.01")
-            ax[1, 0].plot(x, y, label=r"$z$", linestyle="", markersize="5", marker="o",
+            #ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="1")
+            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='grey', linewidth="1")
+
+            #ax[1, 0].errorbar(x, amp*np.cos(phase), np.sqrt((amperror*np.cos(phase))**2+(amp*np.sin(phase)*phaseerror)**2), color="b", label=r"$x$", markersize="5", marker="o",
+            #              linestyle="")
+
+            ax[1, 0].errorbar(x, amp*np.sin(phase), np.sqrt((amperror*np.sin(phase))**2+(amp*np.cos(phase)*phaseerror)**2), color="grey", label=r"$y$", markersize="5", marker="o",
+                          linestyle="--")
+
+            ax[1, 0].errorbar(x, z, zerror, label=r"$z$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
-            ax[1, 0].plot(x, xy, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+
+            ax[1, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
                           linestyle="",
                           markersize="5", marker="v", color='black')
+
             # ax[1, 0].plot(perturb_times, np.real(expect2[0]), label="sigma_x, Time Dependent Hamiltonian")
             # ax[1, 0].plot(perturb_times, np.real(expect2[2]), label="sigma_y, Time Dependent Hamiltonian")
             #ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + expect_single[1] ** 2), color="black",
@@ -577,9 +681,10 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                  options=opts)
 
             ax[1, 1].plot(x0, y0, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
+
             ax[1, 1].plot(t1, np.real(m0[1]), color='#008b8b', linestyle='-')
 
-            ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='black', label="Time Dependant"),
+            #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='black', label="Time Dependant"),
 
             ax[1, 1].plot(x0, y3, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
