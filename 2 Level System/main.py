@@ -32,7 +32,7 @@ omega = 0  # MHz
 
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 24.4 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 24.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -431,8 +431,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 zerror.append(float(linesmagnzforwarderror[element][5:11]))
                 amp.append(float(linesphase_ampforward[element][5:11]))
                 amperror.append(float(linesphase_ampforwarderror[element][5:11]))
-                phase.append(float(linesphase_forward[element][5:11])/360)
-                phaseerror.append(float(linesphase_forwarderror[element][5:11])/360)
+                phase.append(float(linesphase_forward[element][5:11])/180)
+                phaseerror.append(float(linesphase_forwarderror[element][5:11])/180)
 
 
 
@@ -441,8 +441,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 zerror.append(float(linesmagnzbackwarderror[element][11:18]))
                 amp.append(float(linesphase_ampbackward[element][11:18]))
                 amperror.append(float(linesphase_ampbackwarderror[element][11:18]))
-                phase.append(float(linesphase_backward[element][11:18])/360)
-                phaseerror.append(float(linesphase_backwarderror[element][11:18])/360)
+                phase.append(float(linesphase_backward[element][11:18])/180)
+                phaseerror.append(float(linesphase_backwarderror[element][11:18])/180)
 
             for element in range(1, 21):
                 x.append(float(linesm[element][0:5]))
@@ -450,7 +450,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 xy.append(float(linesmxy[element][12:18]))
 
 
-            phaseerror[0]-=0.5
+            phaseerror[0]-=0.7
 
 
             data = np.loadtxt('Forward3MHzcsv.txt')
@@ -461,15 +461,15 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             data_reversed = np.cumsum(data_reversed) + data[-1] + 180
 
-            data = np.append(data/360, data_reversed/360)
+            data = np.append(data/180, data_reversed/180)
 
 
-            ax[0, 0].errorbar(perturb_times, data, label="phase drift",
+            ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
 
-            ax[0, 0].errorbar(x, phase, phaseerror, label="xy-plane phase",
-                          linestyle="--",
+            ax[0, 0].errorbar(x, phase, phaseerror, label="Phase xy-plane",
+                          linestyle="",
                           markersize="5", marker="v", color='black')
             #ax[0, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
             #              linestyle="",
@@ -481,29 +481,29 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             #ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
             #              label=r"$Phase$", linewidth="1")
-            ax[0, 0].plot(perturb_times, np.arcsin(np.real(expect_single[2]) / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 +0.00001)) / (np.pi) +0.1, color='black',
+            ax[0, 0].plot(perturb_times, 2*np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)) / (np.pi) + 0.2, color='black',
                            linewidth="1")
 
-            ax[0, 0].set_xlabel('Time [us]', fontsize=16)
-            ax[0, 0].set_ylabel('Phase [$2\pi$]', fontsize=16)
-            ax[0, 0].legend(loc="lower center")
+            ax[0, 0].set_xlabel('Time [us]', fontsize=14)
+            ax[0, 0].set_ylabel('Phase [$\pi$]', fontsize=14)
+            ax[0, 0].legend(loc="lower left", fontsize=12)
 
 
             for n in range(0,len(phase)):
-                phase[n]=phase[n]*2*np.pi
+                phase[n]=phase[n]*np.pi
 
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
             #ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="1")
-            ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='grey', linewidth="1")
+            #ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='grey', linewidth="1")
 
             #ax[1, 0].errorbar(x, amp*np.cos(phase), np.sqrt((amperror*np.cos(phase))**2+(amp*np.sin(phase)*phaseerror)**2), color="b", label=r"$x$", markersize="5", marker="o",
             #              linestyle="")
 
-            ax[1, 0].errorbar(x, amp*np.sin(phase), np.sqrt((amperror*np.sin(phase))**2+(amp*np.cos(phase)*phaseerror)**2), color="grey", label=r"$y$", markersize="5", marker="o",
-                          linestyle="--")
+            #ax[1, 0].errorbar(x, amp*np.sin(phase), np.sqrt((amperror*np.sin(phase))**2+(amp*np.cos(phase)*phaseerror)**2), color="grey", label=r"$y$", markersize="5", marker="o",
+            #              linestyle="--")
 
-            ax[1, 0].errorbar(x, z, zerror, label=r"$z$", linestyle="", markersize="5", marker="o",
+            ax[1, 0].errorbar(x, z, zerror, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
 
             ax[1, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
@@ -516,14 +516,15 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #              linestyle="--")
 
             ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2), color="black",
-                          linestyle="--")
+                          linestyle="-")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             # ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             # ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
-            ax[1, 0].set_xlabel('Time [us]', fontsize=16)
-            ax[1, 0].set_ylabel('Magnetization', fontsize=16)
+            ax[1, 0].set_xlabel('Time [us]', fontsize=14)
+            ax[1, 0].set_ylabel('Magnetization', fontsize=14)
+            ax[1, 0].set_ylim([-0.596, 0.596])
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
-            ax[1, 0].legend(loc="lower center")
+            ax[1, 0].legend(loc="lower center", fontsize=12)
 
             #################### END OF SINGLE TRAJECTORY ######################################## 2222222222222222222
 
@@ -584,8 +585,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                     ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#85bb65', linestyle='-',
                                   linewidth=1.0,
                                   label='$\gamma = 3$ MHz')
-                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0
-                    ,label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
+                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
+                    #, label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
                 if gamma == 10:
@@ -603,17 +604,17 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                     ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-',
                                   linewidth=1.0,
                                   label='$\gamma = 30$ MHz')
-                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0
-                     ,label='$\sqrt{30 MHz  t}$')
+                    ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
+                    # ,label='$\sqrt{30 MHz  t}$')
                     ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
             ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
             ###ax[0, 1].set_xlim([0, 0.1])
-            ax[0, 1].set_xlabel('Time [us]', fontsize=16)
-            ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=16)
+            ax[0, 1].set_xlabel('Time [us]', fontsize=14)
+            ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=14)
             #ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
             #ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-            ax[0, 1].legend(loc="lower left")
+            ax[0, 1].legend(loc="lower left", fontsize=12)
 
             ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 
@@ -640,14 +641,26 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 linesm10 = f.readlines()
             with open('m30.txt') as f:
                 linesm30 = f.readlines()
+            with open('m0err.txt') as f:
+                linesm0e = f.readlines()
+            with open('m3err.txt') as f:
+                linesm3e = f.readlines()
+            with open('m10err.txt') as f:
+                linesm10e = f.readlines()
+            with open('m30err.txt') as f:
+                linesm30e = f.readlines()
 
             # print(linesmf)
             # print(linesm)
             x0 = []
             y0 = []
+            y0e = []
             y3 = []
+            y3e = []
             y10 = []
+            y10e = []
             y30 = []
+            y30e = []
 
             for element in range(1, 22):
                 x0.append(float(linesm0[element][0:5]))
@@ -655,10 +668,14 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 y3.append(float(linesm3[element][8:18]))
                 y10.append(float(linesm10[element][8:18]))
                 y30.append(float(linesm30[element][8:18]))
+                y0e.append(float(linesm0e[element][8:18]))
+                y3e.append(float(linesm3e[element][8:18]))
+                y10e.append(float(linesm10e[element][8:18]))
+                y30e.append(float(linesm30e[element][8:18]))
 
             t1 = np.linspace(0, endtime, int(timesteps / 10))
 
-            Omega_R=2*np.pi*12 #MHz
+            Omega_R=2*np.pi*12.3 #MHz
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
@@ -682,23 +699,23 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                  t1, [np.sqrt(30) * sigmaz(0, N), np.sqrt(30) * sigmaz(0, N)], Exps,
                                  options=opts)
 
-            ax[1, 1].plot(x0, y0, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
+            ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
 
             ax[1, 1].plot(t1, np.real(m0[1]), color='#008b8b', linestyle='-')
 
             #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='black', label="Time Dependant"),
 
-            ax[1, 1].plot(x0, y3, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
+            ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
-            ax[1, 1].plot(x0, y10, marker="v", color='#CC7722', label='$\gamma = 10$ MHz', linestyle='')
+            ax[1, 1].errorbar(x0, y10, y10e, marker="v", color='#CC7722', label='$\gamma = 10$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m10.expect[1], color='#CC7722', linestyle='-')
-            ax[1, 1].plot(x0, y30, marker="s", color='#800020', label='$\gamma = 30$ MHz', linestyle='')
+            ax[1, 1].errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 30$ MHz', linestyle='')
             ax[1, 1].plot(t1, result_m30.expect[1], color='#800020', linestyle='-')
             # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
-            # ax[1, 1].set_ylim([-1.2 * np.sqrt(gamma * T), 1.2 * np.sqrt(gamma * T)])
-            ax[1, 1].set_xlabel('Time [us]', fontsize=16)
-            ax[1, 1].set_ylabel('Magnetization', fontsize=16)
-            ax[1, 1].legend(loc="upper center")
+            ax[1, 1].set_ylim([-0.596, 0.596])
+            ax[1, 1].set_xlabel('Time [us]', fontsize=14)
+            ax[1, 1].set_ylabel('Magnetization', fontsize=14)
+            ax[1, 1].legend(loc="upper center", fontsize=12)
 
             fig.tight_layout()
             plt.show()
