@@ -32,7 +32,7 @@ omega = 0  # MHz
 
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 24.7 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 24.4 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -657,6 +657,8 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                 y30.append(float(linesm30[element][8:18]))
 
             t1 = np.linspace(0, endtime, int(timesteps / 10))
+
+            Omega_R=2*np.pi*12 #MHz
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
