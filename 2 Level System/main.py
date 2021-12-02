@@ -11,7 +11,7 @@ import array
 #    return float(s)
 
 
-data = array.array('d')  # an array of type double (float of 64 bits)
+#data = array.array('d')  # an array of type double (float of 64 bits)
 
 # with open("noise_gamma_3.csv", 'r') as f:
 #    for l in f:
@@ -19,7 +19,7 @@ data = array.array('d')  # an array of type double (float of 64 bits)
 #        data.extend( (convert(s) for s in strnumbers if s!='') )
 # A generator expression here.
 
-data = np.loadtxt('Forward3MHzcsv.txt')
+
 # print(data)
 
 
@@ -32,7 +32,7 @@ omega = 0  # MHz
 
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 24.7 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 23.7 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -43,9 +43,9 @@ averages = 150
 sampling_rate = 2 * np.pi * 64 * 10 ** 3  # MHz
 endtime = 0.2
 timesteps = int(endtime * sampling_rate)
+data = np.loadtxt('Forward3MHzcsv.txt')
 timesteps = 2 * len(data)
 
-print(timesteps)
 
 bath = 'Forward3MHzcsv.txt'
 #bath = 'Markovian'
@@ -87,12 +87,13 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 # plt.show()
 
 
-for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np.e):
-    # print("omega: ", omega)
+for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
+    #print("Omega_R: ", Omega_R)
     for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
         # print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
+        data = np.loadtxt('Forward3MHzcsv.txt')
         timesteps = 2 * len(data)
         endtime = 0.2
         pertubation_length = endtime / 1
@@ -124,7 +125,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             bath = "markovian"
 
             gamma = 0
-
+            data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 1 * len(data)
             endtime = 1
             pertubation_length = endtime / 1
@@ -137,12 +138,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             #                 data[0:32000]/0.4)
 
-            print('H0...')
-            print(H0(omega, J, N))
-            print('H1...')
-            print(H1(Omega_R, N))
-            print('H2...')
-            print(H2(Omega_R, N))
+            #print('H0...')
+            #print(H0(omega, J, N))
+            #print('H1...')
+            #print(H1(Omega_R, N))
+            #print('H2...')
+            #print(H2(Omega_R, N))
 
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                               perturb_times, e_ops=Exps, options=opts)
@@ -367,7 +368,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
 
-
+            data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 2 * len(data)
             endtime = 0.2
             pertubation_length = endtime / 1
@@ -463,10 +464,11 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             data = np.append(data/180, data_reversed/180)
 
-
             ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
+
+            data = np.loadtxt('Forward3MHzcsv.txt')
 
             ax[0, 0].errorbar(x, phase, phaseerror, label="Phase xy-plane",
                           linestyle="",
@@ -481,7 +483,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             #ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
             #              label=r"$Phase$", linewidth="1")
-            ax[0, 0].plot(perturb_times, 2*np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)) / (np.pi) + 0.2, color='black',
+            ax[0, 0].plot(perturb_times, np.real(2*np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2+0.001)) / (np.pi) + 0.2), color='black',
                            linewidth="1")
 
             ax[0, 0].set_xlabel('Time [us]', fontsize=14)
@@ -490,7 +492,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
             for n in range(0,len(phase)):
-                phase[n]=phase[n]*np.pi
+                phase[n] = phase[n] * np.pi
 
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65')
@@ -515,12 +517,12 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
             #ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + expect_single[1] ** 2), color="black",
             #              linestyle="--")
 
-            ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2), color="black",
+            ax[1, 0].plot(perturb_times, np.real(np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)), color="black",
                           linestyle="-")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
             # ax[1, 0].plot(perturb_times, np.exp(- perturb_times * gamma), color="orange", label="exp(- gamma * t)")
             # ax[1, 0].plot(perturb_times, -np.exp(- perturb_times * gamma), color="orange")
-            ax[1, 0].set_xlabel('Time [us]', fontsize=14)
+            ax[1, 0].set_xlabel('Time [$\mu$s]', fontsize=14)
             ax[1, 0].set_ylabel('Magnetization', fontsize=14)
             ax[1, 0].set_ylim([-0.596, 0.596])
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
@@ -542,7 +544,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
 
             ################### PHASE WALKS ############################################ 33333333333333333333333333333333
-
+            data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = len(data)
             endtime = 0.1
             pertubation_length = endtime / 1
@@ -610,7 +612,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
             ###ax[0, 1].set_xlim([0, 0.1])
-            ax[0, 1].set_xlabel('Time [us]', fontsize=14)
+            ax[0, 1].set_xlabel('Time [$\mu$s]', fontsize=14)
             ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=14)
             #ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
             #ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
@@ -675,7 +677,7 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
 
             t1 = np.linspace(0, endtime, int(timesteps / 10))
 
-            Omega_R=2*np.pi*12.3 #MHz
+            Omega_R = 2 * np.pi * 12.3 #MHz
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 
@@ -699,28 +701,28 @@ for o in np.logspace(np.log(15 * Omega_R), np.log(100 * Omega_R), num=1, base=np
                                  t1, [np.sqrt(30) * sigmaz(0, N), np.sqrt(30) * sigmaz(0, N)], Exps,
                                  options=opts)
 
-            ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='#008b8b', label='$\gamma = 0$ MHz', linestyle='')
+            ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = 0$ MHz', linestyle='')
 
-            ax[1, 1].plot(t1, np.real(m0[1]), color='#008b8b', linestyle='-')
+            ax[1, 1].plot(t1, np.real(m0[1]), color='black', linestyle='--')
 
             #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='black', label="Time Dependant"),
 
             ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m3.expect[1], color='#85bb65', linestyle='-')
+            ax[1, 1].plot(t1, np.real(result_m3.expect[1]), color='#85bb65', linestyle='--')
             ax[1, 1].errorbar(x0, y10, y10e, marker="v", color='#CC7722', label='$\gamma = 10$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m10.expect[1], color='#CC7722', linestyle='-')
+            ax[1, 1].plot(t1, np.real(result_m10.expect[1]), color='#CC7722', linestyle='--')
             ax[1, 1].errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 30$ MHz', linestyle='')
-            ax[1, 1].plot(t1, result_m30.expect[1], color='#800020', linestyle='-')
+            ax[1, 1].plot(t1, np.real(result_m30.expect[1]), color='#800020', linestyle='--')
             # ax[1, 1].plot(t, -np.sqrt(gamma * t), color='black', linestyle='--', linewidth=2.0)
             ax[1, 1].set_ylim([-0.596, 0.596])
-            ax[1, 1].set_xlabel('Time [us]', fontsize=14)
+            ax[1, 1].set_xlabel('Time [$\mu$s]', fontsize=14)
             ax[1, 1].set_ylabel('Magnetization', fontsize=14)
             ax[1, 1].legend(loc="upper center", fontsize=12)
 
             fig.tight_layout()
             plt.show()
-            plt.savefig("bath" + bath + ", omega =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
-                omega, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+            #plt.savefig("bath" + bath + ", Omega_R =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
+            #    Omega_R, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
             ################### MASTER EQUATION ############################################4444444444444444
 
