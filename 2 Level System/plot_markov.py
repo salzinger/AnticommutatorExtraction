@@ -37,6 +37,8 @@ for gamma in [3,10,30]:
 
             bath = "markovian"
 
+            init_state = productstateZ(0, 0, N)
+
             data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 1 * len(data)
             endtime = 0.1
@@ -69,8 +71,8 @@ for gamma in [3,10,30]:
             ancilla_overlap = []
             #Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             #Pmean = 0
-
-            while i < 2000:  # averages + int(2 * gamma):
+            i = 0
+            while i < 3:  # averages + int(2 * gamma):
                 print(i)
                 i += 1
 
@@ -84,7 +86,7 @@ for gamma in [3,10,30]:
                 result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                                   perturb_times, e_ops=Exps, options=opts)
 
-                qsave(result2, "i =  %.2f, gamma =  %.2f" % (i,gamma))
+                #qsave(result2, "i =  %.2f, gamma =  %.2f" % (i,gamma))
 
                 states2 += np.array(result2.states[timesteps - 1])
                 expect2 += np.array(result2.expect[:])

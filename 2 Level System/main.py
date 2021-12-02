@@ -589,7 +589,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
                                   label='$\gamma = 3$ MHz')
                     ax[0, 1].plot(t, np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
                     #, label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
-                    ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
+                    #ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
                 if gamma == 10:
                     # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
@@ -599,7 +599,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
                                   label='$\gamma = 10$ MHz')
                     ax[0, 1].plot(t, np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
                     #,label='$\sqrt{10 MHz t}$')
-                    ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
+                    #ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
 
                 if gamma == 30:
                     # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
@@ -608,7 +608,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
                                   label='$\gamma = 30$ MHz')
                     ax[0, 1].plot(t, np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
                     # ,label='$\sqrt{30 MHz  t}$')
-                    ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
+                    #ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
             ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
             ###ax[0, 1].set_xlim([0, 0.1])
@@ -616,7 +616,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=14)
             #ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
             #ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-            ax[0, 1].legend(loc="lower left", fontsize=12)
+            ax[0, 1].legend(loc="upper left", fontsize=12)
 
             ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 
