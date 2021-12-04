@@ -274,9 +274,9 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #lab_frame:
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return np.exp(-1j * phase_noise[0])/2
+            return np.exp(-1j * phase_noise[0])
         else:
-            func1 = lambda t: np.exp(-1j * t * omega)/2
+            func1 = lambda t: np.exp(-1j * t * omega)
             return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
         #rotating_frame:
         #func1 = lambda t: np.exp(-1j * t * omega)
