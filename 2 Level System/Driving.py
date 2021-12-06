@@ -188,7 +188,7 @@ def envelope(shape, function):
 
 def func(perturb_times, omega):
     if omega == 0:
-        return np.ones_like(perturb_times)
+        return np.ones_like(perturb_times)/2
     else:
         func2 = lambda t: 0.5j * np.exp(-1j * t * 1 * omega) - 0.5j * np.exp(1j * t * 1 * omega)
         return func2(perturb_times)
@@ -274,7 +274,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #lab_frame:
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return np.exp(-1j * phase_noise[0])
+            return np.exp(-1j * phase_noise[0])/2
         else:
             func1 = lambda t: np.exp(-1j * t * omega)
             return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)

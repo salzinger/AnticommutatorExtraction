@@ -102,6 +102,24 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
 
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
 
+            c = Bloch()
+            c.make_sphere()
+            # vec1 = [np.real(x1), np.real(y1), np.real(z1)]
+            # vec2 = [np.real(x2), np.real(y2), np.real(z2)]
+            # vec3 = [np.real(x3), np.real(y3), np.real(z3)]
+            # th = np.linspace(0, 2*np.pi, 20)
+
+            xz = np.real(expect_single[0]*2)
+            yz = np.real(expect_single[2]*2)
+            zz = np.real(expect_single[1]*2)
+            c.add_points([xz, yz, zz])
+
+            # c.add_vectors(vec1)
+            # c.add_vectors(vec2)
+            # c.add_vectors(vec3)
+            c.render()
+            c.clear()
+
             data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 2 * len(data)
             endtime = 0.2
@@ -295,3 +313,20 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
 
 
 
+c = Bloch()
+c.make_sphere()
+#vec1 = [np.real(x1), np.real(y1), np.real(z1)]
+#vec2 = [np.real(x2), np.real(y2), np.real(z2)]
+#vec3 = [np.real(x3), np.real(y3), np.real(z3)]
+#th = np.linspace(0, 2*np.pi, 20)
+
+xz = np.real(expect_single[0])
+yz = np.real(expect_single[2])
+zz = np.real(expect_single[1])
+c.add_points([xz, yz, zz])
+
+#c.add_vectors(vec1)
+#c.add_vectors(vec2)
+#c.add_vectors(vec3)
+c.render()
+c.clear()
