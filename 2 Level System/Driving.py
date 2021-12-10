@@ -201,9 +201,9 @@ def noisy_func(gamma, perturb_times, omega, bath):
         data_reversed = -data[::-1]
 
         data = np.cumsum(data)
-        data_reversed = np.cumsum(data_reversed)+data[-1]+180
+        #data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
-        data = np.append(data, data_reversed)
+        #data = np.append(data, data_reversed)
 
         #print(len(data))
         #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")

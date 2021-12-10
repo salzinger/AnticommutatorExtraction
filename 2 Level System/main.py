@@ -610,10 +610,10 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
                     # ,label='$\sqrt{30 MHz  t}$')
                     #ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
-            ax[0, 1].set_ylim([-1.1 * np.sqrt(30 * T), 1.1 * np.sqrt(30 * T)])
+            ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
             ###ax[0, 1].set_xlim([0, 0.1])
-            ax[0, 1].set_xlabel('Time [$\mu$s]', fontsize=14)
-            ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=14)
+            ax[0, 1].set_xlabel('Time [$\mu$s]', fontsize=16)
+            ax[0, 1].set_ylabel('Phase [$\pi$]', fontsize=16)
             #ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
             #ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
             ax[0, 1].legend(loc="upper left", fontsize=12)

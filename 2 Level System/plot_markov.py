@@ -216,8 +216,8 @@ ax[1, 1].fill_between(perturb_times,  np.real(result_m30.expect[1])+vars[2],
                       np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$\mu$s]', fontsize=14)
-ax[1, 1].set_ylabel('Magnetization', fontsize=14)
+ax[1, 1].set_xlabel('Time [$\mu$s]', fontsize=16)
+ax[1, 1].set_ylabel('Magnetization', fontsize=16)
 ax[1, 1].legend(loc="upper center", fontsize=12)
 
 fig.tight_layout()

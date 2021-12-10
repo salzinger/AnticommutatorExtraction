@@ -29,18 +29,21 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
-
+figure = plt.plot()
+c = Bloch(figure)
+c.make_sphere()
 
 for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
     print("Omega_R: ", Omega_R)
+
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
     for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
         # print("sampling: ", sampling_rate)
         init_state = productstateZ(0, 0, N)
         # timesteps = int(endtime * sampling_rate)
         data = np.loadtxt('Forward3MHzcsv.txt')
-        timesteps = 2 * len(data)
-        endtime = 0.2
+        timesteps = 1 * len(data)
+        endtime = 0.1
         pertubation_length = endtime / 1
         # t1 = np.linspace(0, endtime, timesteps)
         # t2 = np.linspace(0, endtime, timesteps)
@@ -72,7 +75,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             gamma = 0
             data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 1 * len(data)
-            endtime = 1
+            endtime = 0.2
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
@@ -90,36 +93,71 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             #print('H2...')
             #print(H2(Omega_R, N))
 
-            result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
-                              perturb_times, e_ops=Exps, options=opts)
+            #result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+            #                  perturb_times, e_ops=Exps, options=opts)
             concmean = []
             # for t in range(0, timesteps):
             # concmean.append(concurrence(result2.states[t]))
 
             # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
-            states2 = np.array(result2.states[timesteps - 1])
-            expect2 = np.array(result2.expect[:])
+            #states2 = np.array(result2.states[timesteps - 1])
+            #expect2 = np.array(result2.expect[:])
 
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
 
-            c = Bloch()
-            c.make_sphere()
+
             # vec1 = [np.real(x1), np.real(y1), np.real(z1)]
             # vec2 = [np.real(x2), np.real(y2), np.real(z2)]
             # vec3 = [np.real(x3), np.real(y3), np.real(z3)]
             # th = np.linspace(0, 2*np.pi, 20)
+            colorlist = []#np.zeros_like(data)
+            data = np.cumsum(data)
+            min = np.min(data)
+            max = np.max(data)
+            print(max)
+            for element in data:
+                if element > -88.5:
+                    if element > 1.14:
+                        colorlist.append([1-1*element/max, 1-40/80*element/max, 1-10/80*element/max, 1])
+                    elif element < -1.14:
+                        colorlist.append([1-10/80*element/min, 1-40/80*element/min, 1-1*element/min, element/min/4])
+                    else:
+                        colorlist.append([1, 0, 0, 1])
+                elif element < -91.5:
+                    colorlist.append([1-10/80*element/min, 1-40/80*element/min, 1-1*element/min, 1])
+                else:
+                    colorlist.append([0, 0, 0, 1])
+
+            print(len(colorlist))
+            print(len(expect_single[0]))
+
+            expectsx = []
+            expectsy = []
+            expectsz = []
+            colors = []
+
+            for n in range(0, len(data)):
+                if np.mod(n, 10) == 0:
+                    expectsx.append(np.real(expect_single[0][n] * 2))
+                    expectsy.append(np.real(expect_single[2][n] * 2))
+                    expectsz.append(np.real(expect_single[1][n] * 2))
+                    colors.append(colorlist[n])
 
             xz = np.real(expect_single[0]*2)
             yz = np.real(expect_single[2]*2)
             zz = np.real(expect_single[1]*2)
-            c.add_points([xz, yz, zz])
-
+            c.point_color = colors
+            c.point_size = [5,20,100]
+            c.add_points([expectsx, expectsy, expectsz], 'm')
+            #plt.colorbar(c.fig)
+            c.sphere_alpha = 0.05
             # c.add_vectors(vec1)
             # c.add_vectors(vec2)
             # c.add_vectors(vec3)
-            c.render()
-            c.clear()
 
+
+            #c.clear()
+            '''
             data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 2 * len(data)
             endtime = 0.2
@@ -310,23 +348,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             plt.show()
             plt.savefig("Omega_R =  %.2f.png" % (
                 Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
-
-
-
-c = Bloch()
-c.make_sphere()
-#vec1 = [np.real(x1), np.real(y1), np.real(z1)]
-#vec2 = [np.real(x2), np.real(y2), np.real(z2)]
-#vec3 = [np.real(x3), np.real(y3), np.real(z3)]
-#th = np.linspace(0, 2*np.pi, 20)
-
-xz = np.real(expect_single[0])
-yz = np.real(expect_single[2])
-zz = np.real(expect_single[1])
-c.add_points([xz, yz, zz])
-
-#c.add_vectors(vec1)
-#c.add_vectors(vec2)
-#c.add_vectors(vec3)
+            '''
 c.render()
-c.clear()
+plt.show()
+
