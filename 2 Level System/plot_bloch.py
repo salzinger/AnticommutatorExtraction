@@ -28,7 +28,7 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
+opts = Options(store_states=True, store_final_state=True, nsteps=1000, num_cpus=8)
 figure = plt.plot()
 c = Bloch(figure)
 c.make_sphere()
@@ -114,7 +114,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             data = np.cumsum(data)
             min = np.min(data)
             max = np.max(data)
-            print(max)
+            #print(max)
             for element in data:
                 if element > -88.5:
                     if element > 1.14:
@@ -157,7 +157,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
 
 
             #c.clear()
-
+            '''
             data = np.loadtxt('Forward3MHzcsv.txt')
             timesteps = 2 * len(data)
             endtime = 0.2
@@ -348,7 +348,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             plt.show()
             plt.savefig("Omega_R =  %.2f.png" % (
                 Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
-
+            '''
 c.render()
 plt.show()
 
