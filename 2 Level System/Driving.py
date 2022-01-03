@@ -168,7 +168,7 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     return b, a
 
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=2):
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=3):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
@@ -199,7 +199,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
     if bath == 'Forward3MHzcsv.txt':
         data = np.loadtxt('Forward3MHzcsv.txt')
         data_reversed = -data[::-1]
-        print(len(perturb_times)/perturb_times[-1])
+        print("noisy func fs: ", len(perturb_times)/perturb_times[-1])
         data = np.cumsum(data)
         #data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
@@ -215,7 +215,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.1, 1, len(perturb_times)/perturb_times[-1])
+            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 10000, len(perturb_times)/perturb_times[-1])
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
             return func1(perturb_times+data/omega*2*np.pi/360)
@@ -228,7 +228,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         # Time step size
         dt = T / N
 
-        phase_noise = davies_harte(perturb_times[-1], len(perturb_times), 1, gamma)
+        phase_noise = davies_harte(perturb_times[-1], len(perturb_times), 1/2, gamma)
         '''
         Generates sample paths of fractional Brownian Motion using the Davies Harte method
 
@@ -238,7 +238,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
             H:      Hurst parameter
         '''
         func1 = lambda t: np.exp(-1j * t * omega)/2
-        return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+
+        if omega == 0:
+            return np.exp(-1j * phase_noise[0])/2
+        else:
+            return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
 
     elif bath == "markovian":
         # Total time.
