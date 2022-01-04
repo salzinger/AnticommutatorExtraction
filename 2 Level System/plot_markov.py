@@ -37,7 +37,7 @@ n=0
 for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
 
 
-            bath = "fbm"
+            bath = "markovian"
 
             init_state = productstateZ(0, 0, N)
 
@@ -46,6 +46,8 @@ for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
             endtime = 0.1
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, endtime, len(data))
+
+            print(len(perturb_times))
 
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                               noisy_func(gamma, perturb_times, omega, bath))
@@ -74,7 +76,7 @@ for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
             #Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             #Pmean = 0
             i = 1
-            while i < int(gamma/6):  # averages + int(2 * gamma):
+            while i < int(gamma/12):  # averages + int(2 * gamma):
                 print(i)
                 i += 1
 
@@ -116,7 +118,7 @@ for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
             means[n] = np.mean(expect1, axis=0)[1]
 
             n += 1
-            print[means]
+            print(means)
             #print(vars)
 
             # print(Qobj(states2))
@@ -197,9 +199,9 @@ ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = 0$ MH
 ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
 #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='#008b8b', label="Time Dependant")
-ax[1, 1].plot(perturb_times, means[0], color='b',
+ax[1, 1].plot(perturb_times, means[0], color='g',
               label="fbm 3", marker="s", markersize="0.1", linestyle="")
-ax[1, 1].plot(perturb_times, means[1], color='g',
+ax[1, 1].plot(perturb_times, means[1], color='yellow',
               label="fbm 10", marker="s", markersize="0.1", linestyle="")
 ax[1, 1].plot(perturb_times, means[2], color='r',
               label="fbm 30", marker="s", markersize="0.1", linestyle="")

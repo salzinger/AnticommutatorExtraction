@@ -113,7 +113,7 @@ def brownian(x0, n, dt, delta, out=None):
     return out
 
 
-def davies_harte(T, N, H,y):
+def davies_harte(T, N, H, y):
     '''
     Generates sample paths of fractional Brownian Motion using the Davies Harte method
 
@@ -153,11 +153,12 @@ def davies_harte(T, N, H,y):
                 np.flip(Vj[1:N].T[0]) - (complex(0, 1) * np.flip(Vj[1:N].T[1])))
 
     Z = np.fft.fft(wk);
-    fGn = Z[0:N]*y
+    fGn = Z[0:N]
     fBm = np.cumsum(fGn) * (N ** (-H))
     fBm = (T ** H) * (fBm)
     path = np.array([0] + list(fBm))
-    return path
+    print(len(path[0:N]))
+    return path[0:N]
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -197,13 +198,17 @@ def func(perturb_times, omega):
 
 def noisy_func(gamma, perturb_times, omega, bath):
     if bath == 'Forward3MHzcsv.txt':
+
+        #there
         data = np.loadtxt('Forward3MHzcsv.txt')
         data_reversed = -data[::-1]
         print("noisy func fs: ", len(perturb_times)/perturb_times[-1])
         data = np.cumsum(data)
-        #data_reversed = np.cumsum(data_reversed)+data[-1]+180
 
-        #data = np.append(data, data_reversed)
+        ###and back again
+        data_reversed = np.cumsum(data_reversed)+data[-1]+180
+
+        data = np.append(data, data_reversed)
 
         #print(len(data))
         #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
