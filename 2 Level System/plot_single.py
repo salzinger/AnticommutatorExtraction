@@ -1,3 +1,5 @@
+import numpy as np
+
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
@@ -5,7 +7,7 @@ import matplotlib.pyplot as plt
 
 N = 1
 
-omega = 2 * np.pi * 21 * 10 ** 3  # MHz
+#omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
 omega = 0  # MHz
@@ -56,10 +58,17 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
                               noisy_func(gamma, perturb_times, omega, bath))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
                               np.conj(noisy_func(gamma, perturb_times, omega, bath)))
-
+            '''
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             # data / 0.4)
+            #print(noisy_func(gamma, perturb_times, omega, bath))
 
+            plt.plot(perturb_times, np.absolute(noisy_func(gamma, perturb_times, omega, bath))*2, label="Mag")
+            plt.plot(perturb_times, np.angle(noisy_func(gamma, perturb_times, omega, bath)), label="Phase")
+            plt.xlim(-0.001, 0.1)
+            plt.ylim(-1, 2.25)
+            plt.show()
+            '''
             result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                                     perturb_times, e_ops=Exps, options=opts)
 

@@ -169,7 +169,7 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     return b, a
 
 
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=3):
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=6):
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = lfilter(b, a, data)
     return y
@@ -220,10 +220,11 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 10000, len(perturb_times)/perturb_times[-1])
+            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 1000, len(perturb_times)/perturb_times[-1], order=3)
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
-            return func1(perturb_times+data/omega*2*np.pi/360)
+            #return func1(perturb_times+data/omega*2*np.pi/360)
+            return butter_bandpass_filter(func1(perturb_times+data/omega*2*np.pi/360), 0.01, 31999, len(perturb_times)/perturb_times[-1], order=3)
 
     elif bath == "fbm":
         # Total time.
