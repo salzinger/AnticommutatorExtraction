@@ -5,14 +5,16 @@ import matplotlib.pyplot as plt
 
 N = 1
 
-#omega = 2 * np.pi * 21 * 10 ** 3  # MHz
-#omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
-
-omega = 0  # MHz
-
+omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
+#omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
+
+#omega = 0  # MHz
 Omega_R = 2 * np.pi * 24.6 * 10 ** 0  # MHz
+
+
+
 #Omega_R = 2 * np.pi * 12.3  # MHz
 
 #gamma = 2 * np.pi * 15.0  # MHz
@@ -34,7 +36,7 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 vars = np.array([np.zeros(6400), np.zeros(6400), np.zeros(6400)])
 means = np.array([np.zeros(6400), np.zeros(6400), np.zeros(6400)])
 n=0
-for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
+for gamma in [3, 10, 30]:
 
 
             bath = "markovian"
@@ -76,7 +78,7 @@ for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
             #Smean = np.zeros_like(perturb_times) + 1j * np.zeros_like(perturb_times)
             #Pmean = 0
             i = 1
-            while i < int(gamma/12):  # averages + int(2 * gamma):
+            while i < int(gamma*3):  # averages + int(2 * gamma):
                 print(i)
                 i += 1
 
@@ -118,7 +120,7 @@ for gamma in [3*np.pi*2, 10*np.pi*2, 30*np.pi*2]:
             means[n] = np.mean(expect1, axis=0)[1]
 
             n += 1
-            print(means)
+            #print(means)
             #print(vars)
 
             # print(Qobj(states2))
@@ -200,11 +202,11 @@ ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
 #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='#008b8b', label="Time Dependant")
 ax[1, 1].plot(perturb_times, means[0], color='g',
-              label="fbm 3", marker="s", markersize="0.1", linestyle="")
+             label="fbm 3", marker="s", markersize="0.2", linestyle="")
 ax[1, 1].plot(perturb_times, means[1], color='yellow',
-              label="fbm 10", marker="s", markersize="0.1", linestyle="")
+             label="fbm 10", marker="s", markersize="0.2", linestyle="")
 ax[1, 1].plot(perturb_times, means[2], color='r',
-              label="fbm 30", marker="s", markersize="0.1", linestyle="")
+              label="fbm 30", marker="s", markersize="0.2", linestyle="")
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] + np.var(expect1, axis=0)[1], color='b',
 #              label=" +std", marker="s", markersize="0.1", linestyle="")
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',

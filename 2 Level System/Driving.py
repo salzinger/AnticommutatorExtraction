@@ -248,7 +248,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         if omega == 0:
             return np.exp(-1j * phase_noise[0])/2
         else:
-            return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+            return func1(perturb_times+phase_noise[0]/omega)/2  #*(np.pi/2)**2
 
     elif bath == "markovian":
         # Total time.
@@ -287,7 +287,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
             return np.exp(-1j * phase_noise[0])/2
         else:
             func1 = lambda t: np.exp(-1j * t * omega)
-            return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)
+            return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)/2
         #rotating_frame:
         #func1 = lambda t: np.exp(-1j * t * omega)
         #return func1(phase_noise[0] / omega)
