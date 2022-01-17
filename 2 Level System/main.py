@@ -3,24 +3,9 @@ import numpy as np
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
-import array
-
-# def convert(s):
-# The function that converts the string to float
-#    s = s.strip().replace(',', '.')
-#    return float(s)
 
 
-#data = array.array('d')  # an array of type double (float of 64 bits)
 
-# with open("noise_gamma_3.csv", 'r') as f:
-#    for l in f:
-#        strnumbers = l.split('\t')
-#        data.extend( (convert(s) for s in strnumbers if s!='') )
-# A generator expression here.
-
-
-# print(data)
 
 
 N = 1
