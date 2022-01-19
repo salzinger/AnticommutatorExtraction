@@ -189,13 +189,25 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
             phaseerror = []
             y = []
             x = []
+            total=[]
+
+            Ntot = 29.46153846153846
+            de = 1.8333333333333333
 
             for element in range(2, 53):
                 tmw.append(float(linescountsz[element][0:5]))
-                z.append(float(linescountsz[element][7:15])/30-0.5)
+
+                z.append((float(linescountsz[element][7:15])-de)/(Ntot-de)-0.5)
+
                 zerror.append(float(linescountsz[element][16:25]))
-                amp.append(float(linesphase[element][15:25])/30)
+
+                amp.append(float(linesphase[element][15:25])/(Ntot-de))
+
                 phase.append(float(linesphase[element][26:36])*2*np.pi/360)
+
+                total.append(np.sqrt( (float(linesphase[element][15:25])/(Ntot-de)*np.cos(float(linesphase[element][26:36])*2*np.pi/360))**2
+                                      +(float(linesphase[element][15:25])/(Ntot-de)*np.sin(float(linesphase[element][26:36])*2*np.pi/360))**2
+                                      +((float(linesphase[element][7:15])-de)/(Ntot-de)-0.5)**2))
 
 
             print(tmw)
@@ -270,24 +282,24 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
             ax[0, 0].legend(loc="lower left", fontsize=12)
 
             '''
-            ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-", label="z")
-            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label=r"$sqrt(x^2+y^2)$")
-            ax[0, 1].errorbar(tmw, amp, color="grey", label=r"$sqrt(x^2+y^2)$", markersize="5", marker="o",
+            ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
+            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--")
+            ax[0, 1].errorbar(tmw, amp, color="grey", label=r"$sqrt(x^2+y^2)$", markersize="4", marker="o",
                          linestyle="")
             ax[0, 1].errorbar(tmw, z, color='#85bb65', label=r"$z$", markersize="5", marker="o",
                          linestyle="")
             ax[0, 1].legend(loc="lower center", fontsize=12)
 
 
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='purple', linestyle="-", label="x")
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='blue', linestyle="-", label="y")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='purple', linestyle="-")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='blue', linestyle="-")
             ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
-            ax[1, 1].errorbar(tmw, np.sqrt(amp**2 + z**2), color="b", label=r"$sqrt(z**2+x**2+y**2)$", markersize="5", marker="o",
+            ax[1, 1].errorbar(tmw, total, color="grey", label=r"$sqrt(z**2+x**2+y**2)$", markersize="4", marker="o",
                          linestyle="")
 
-            ax[1, 1].errorbar(tmw, amp * np.cos(phase), color="b", label=r"$x$", markersize="5", marker="o",
+            ax[1, 1].errorbar(tmw, amp * np.cos(phase), color="b", label=r"$x$", markersize="4", marker="o",
                          linestyle="")
-            ax[1, 1].errorbar(tmw, amp * np.sin(phase), color="purple", label=r"$y$", markersize="5", marker="o",
+            ax[1, 1].errorbar(tmw, amp * np.sin(phase), color="purple", label=r"$y$", markersize="4", marker="o",
                          linestyle="")
             ax[1, 1].legend(loc="lower center", fontsize=12)
             '''
