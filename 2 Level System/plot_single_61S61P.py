@@ -14,7 +14,7 @@ omega = 0  # MHz
 
 #Omega_R = 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-Omega_R = 2 * np.pi * 23.7 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 14.6 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
@@ -35,7 +35,7 @@ figure = plt.plot()
 c = Bloch(figure)
 c.make_sphere()
 
-for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
+for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
     print("Omega_R: ", Omega_R)
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
@@ -173,44 +173,14 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-            with open('m.txt') as f:
-                linesm = f.readlines()
+            with open('counts_z.txt') as f:
+                linescountsz = f.readlines()
 
-            with open('magn_z_forward.txt') as f:
-                linesmagnzforward = f.readlines()
-            with open('magn_z_forward_error.txt') as f:
-                linesmagnzforwarderror = f.readlines()
-            with open('magn_z_backward.txt') as f:
-                linesmagnzbackward = f.readlines()
-            with open('magn_z_backward_error.txt') as f:
-                linesmagnzbackwarderror = f.readlines()
+            with open('phase_fits.txt') as f:
+                linesphase = f.readlines()
 
-            with open('phase_amp_forward.txt') as f:
-                linesphase_ampforward = f.readlines()
-            with open('phase_amp_forward_error.txt') as f:
-                linesphase_ampforwarderror = f.readlines()
-            with open('phase_amp_backward.txt') as f:
-                linesphase_ampbackward = f.readlines()
-            with open('phase_amp_backward_error.txt') as f:
-                linesphase_ampbackwarderror = f.readlines()
 
-            with open('phase_forward.txt') as f:
-                linesphase_forward = f.readlines()
-            with open('phase_forward_error.txt') as f:
-                linesphase_forwarderror = f.readlines()
-            with open('phase_backward.txt') as f:
-                linesphase_backward = f.readlines()
-            with open('phase_backward_error.txt') as f:
-                linesphase_backwarderror = f.readlines()
-
-            with open('mf.txt') as f:
-                linesmf = f.readlines()
-            with open('mfxy.txt') as f:
-                linesmfxy = f.readlines()
-            with open('mxy.txt') as f:
-                linesmxy = f.readlines()
-
-            x = []
+            tmw = []
             z = []
             zerror = []
             amp = []
@@ -218,35 +188,21 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
             phase = []
             phaseerror = []
             y = []
-            xy = []
+            x = []
 
-            for element in range(1, 20):
-                x.append(float(linesmf[element][0:5]))
-                y.append(float(linesmf[element][11:18]))
-                xy.append(float(linesmfxy[element][11:18]))
+            for element in range(2, 53):
+                tmw.append(float(linescountsz[element][0:5]))
+                z.append(float(linescountsz[element][7:15])/30-0.5)
+                zerror.append(float(linescountsz[element][16:25]))
+                amp.append(float(linesphase[element][15:25])/30)
+                phase.append(float(linesphase[element][26:36])*2*np.pi/360)
 
-            for element in range(0, 19):
-                z.append(float(linesmagnzforward[element][5:11]))
-                zerror.append(float(linesmagnzforwarderror[element][5:11]))
-                amp.append(float(linesphase_ampforward[element][5:11]))
-                amperror.append(float(linesphase_ampforwarderror[element][5:11]))
-                phase.append(float(linesphase_forward[element][5:11]) / 180)
-                phaseerror.append(float(linesphase_forwarderror[element][5:11]) / 180)
 
-            for element in range(1, 21):
-                z.append(float(linesmagnzbackward[element][11:18]))
-                zerror.append(float(linesmagnzbackwarderror[element][11:18]))
-                amp.append(float(linesphase_ampbackward[element][11:18]))
-                amperror.append(float(linesphase_ampbackwarderror[element][11:18]))
-                phase.append(float(linesphase_backward[element][11:18]) / 180)
-                phaseerror.append(float(linesphase_backwarderror[element][11:18]) / 180)
-
-            for element in range(1, 21):
-                x.append(float(linesm[element][0:5]))
-                y.append(float(linesm[element][11:18]))
-                xy.append(float(linesmxy[element][12:18]))
-
-            phaseerror[0] -= 0.7
+            print(tmw)
+            print(z)
+            print(zerror)
+            print(phase)
+            print(amp)
 
             data = np.loadtxt('10MHz_gamma.txt')
             timesteps = 2 * len(data)
@@ -269,7 +225,7 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
 
 
 
-            ax[0, 0].errorbar(x, phase, phaseerror, label="Phase xy-plane",
+            ax[0, 0].errorbar(tmw, phase, label="Phase xy-plane",
                               linestyle="",
                               markersize="5", marker="v", color='black')
 
@@ -284,8 +240,8 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
 
             # ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
             #              label=r"$Phase$", linewidth="1")
-            stored_result = qload("Omega_R =  159.59")
-            stored_result1 = qload("Omega_R =  147.03")
+            #stored_result = qload("Omega_R =  159.59")
+            #stored_result1 = qload("Omega_R =  147.03")
             '''
             ax[0, 0].plot(perturb_times, np.real(
                 2 * np.arcsin(stored_result.expect[2] / np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2 + 0.001)) / (
@@ -314,7 +270,26 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
             ax[0, 0].legend(loc="lower left", fontsize=12)
 
             '''
-            ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="--")
+            ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-", label="z")
+            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label=r"$sqrt(x^2+y^2)$")
+            ax[0, 1].errorbar(tmw, amp, color="grey", label=r"$sqrt(x^2+y^2)$", markersize="5", marker="o",
+                         linestyle="")
+            ax[0, 1].errorbar(tmw, z, color='#85bb65', label=r"$z$", markersize="5", marker="o",
+                         linestyle="")
+            ax[0, 1].legend(loc="lower center", fontsize=12)
+
+
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='purple', linestyle="-", label="x")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='blue', linestyle="-", label="y")
+            ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
+            ax[1, 1].errorbar(tmw, np.sqrt(amp**2 + z**2), color="b", label=r"$sqrt(z**2+x**2+y**2)$", markersize="5", marker="o",
+                         linestyle="")
+
+            ax[1, 1].errorbar(tmw, amp * np.cos(phase), color="b", label=r"$x$", markersize="5", marker="o",
+                         linestyle="")
+            ax[1, 1].errorbar(tmw, amp * np.sin(phase), color="purple", label=r"$y$", markersize="5", marker="o",
+                         linestyle="")
+            ax[1, 1].legend(loc="lower center", fontsize=12)
             '''
             ax[1, 0].plot(perturb_times, np.real(stored_result.expect[1]), color='#85bb65', linestyle="")
             ax[1, 0].plot(perturb_times, np.real(stored_result1.expect[1]), color='#85bb65', linestyle="")
@@ -324,16 +299,18 @@ for Omega_R in np.linspace(2*np.pi*14.4, 2*np.pi*14.4, 1):
             #ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="1")
             #ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='grey', linewidth="1")
 
+
+
             #ax[1, 0].errorbar(x, amp*np.cos(phase), np.sqrt((amperror*np.cos(phase))**2+(amp*np.sin(phase)*phaseerror)**2), color="b", label=r"$x$", markersize="5", marker="o",
             #              linestyle="")
 
             #ax[1, 0].errorbar(x, amp*np.sin(phase), np.sqrt((amperror*np.sin(phase))**2+(amp*np.cos(phase)*phaseerror)**2), color="grey", label=r"$y$", markersize="5", marker="o",
             #              linestyle="--")
 
-            ax[1, 0].errorbar(x, z, zerror, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
+            ax[1, 0].errorbar(tmw, z, zerror, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="5", marker="o",
                           color='#85bb65')
 
-            ax[1, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            ax[1, 0].errorbar(tmw, amp, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
                           linestyle="",
                           markersize="5", marker="v", color='black')
 
