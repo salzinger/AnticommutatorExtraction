@@ -208,9 +208,8 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
 
                 phase.append(float(linesphase[element][26:36])*2*np.pi/360)
 
-                total.append(np.sqrt(  (float(linesphase[element][15:25])/(Ntot-de)*np.cos(float(linesphase[element][26:36])*2*np.pi/360))**2
-                                      +(float(linesphase[element][15:25])/(Ntot-de)*np.sin(float(linesphase[element][26:36])*2*np.pi/360))**2
-                                      +((float(linesphase[element][7:15])-de)/(Ntot-de)-0.5)**2))
+                total.append(np.sqrt(  ( float(linesphase[element][15:25])/(Ntot-de) )**2
+                                      +( (float(linesphase[element][7:15])-de)/(Ntot-de)  -  0.5 )**2))
 
 
             for element in range(56, 107):
@@ -243,11 +242,12 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
                               color='#85bb65')
 
             ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
-            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--")
-            ax[0, 1].errorbar(tmw, amp, amperror, color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="o",
+            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='black', linestyle="-")
+            ax[0, 1].errorbar(tmw, amp, amperror, color="black", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="s",
                          linestyle="")
-            ax[0, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$z$", markersize="5", marker="o",
+            ax[0, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle^2}$", markersize="5", marker="o",
                          linestyle="")
+            ax[0, 1].set_ylim([-0.68, 0.68])
             ax[0, 1].legend(loc="lower center", fontsize=12)
 
 
@@ -265,7 +265,7 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
 
             ax[1, 0].set_xlabel(r'Time [$\mu$s]', fontsize=14)
             ax[1, 0].set_ylabel('Magnetization', fontsize=14)
-            ax[1, 0].set_ylim([-0.596, 0.596])
+            #ax[1, 0].set_ylim([-0.599, 0.599])
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
             ax[1, 0].legend(loc="lower center", fontsize=12)
 
@@ -273,16 +273,17 @@ for Omega_R in np.linspace(2*np.pi*14.6, 2*np.pi*14.6, 1):
 
 
 
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='purple', linestyle="-")
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='blue', linestyle="-")
-            ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
-            ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
-                         linestyle="")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='#85bb65', linestyle="-")
+            #ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
+            #ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            #             linestyle="")
 
             ax[1, 1].errorbar(tmw, amp * np.cos(phase),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                                color="b", label=r"$x$", markersize="4", marker="o", linestyle="")
+                                color='#85bb65', label=r"$\langle \sigma_x \rangle^2}$", markersize="4", marker="o", linestyle="")
             ax[1, 1].errorbar(tmw, amp * np.sin(phase),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
-                                color="purple", label=r"$y$", markersize="4", marker="o", linestyle="")
+                                color="black", label=r"$\langle \sigma_y \rangle^2}$", markersize="4", marker="s", linestyle="")
+            ax[1, 1].set_ylim([-0.68, 0.68])
             ax[1, 1].legend(loc="lower center", fontsize=12)
 
             #plt.show()
