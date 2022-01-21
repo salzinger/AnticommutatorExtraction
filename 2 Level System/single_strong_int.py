@@ -201,12 +201,12 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
 
                 z.append((float(linescountsz[element][7:15])-de)/(Ntot-de)-0.5)
 
-                zerror.append(float(linescountsz[element][16:25])/(Ntot-de))
+                zerror.append(float(linescountsz[element][17:26])/(Ntot-de))
 
                 amp.append(float(linesphase[element][15:25])/(Ntot-de))
 
 
-                phase.append(float(linesphase[element][26:36])*2*np.pi/360)
+                phase.append(float(linesphase[element][27:37])*2*np.pi/360)
 
                 total.append(np.sqrt(  ( float(linesphase[element][15:25])/(Ntot-de) )**2
                                       +( (float(linesphase[element][7:15])-de)/(Ntot-de)  -  0.5 )**2))
