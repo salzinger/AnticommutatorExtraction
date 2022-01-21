@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 
-N = 1
+N = 8
 
 #omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
@@ -18,7 +18,8 @@ Omega_R = 2 * np.pi * 15 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
-J = 0 * 10 ** 0  # MHz
+J = 2 * np.pi * 30 ** 0  # MHz
+
 bath = '10MHz_gamma.txt'
 data = np.loadtxt('10MHz_gamma.txt')
 timesteps = 2 * len(data)
@@ -245,7 +246,7 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
             ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='black', linestyle="-")
             ax[0, 1].errorbar(tmw, amp, amperror, color="black", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="s",
                          linestyle="")
-            ax[0, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle^2}$", markersize="5", marker="o",
+            ax[0, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle}$", markersize="5", marker="o",
                          linestyle="")
             ax[0, 1].set_ylim([-0.68, 0.68])
             ax[0, 1].legend(loc="lower center", fontsize=12)
@@ -256,7 +257,7 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
                           color='#85bb65')
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
 
-            ax[1, 0].errorbar(tmw, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            ax[1, 0].errorbar(tmw, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle}$",
                           linestyle="",
                           markersize="3", marker="s", color='black')
 
@@ -280,9 +281,9 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
                          linestyle="")
 
             ax[1, 1].errorbar(tmw, amp * np.cos(phase),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                                color='#85bb65', label=r"$\langle \sigma_x \rangle^2}$", markersize="4", marker="o", linestyle="")
+                                color='#85bb65', label=r"$\langle \sigma_x \rangle}$", markersize="4", marker="o", linestyle="")
             ax[1, 1].errorbar(tmw, amp * np.sin(phase),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
-                                color="black", label=r"$\langle \sigma_y \rangle^2}$", markersize="4", marker="s", linestyle="")
+                                color="black", label=r"$\langle \sigma_y \rangle}$", markersize="4", marker="s", linestyle="")
             ax[1, 1].set_ylim([-0.68, 0.68])
             ax[1, 1].legend(loc="lower center", fontsize=12)
 
