@@ -275,13 +275,13 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
             '''
 
-            samples = 2 * 10 ** 6 #min 8 * 10 ** 6
+            samples = 2 * 10 ** 7 #min 8 * 10 ** 6
             sample_time = 2
 
-            gamma3 = average_psd(3, omega, samples, sample_time, 2) #min 40
-            gamma5 = average_psd(5, omega, samples, sample_time, 2)
-            gamma15 = average_psd(15, omega, samples, sample_time, 2)
-            gamma30 = average_psd(30, omega, samples, sample_time, 2)
+            gamma3 = average_psd(3, omega, samples, sample_time, 140) #min 40
+            gamma5 = average_psd(5, omega, samples, sample_time, 140)
+            gamma15 = average_psd(15, omega, samples, sample_time, 140)
+            gamma30 = average_psd(30, omega, samples, sample_time, 140)
 
 
 
@@ -301,7 +301,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             ax[0, 0].plot(-gamma15[0], gamma15[1], linestyle='',
                           marker='v', markersize='4', label=r"$\gamma=\Omega_R$", color="#CC7722")
-            ax[0, 0].plot(gamma15[0], 0.5 * lorentzian(gamma15[0], 1, omega / (2 * np.pi), 10), linestyle='-',
+            ax[0, 0].plot(gamma15[0], 0.5 * lorentzian(gamma15[0], 1, omega / (2 * np.pi), 15), linestyle='-',
                            linewidth=1,
                           color="#CC7722")
 
@@ -350,7 +350,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             ax[0, 0].legend(loc="upper right")
 
-            ax[0, 0].set_xlabel(r'$\Delta$f [\Omega_R]', fontsize=16)
+            ax[0, 0].set_xlabel(r'$\Delta$f [$\Omega_R$]', fontsize=16)
             ax[0, 0].set_ylabel(r'PSD [$V^2$/Hz]', fontsize=16)
             plt.xticks(np.linspace(-10, 10, 5))
             plt.show()
