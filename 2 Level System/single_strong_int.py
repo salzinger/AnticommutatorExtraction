@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 
-N = 8
+N = 2
 
 #omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
@@ -194,8 +194,8 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
             x = []
             total=[]
 
-            Ntot=310
-            de=10.6
+            Ntot = 310
+            de = 10.6
 
             for element in range(2, 53):
                 tmw.append(float(linescountsz[element][0:5]))
@@ -242,7 +242,7 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
                               linewidth="0.4",
                               color='#85bb65')
 
-            ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
+            ax[0, 1].plot(perturb_times, np.real(expect_single[1])*np.exp(-perturb_times**(-0.5)), color='#85bb65', linestyle="-")
             ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='black', linestyle="-")
             ax[0, 1].errorbar(tmw, amp, amperror, color="black", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="s",
                          linestyle="")
@@ -297,3 +297,71 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
 c.render()
 plt.show()
 
+
+
+'''
+            data = np.loadtxt('10MHz_gamma.txt')
+            timesteps = 2 * len(data)
+            endtime = 0.4
+            pertubation_length = endtime / 1
+
+            data_reversed = -data[::-1]
+
+            data = np.cumsum(data)
+
+            data_reversed = np.cumsum(data_reversed) + data[-1] + 180
+
+            data = np.append(data / 180, data_reversed / 180)
+
+            ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
+                              linewidth="0.4",
+                              color='#85bb65')
+
+            ax[0, 1].plot(perturb_times, np.real(expect_single[1])*np.exp(-perturb_times**(0.5)), color='#85bb65', linestyle="-")
+            ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2)*np.exp(-perturb_times**(0.5)), color='black', linestyle="-")
+            ax[0, 1].errorbar(tmw, amp, amperror, color="black", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="s",
+                         linestyle="")
+            ax[0, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle}$", markersize="5", marker="o",
+                         linestyle="")
+            ax[0, 1].set_ylim([-0.68, 0.68])
+            ax[0, 1].legend(loc="lower center", fontsize=12)
+
+
+
+            ax[1, 0].errorbar(tmw, z, zerror, label=r"$\langle \sigma_z \rangle$", linestyle="", markersize="4", marker="o",
+                          color='#85bb65')
+            ax[1, 0].plot(perturb_times, np.real(expect_single[1])*np.exp(-perturb_times**(0.5)), color='#85bb65', linestyle="-")
+
+            ax[1, 0].errorbar(tmw, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle}$",
+                          linestyle="",
+                          markersize="3", marker="s", color='black')
+
+            ax[1, 0].plot(perturb_times, np.real(np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2))*np.exp(-perturb_times**(0.5)), color="black",
+                          linestyle="--")
+
+            ax[1, 0].set_xlabel(r'Time [$\mu$s]', fontsize=14)
+            ax[1, 0].set_ylabel('Magnetization', fontsize=14)
+            #ax[1, 0].set_ylim([-0.599, 0.599])
+            # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
+            ax[1, 0].legend(loc="lower center", fontsize=12)
+
+
+
+
+
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[0])*np.exp(-perturb_times**(0.5)), color='black', linestyle="-")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[2])*np.exp(-perturb_times**(0.5)), color='#85bb65', linestyle="-")
+            ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2)*np.exp(-perturb_times**(0.5)), color='grey', linestyle="--", label="")
+            ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+                         linestyle="")
+
+            ax[1, 1].errorbar(tmw, amp * np.cos(phase),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
+                                color='#85bb65', label=r"$\langle \sigma_x \rangle}$", markersize="4", marker="o", linestyle="")
+            ax[1, 1].errorbar(tmw, amp * np.sin(phase),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
+                                color="black", label=r"$\langle \sigma_y \rangle}$", markersize="4", marker="s", linestyle="")
+            ax[1, 1].set_ylim([-0.68, 0.68])
+            ax[1, 1].legend(loc="lower center", fontsize=12)
+
+            #plt.show()
+
+'''

@@ -117,10 +117,10 @@ def MagnetizationY(N):
 def H0(omega, J, N):
     H = 0
     for j in range(0, N):
-        H += 1 * omega / 2 * sigmaz(j, N)
+        H += 1 * omega / 2 * sigmaz(j, N) + Qobj([[0, 0], [0, 0]])
         for i in range(0, N):
             if i != j:
-                H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / (np.abs(i-j))**3
+                H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / (np.random.uniform(0.65, 1.35)*np.abs(i-j))**3
     return H
 
 

@@ -220,7 +220,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 1000, len(perturb_times)/perturb_times[-1], order=3)
+            return np.exp(-1j * data * 2 * np.pi/360)/2 # butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 1000, len(perturb_times)/perturb_times[-1], order=3)
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
             #return func1(perturb_times+data/omega*2*np.pi/360)
@@ -263,7 +263,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 31999, len(perturb_times)/perturb_times[-1], order=3)
+            return np.exp(-1j * data * 2 * np.pi/360)/2#butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, 31999, len(perturb_times)/perturb_times[-1], order=3)
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
             #return func1(perturb_times+data/omega*2*np.pi/360)

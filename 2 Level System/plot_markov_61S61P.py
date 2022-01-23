@@ -1,3 +1,5 @@
+import numpy as np
+
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
@@ -11,7 +13,7 @@ N = 1
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
 omega = 0  # MHz
-Omega_R = 2 * np.pi * 15 * 10 ** 0  # MHz
+Omega_R = 2 * np.pi * 1 * 10 ** 0  # MHz
 
 
 
@@ -37,10 +39,11 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 #means = np.array([np.zeros(6400), np.zeros(6400), np.zeros(6400)])
 #n=0
 timesteps = 100
-endtime = 0.2
+endtime = 3
 pertubation_length = endtime / 1
 perturb_times = np.linspace(0, endtime, timesteps)
 init_state = productstateZ(0, 0, N)
+
 '''
 for gamma in [3, 10, 30]:
 
@@ -188,7 +191,7 @@ Ntot_e = 2
 
 
 for element in range(1, 32):
-    x0.append(float(linesm0[element][0:5]))
+    x0.append(float(linesm0[element][0:5])*15)
 
     y0.append((float(linesm0[element][8:18])-de)/(Ntot-de)-0.5)
     y3.append((float(linesm3[element][8:18])-de)/(Ntot-de)-0.5)
@@ -214,34 +217,40 @@ S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega)
 
 result_m0 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     init_state,
-                    perturb_times, [], Exps,
+                    perturb_times, [np.sqrt(0.15/15) * sigmaz(0, N), np.sqrt(0.15/15) * sigmaz(0, N)], Exps,
                     options=opts)
 
 m0 = np.array(result_m0.expect[:])
 
 result_m3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     init_state,
-                    perturb_times, [np.sqrt(3) * sigmaz(0, N), np.sqrt(3) * sigmaz(0, N)], Exps,
+                    perturb_times, [np.sqrt(3/15) * sigmaz(0, N), np.sqrt(3/15) * sigmaz(0, N)], Exps,
                     options=opts)
 
 result_m5 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     init_state,
-                    perturb_times, [np.sqrt(5) * sigmaz(0, N), np.sqrt(5) * sigmaz(0, N)], Exps,
+                    perturb_times, [np.sqrt(5/15) * sigmaz(0, N), np.sqrt(5/15) * sigmaz(0, N)], Exps,
                     options=opts)
 
 result_m15 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                      init_state,
-                     perturb_times, [np.sqrt(15) * sigmaz(0, N), np.sqrt(15) * sigmaz(0, N)], Exps,
+                     perturb_times, [np.sqrt(15/15) * sigmaz(0, N), np.sqrt(15/15) * sigmaz(0, N)], Exps,
                      options=opts)
 
 result_m30 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                      init_state,
-                     perturb_times, [sqrt(30) * sigmaz(0, N), sqrt(30) * sigmaz(0, N)], Exps,
+                     perturb_times, [sqrt(30/15) * sigmaz(0, N), sqrt(30/15) * sigmaz(0, N)], Exps,
                      options=opts)
 
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = 0$ MHz', linestyle='')
+
+
+ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/100$', linestyle='')
 
 ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
+
+ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
+ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
+ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.0, color='grey', linestyle='--')
 
 #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='#008b8b', label="Time Dependant")
 #ax[1, 1].plot(perturb_times, means[0], color='g',
@@ -255,28 +264,30 @@ ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#85bb65', label='$\gamma = 3$ MHz', linestyle='', markersize="5")
-ax[1, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#85bb65', linestyle='-')
+ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#025669', label='$\gamma = \Omega_R/5$', linestyle='', markersize="5")
+ax[1, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#025669', linestyle='-')
 
-ax[1, 1].errorbar(x0, y5, y5e, marker="^", color='b', label='$\gamma = 5$ MHz', linestyle='')
-ax[1, 1].plot(perturb_times, np.real(result_m5.expect[1]), color='b', linestyle='-')
+ax[1, 1].errorbar(x0, y5, y5e, marker="D", color='#800080', label='$\gamma = \Omega_R/3$', linestyle='', markersize="5")
+ax[1, 1].plot(perturb_times, np.real(result_m5.expect[1]), color='#800080', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m3.expect[1])+vars[0],
            #           np.real(result_m3.expect[1])-vars[0], alpha=0.2, color='b')
 
-ax[1, 1].errorbar(x0, y15, y15e, marker="v", color='#CC7722', label='$\gamma = 15$ MHz', linestyle='')
+ax[1, 1].errorbar(x0, y15, y15e, marker="v", color='#CC7722', label='$\gamma = \Omega_R$', linestyle='', markersize="5")
 ax[1, 1].plot(perturb_times, np.real(result_m15.expect[1]), color='#CC7722', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m10.expect[1])+vars[1],
 #                      np.real(result_m10.expect[1])-vars[1], alpha=0.2, color='#CC7722')
 
-ax[1, 1].errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 30$ MHz', linestyle='')
+ax[1, 1].errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="5")
 ax[1, 1].plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m30.expect[1])+vars[2],
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
-ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$\mu$s]', fontsize=16)
+#ax[1, 1].set_ylim([-0.596, 0.596])
+ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
 ax[1, 1].set_ylabel('Magnetization', fontsize=16)
 ax[1, 1].legend(loc="upper right", fontsize=10)
+
+
 
 fig.tight_layout()
 plt.show()
