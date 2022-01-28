@@ -278,35 +278,35 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             samples = 2 * 10 ** 7 #min 8 * 10 ** 6
             sample_time = 2
 
-            gamma3 = average_psd(3, omega, samples, sample_time, 140) #min 40
-            gamma5 = average_psd(5, omega, samples, sample_time, 140)
-            gamma15 = average_psd(15, omega, samples, sample_time, 140)
-            gamma30 = average_psd(30, omega, samples, sample_time, 140)
+            gamma3 = average_psd(3, omega, samples, sample_time, 400) #min 40
+            gamma5 = average_psd(5, omega, samples, sample_time, 400)
+            gamma15 = average_psd(15, omega, samples, sample_time, 400)
+            gamma30 = average_psd(30, omega, samples, sample_time, 400)
 
 
 
             # ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
             #           marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
             ax[0, 0].plot(-gamma3[0], gamma3[1], linestyle='',
-                          marker='^', markersize='4', label=r"$\gamma=\Omega_R/5$", color='#025669')
+                          marker='^', markersize='4', label=r"$\gamma=\Omega_R/5$", color='#025669', markerfacecolor='none', markeredgecolor = '#025669')
             ax[0, 0].plot(gamma3[0], 0.5 * lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           linewidth=1,
                           color='#025669')
 
             ax[0, 0].plot(-gamma5[0], gamma5[1], linestyle='',
-                          marker='D', markersize='4', label=r"$\gamma=\Omega_R/3$", color='#800080')
+                          marker='D', markersize='4', label=r"$\gamma=\Omega_R/3$", markerfacecolor='none', markeredgecolor = '#800080')
             ax[0, 0].plot(gamma5[0], 0.5 * lorentzian(gamma5[0], 1, omega / (2 * np.pi), 5), linestyle='-',
                           linewidth=1,
                           color='#800080')
 
             ax[0, 0].plot(-gamma15[0], gamma15[1], linestyle='',
-                          marker='v', markersize='4', label=r"$\gamma=\Omega_R$", color="#CC7722")
+                          marker='v', markersize='4', label=r"$\gamma=\Omega_R$", markerfacecolor='none', markeredgecolor = "#CC7722")
             ax[0, 0].plot(gamma15[0], 0.5 * lorentzian(gamma15[0], 1, omega / (2 * np.pi), 15), linestyle='-',
                            linewidth=1,
                           color="#CC7722")
 
             ax[0, 0].plot(-gamma30[0], gamma30[1], linestyle='',
-                          marker='s', markersize='4', label=r"$\gamma=2\Omega_R$", color="#800020")
+                          marker='s', markersize='4', label=r"$\gamma=2\Omega_R$", markerfacecolor='none', markeredgecolor = "#800020")
             ax[0, 0].plot(gamma30[0], 0.5 * lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
                           linewidth=1,
                           color="#800020")

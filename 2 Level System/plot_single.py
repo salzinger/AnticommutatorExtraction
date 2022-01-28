@@ -344,7 +344,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             ax[1, 0].plot(perturb_times, np.real(np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2)), color="grey",
                           linestyle="")
             ax[1, 0].fill_between(perturb_times, np.real(np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2)),
-                                  np.real(np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2)), alpha=0.2, color="grey")
+                                  np.real(np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2)), alpha = 0.2, color="grey")
 
             ax[1, 0].plot(perturb_times, np.real(np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)), color="black",
                           linestyle="--")
@@ -357,7 +357,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
             ax[1, 0].legend(loc="lower center", fontsize=12)
 
-            #plt.show()
+            plt.show()
             plt.savefig("Omega_R =  %.2f.png" % (
                 Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 

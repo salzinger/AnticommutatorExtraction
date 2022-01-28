@@ -80,7 +80,7 @@ for gamma in [3, 5, 15, 30]:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
         ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
                       linewidth=1.0,
-                      label='$\gamma = 2\Omega_R$', marker="s", markersize="2")
+                      label='$\gamma = 2\Omega_R$', marker="s", markersize="4", markerfacecolor='none', markeredgecolor='#800020')
         ax[0, 1].plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='--', linewidth=1.0)
         # ,label='$\sqrt{30 MHz  t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
@@ -90,7 +90,7 @@ for gamma in [3, 5, 15, 30]:
 
         ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='',
                       linewidth=1.0,
-                      label='$\gamma = \Omega_R/5$' ,marker="^", markersize="2")
+                      label='$\gamma = \Omega_R/5$' ,marker="^", markersize="4", markerfacecolor='none', markeredgecolor = '#025669')
         ax[0, 1].plot(t, np.sqrt(gamma * t / 15), color='#025669', linestyle='--', linewidth=1.0)
         # , label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
