@@ -72,6 +72,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                                     perturb_times, e_ops=Exps, options=opts)
 
+            states = result_single.states
+
             expect_single = np.array(result_single.expect[:])
             qsave(result_single, "Omega_R =  %.2f" % Omega_R)
             # print("gamma: ", gamma)
@@ -194,7 +196,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             total=[]
 
             Ntot = 29.46153846153846
-            de = 1.8333333333333333
+            de = 1.8333333333333333-1.8
 
             for element in range(2, 53):
                 tmw.append(float(linescountsz[element][0:5])*15)
@@ -203,10 +205,10 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 zerror.append(float(linescountsz[element][16:25])/(Ntot-de))
 
-                amp.append(float(linesphase[element][15:25])/(Ntot-de))
+                amp.append((float(linesphase[element][15:25]))/(Ntot-de))
 
 
-                phase.append(float(linesphase[element][26:36])*2*np.pi/360)
+                phase.append(float(linesphase[element][26:36])*2*np.pi/360+np.pi)
 
                 total.append(np.sqrt(  ( float(linesphase[element][15:25])/(Ntot-de) )**2
                                       +( (float(linesphase[element][7:15])-de)/(Ntot-de)  -  0.5 )**2))
@@ -257,6 +259,9 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             rho_ideal=[]
             F=[]
             F1 = []
+            F2 = []
+            F3 = []
+            F4 = []
 
             diz=[]
             dix=[]
@@ -271,38 +276,76 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 rho_measured.append(qeye(2) + z[t]*sigmaz(0, 1) + amp[t] * np.cos(phase[t])*sigmax(0, 1) + amp[t] * np.sin(phase[t])*sigmay(0, 1))
 
-                F.append( (((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1) + expect_single[2][t*511]*sigmay(0, 1) + expect_single[0][t*511]*sigmax(0, 1))/2).conj()
-                          * (qeye(2) + z[t]*sigmaz(0, 1) + amp[t] * np.cos(phase[t])*sigmay(0, 1) + amp[t] * np.sin(phase[t])*sigmax(0, 1))/2).tr())
+                F.append(np.sqrt( (  ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).dag()
+                          * (qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2   ).tr()))
 
-                F1.append( (qutip.to_choi(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1) + expect_single[2][t*511]*sigmay(0, 1) + expect_single[0][t*511]*sigmax(0, 1)))/2).conj()
-                          * qutip.to_choi((qeye(2) + z[t]*sigmaz(0, 1) + amp[t] * np.cos(phase[t])*sigmay(0, 1) + amp[t] * np.sin(phase[t])*sigmax(0, 1))/2)).tr())
+                #F.append( (( (qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).dag()
+                #          * (qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).tr())
+
+                #print((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1) + expect_single[2][t*511]*sigmay(0, 1) + expect_single[0][t*511]*sigmax(0, 1))/2)
+
+                F1.append( np.sqrt((   qutip.to_choi(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2))/2).dag()
+                          * qutip.to_choi((qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2)   ).tr()))
+
+                #F1.append( ( qutip.to_choi((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).dag()
+                #          * qutip.to_choi((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2)).tr())
+
+                #print(states[t*511].dag()*states[t*511])
+
+                F2.append((states[t*511].dag() * ((qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2) * states[t*511] ).sqrtm())
+
+                #F2.append( (states[t*511].dag() * (qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2)
+                #          * states[t*511])
+
+                F3.append( fidelity((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2,
+                        (qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2    ))
+
+                F4.append( process_fidelity((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2,
+                        (qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2    ))
 
 
 
                 diz.append( -(np.real(expect_single[1])[t*511] - z[t]) / zerror[t] )
 
-                dix.append( -(- (np.real(expect_single[2])[t*511]) - amp[t] * np.cos(phase[t])) / (np.sqrt((amperror[t]*np.cos(phase[t]))**2 + (amp[t]*np.sin(phase[t])*phaseerror[t])**2)) )
+                dix.append( ((np.real(expect_single[2])[t*511]) - amp[t] * np.cos(phase[t])) / (np.sqrt((amperror[t]*np.cos(phase[t]))**2 + (amp[t]*np.sin(phase[t])*phaseerror[t])**2)) )
 
-                diy.append( -(- (np.real(expect_single[0])[t*511]) - amp[t] * np.sin(phase[t])) / (np.sqrt((amperror[t]*np.sin(phase[t]))**2 + (amp[t]*np.cos(phase[t])*phaseerror[t])**2)) )
+                diy.append( ((np.real(expect_single[0])[t*511]) - amp[t] * np.sin(phase[t])) / (np.sqrt((amperror[t]*np.sin(phase[t]))**2 + (amp[t]*np.cos(phase[t])*phaseerror[t])**2)) )
 
-            print(F1)
+            print(np.mean(F))
+            print(np.std(F))
+            print(np.mean(F1))
+            print(np.std(F1))
+            print(np.mean(F2))
+            print(np.std(F2))
+            print(np.mean(F3))
+            print(np.std(F3))
+            #print(np.sum(diz))
+            #print(np.sum(dix))
+            #print(np.sum(diy))
 
-            print(np.sum(diz))
-            print(np.sum(dix))
-            print(np.sum(diy))
-
-            ax[1, 0].errorbar(tmw, diz, label=r"$z [\sigma]$", linestyle="--", markersize="4", marker="o",
-                          color='grey')
+            #ax[1, 0].errorbar(tmw, diz, label=r"$z [\sigma]$", linestyle="--", markersize="4", marker="o",
+             #             color='grey')
 
 
             #ax[1, 0].errorbar(tmw, F, label=r"$Fidelity $", linestyle="--", markersize="4", marker="o",
             #              color='black')
 
-            ax[1, 0].errorbar(tmw, F, label=r"$F = Tr[\rho^\dagger_{ideal}*\rho_{measured}]$", linestyle="--", markersize="4", marker="o",
+            ax[1, 0].errorbar(tmw, F, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal}*\rho_{measured}]}$", linestyle="--", markersize="4", marker="o",
                           color='black')
 
-            ax[1, 0].errorbar(tmw, F1, label=r"$F = Tr[\chi^\dagger_{ideal}*\chi_{measured}]$", linestyle="--", markersize="4", marker="o",
+            ax[1, 0].errorbar(tmw, F2, label=r"$F =\sqrt{ \langle \Psi \vert *\rho_{measured} \vert \Psi \rangle}$", linestyle="", markersize="3", marker="o",
+                         color='blue')
+
+            ax[1, 0].errorbar(tmw, F3, label="Fidelity Qutip", linestyle="", markersize="3", marker="^",
+                         color='grey')
+
+
+
+            ax[1, 0].errorbar(tmw, F1, label=r"$F_{process} = Tr[\chi^\dagger_{ideal}*\chi_{measured}]$", linestyle="--", markersize="4", marker="o",
                           color='g')
+
+            ax[1, 0].errorbar(tmw, F4, label="Process Fidelity Qutip", linestyle="", markersize="3", marker="s",
+                         color='orange')
 
             #ax[1, 0].errorbar(tmw, dix, label=r"$y [\sigma]$", linestyle="--", markersize="4", marker="o",
             #              color='#85bb65')
@@ -333,8 +376,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
 
             ax[1, 0].plot(perturb_times, np.ones_like(perturb_times) * 1, color='grey', linestyle='--')
-            ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 1, color='grey', linestyle='--')
-            ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
+            #ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 1, color='grey', linestyle='--')
+            #ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
 
             ax[1, 1].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
             ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
@@ -344,8 +387,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
 
 
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='#85bb65', linestyle="-")
+            ax[1, 1].plot(perturb_times, np.real(expect_single[0]), color='black', linestyle="-")
+            ax[1, 1].plot(perturb_times, np.real(expect_single[2]), color='#85bb65', linestyle="-")
             #ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
             #ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
             #             linestyle="")
@@ -358,7 +401,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[1, 1].legend(loc="lower center", fontsize=12)
 
             ax[1, 0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-            ax[1, 0].set_ylabel('Magnetization', fontsize=14)
+            ax[1, 0].set_ylabel('', fontsize=14)
             ax[1, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
             ax[1, 1].set_ylabel('Magnetization', fontsize=14)
 
