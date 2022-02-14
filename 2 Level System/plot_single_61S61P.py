@@ -175,10 +175,10 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-            with open('counts_z_new.txt') as f:
+            with open('counts_z_new1.txt') as f:
                 linescountsz = f.readlines()
 
-            with open('phase_fits_new.txt') as f:
+            with open('phase_fits_new1.txt') as f:
                 linesphase = f.readlines()
 
 
@@ -217,12 +217,12 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 zerror.append(float(linescountsz[element][16:25])/(Ntot-de))
 
-                amp.append((float(linesphase[element][15:25])-0.5)/(Ntot-de))
+                amp.append((float(linesphase[element][15:29]))/(Ntot-de))
 
 
-                phase.append(float(linesphase[element][26:36])*2*np.pi/360+np.pi)
+                phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
 
-                total.append(np.sqrt(  ( (float(linesphase[element][15:25])-0.5)/(Ntot-de) )**2   +  ( (float(linescountsz[element][7:15])-de)/(Ntot-de)  -  0.5 )**2  )  )
+                total.append(np.sqrt(  ( (float(linesphase[element][15:29]))/(Ntot-de) )**2   +  ( (float(linescountsz[element][7:15])-de)/(Ntot-de)  -  0.5 )**2  )  )
 
 
             for element in range(56, 107):
@@ -366,8 +366,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[0, 1].errorbar(tmw, F1, label=r"$F_{process} = Tr[\chi^\dagger_{ideal}*\chi_{measured}]$", linestyle="--", markersize="4", marker="o",
                           color='g')
 
-            #ax[1, 0].errorbar(tmw, F4, label="Process Fidelity Qutip", linestyle="", markersize="3", marker="s",
-            #             color='orange')
+            ax[1, 0].errorbar(tmw, F4, label="Process Fidelity Qutip", linestyle="", markersize="3", marker="s",
+                         color='orange')
 
             #ax[1, 0].errorbar(tmw, 1 - (np.abs( np.array(total)*2-1 ))/4 , #np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
             #                    color="grey", label=r"$1-\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}$", markersize="4", marker="s", linestyle="")
