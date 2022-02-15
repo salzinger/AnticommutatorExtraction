@@ -219,7 +219,6 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 amp.append((float(linesphase[element][15:29]))/(Ntot-de))
 
-
                 phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
 
                 total.append(np.sqrt(  ( (float(linesphase[element][15:29]))/(Ntot-de) )**2   +  ( (float(linescountsz[element][7:15])-de)/(Ntot-de)  -  0.5 )**2  )  )
@@ -243,6 +242,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #print(phaseerror)
 
             data = np.loadtxt('10MHz_gamma.txt')
+            len(data)
             timesteps = 2 * len(data)
             endtime = 6
             pertubation_length = endtime / 1
@@ -255,9 +255,18 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
             data = np.append(data / 180, data_reversed / 180)
 
+            len(data)
+
+            len(noisy_func(gamma, perturb_times, omega, bath))
+
             ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
+            #ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)+1), Cubic_Spline(perturb_times[0], perturb_times[-1],
+            #                  noisy_func(gamma, perturb_times, omega, bath)), label="Phase drift filtered",
+            #                  linewidth="0.4",
+            #                  color='black')
+
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
             ax[1, 0].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='black', linestyle="-")
@@ -290,7 +299,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 np.append(rho_ideal, (qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2)
 
-                np.append(rho_measured, (qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2)
+                np.append(rho_measured, (qeye(2)*(2*total[t]) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2)
 
                 F.append(np.sqrt(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2
 
