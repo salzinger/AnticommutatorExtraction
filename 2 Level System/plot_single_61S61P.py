@@ -139,8 +139,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
                 else:
                     colorlist.append([0, 0, 0, 1])
 
-            print(len(colorlist))
-            print(len(expect_single[0]))
+            #print(len(colorlist))
+            #print(len(expect_single[0]))
 
             expectsx = []
             expectsy = []
@@ -231,18 +231,18 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
 
             #print(tmw)
-            print(z)
+            #print(z)
             #print(zerror)
 
-            print(amp)
-            print(total)
+            #print(amp)
+            #print(total)
 
             #print(amperror)
             #print(phase)
             #print(phaseerror)
 
             data = np.loadtxt('10MHz_gamma.txt')
-            len(data)
+            #len(data)
             timesteps = 2 * len(data)
             endtime = 6
             pertubation_length = endtime / 1
@@ -251,21 +251,24 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
             data = np.cumsum(data)
 
-            data_reversed = np.cumsum(data_reversed) + data[-1] + 180
+            data_reversed = np.cumsum(data_reversed) + data[-1] - 180
 
             data = np.append(data / 180, data_reversed / 180)
 
-            len(data)
+            #print(len(data))
 
-            len(noisy_func(gamma, perturb_times, omega, bath))
+            #print(len(noisy_func(gamma, perturb_times, omega, bath)))
 
             ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
-            #ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)+1), Cubic_Spline(perturb_times[0], perturb_times[-1],
-            #                  noisy_func(gamma, perturb_times, omega, bath)), label="Phase drift filtered",
-            #                  linewidth="0.4",
-            #                  color='black')
+            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(noisy_func(gamma, perturb_times, omega, bath))), -np.angle(noisy_func(gamma, perturb_times, omega, bath))/np.pi, label="Phase drift filtered",
+                              linewidth="0.4",
+                              color='black')
+
+            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath)), label="Amp of Phase drift filtered",
+                              linewidth="0.4",
+                              color='black')
 
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
@@ -340,16 +343,17 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
                 diy.append( ((np.real(expect_single[0])[t*511]) - amp[t] * np.sin(phase[t])) / (np.sqrt((amperror[t]*np.sin(phase[t]))**2 + (amp[t]*np.cos(phase[t])*phaseerror[t])**2)) )
 
-            print(np.mean(F))
-            print(np.std(F))
-            print(np.mean(F1))
-            print(np.std(F1))
-            print(np.mean(F2))
-            print(np.std(F2))
-            print(np.mean(F3))
-            print(np.std(F3))
+            #print(np.mean(F))
+            #print(np.std(F))
+            #print(np.mean(F1))
+            #print(np.std(F1))
+            #print(np.mean(F2))
+            #print(np.std(F2))
+            #print(np.mean(F3))
+            #print(np.std(F3))
             print(np.mean(F4))
-            print(np.std(F4))
+            print(np.min(F4))
+            #print(np.std(F4))
             #print(np.sum(diz))
             #print(np.sum(dix))
             #print(np.sum(diy))
@@ -375,8 +379,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[0, 1].errorbar(tmw, F1, label=r"$F_{process} = Tr[\chi^\dagger_{ideal}*\chi_{measured}]$", linestyle="--", markersize="4", marker="o",
                           color='g')
 
-            ax[1, 0].errorbar(tmw, F4, label="Process Fidelity Qutip", linestyle="", markersize="3", marker="s",
-                         color='orange')
+            #ax[1, 0].errorbar(tmw, F4, label="Process Fidelity Qutip", linestyle="", markersize="3", marker="s",
+            #             color='orange')
 
             #ax[1, 0].errorbar(tmw, 1 - (np.abs( np.array(total)*2-1 ))/4 , #np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
             #                    color="grey", label=r"$1-\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}$", markersize="4", marker="s", linestyle="")

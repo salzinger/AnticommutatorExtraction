@@ -242,19 +242,29 @@ def noisy_func(gamma, perturb_times, omega, bath):
                 f.write(str(line))
                 f.write('\n')
         '''
-
         data = np.loadtxt('10MHz_gamma.txt')
+        #print(len(data))
         data_reversed = -data[::-1]
 
         #there
         data = np.cumsum(data)
+        #print(butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/32-1, len(data)/6, order=3))
+        signal = np.array(butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3))
+
+        unfiltered_signal = np.array(np.exp(-1j * data * 2 * np.pi/360)/2)
+        #print(len(signal))
 
         #and back again
-        data_reversed = np.cumsum(data_reversed)+data[-1]+180
-
+        data_reversed = np.cumsum(data_reversed)+data[-1]-180
+        signal_reversed = -signal[::-1]
+        #print(np.array(butter_bandpass_filter(np.exp(-1j * data_reversed * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3)))
+        #signal = np.append(signal, signal_reversed)
+        signal = np.append(signal, np.array(butter_bandpass_filter(np.exp(-1j * data_reversed * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3)))
+        #print(len(signal))
         data = np.append(data, data_reversed)
-
         #print(len(data))
+
+
         #plt.plot(np.linspace(0, 0.2, int(len(data))), data/180, color="#85bb65", linewidth="0.5")
         #plt.ylabel('Phase [$\pi$]', fontsize=16)
         #plt.xlabel('Time [us]', fontsize=16)
@@ -266,6 +276,7 @@ def noisy_func(gamma, perturb_times, omega, bath):
         if omega == 0:
             #return np.exp(-1j * data * 2 * np.pi/360)/2
             return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3)
+            #return signal
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
             #return func1(perturb_times+data/omega*2*np.pi/360)
