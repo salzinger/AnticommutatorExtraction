@@ -36,7 +36,7 @@ c = Bloch(figure)
 c.make_sphere()
 
 for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
-    print("Omega_R: ", Omega_R)
+    #print("Omega_R: ", Omega_R)
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
     for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
@@ -52,12 +52,18 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
         perturb_times = np.linspace(0, pertubation_length, timesteps)
         fs = timesteps / endtime
         # print(len(perturb_times))
-        for g in np.logspace(np.log(0.1 * Omega_R), np.log(10 * Omega_R), num=1, base=np.e):
+        for rise_time in np.logspace(np.log(20), np.log(5000), num=20, base=np.e):
+
+            g=Omega_R
+
+            rise_time = int(rise_time)
+
+            print("rise_time= ", rise_time)
 
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              noisy_func(gamma, perturb_times, omega, bath))
+                              noisy_func(gamma, perturb_times, omega, bath, rise_time))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              np.conj(noisy_func(gamma, perturb_times, omega, bath)))
+                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time)))
             '''
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             # data / 0.4)
@@ -91,9 +97,9 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              noisy_func(gamma, perturb_times, omega, bath))
+                              noisy_func(gamma, perturb_times, omega, bath, rise_time))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              np.conj(noisy_func(gamma, perturb_times, omega, bath)))
+                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time)))
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             #                 data[0:32000]/0.4)
 
@@ -125,7 +131,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             data = np.cumsum(data)
             min = np.min(data)
             max = np.max(data)
-            print(max)
+            #print(max)
             for element in data:
                 if element > -88.5:
                     if element > 1.14:
@@ -262,11 +268,11 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
-            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(noisy_func(gamma, perturb_times, omega, bath))), -np.angle(noisy_func(gamma, perturb_times, omega, bath))/np.pi, label="Phase drift filtered",
+            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(noisy_func(gamma, perturb_times, omega, bath, rise_time))), -np.angle(noisy_func(gamma, perturb_times, omega, bath, rise_time))/np.pi, label="Phase drift filtered",
                               linewidth="0.4",
                               color='black')
 
-            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath)), label="Amp of Phase drift filtered",
+            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath, rise_time)), label="Amp of Phase drift filtered",
                               linewidth="0.4",
                               color='black')
 
@@ -280,8 +286,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[1, 0].set_ylim([-0.68, 0.68])
             ax[1, 0].legend(loc="lower center", fontsize=12)
 
-            print(len(tmw))
-            print(len(perturb_times) / 51)
+            #print(len(tmw))
+            #print(len(perturb_times) / 51)
             #discr=[]
             rho_measured = np.array([])
             rho_ideal = np.array([])

@@ -196,7 +196,7 @@ def func(perturb_times, omega):
 
 
 
-def noisy_func(gamma, perturb_times, omega, bath):
+def noisy_func(gamma, perturb_times, omega, bath, rise_time):
     if bath == 'Forward3MHzcsv.txt':
 
         #there
@@ -249,19 +249,35 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #there
         data = np.cumsum(data)
         #print(butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/32-1, len(data)/6, order=3))
-        signal = np.array(butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/50-1, len(data), order=3))
+        signal = np.array(butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/50-1, len(data), order=1))
 
         unfiltered_signal = np.array(np.exp(-1j * data * 2 * np.pi/360)/2)
         #print(len(signal))
 
         #and back again
         data_reversed = np.cumsum(data_reversed)+data[-1]-180
-        signal_reversed = -signal[::-1]#*np.exp(-0.1j)
+        signal_reversed = -unfiltered_signal[::-1]#*np.exp(-0.1j)
+
+
+        '''
+        signal_reversed[5:-1] = signal_reversed[1:len(signal_reversed)-5]
+        signal_reversed[1:5] = signal_reversed[0]
+        '''
+
         #print(np.array(butter_bandpass_filter(np.exp(-1j * data_reversed * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3)))
-        signal = np.append(signal, signal_reversed)
+        signal = np.append(unfiltered_signal, signal_reversed)
         #signal = np.append(signal, np.array(butter_bandpass_filter(np.exp(-1j * data_reversed * 2 * np.pi/360)/2, 0.01, len(data)/2-1, len(data), order=3)))
         #print(len(signal))
         data = np.append(data, data_reversed)
+
+
+
+        #rise_time=2000
+
+
+        signal[0:rise_time]=(1-np.exp(-np.linspace(0,10,rise_time)))*signal[0:rise_time]
+
+        signal[int(len(signal)/2):int(len(signal)/2)+rise_time] = (1 - np.exp(-np.linspace(0, 10, rise_time))) * signal[int(len(signal)/2):int(len(signal)/2)+rise_time]
         #print(len(data))
 
 
@@ -274,9 +290,14 @@ def noisy_func(gamma, perturb_times, omega, bath):
         #print(perturb_times)
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
         if omega == 0:
-            #return np.exp(-1j * data * 2 * np.pi/360)/2
-            #return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/10-1, len(data), order=3)
+
+
+            #func1 = lambda t: (1-np.exp(-100*t+0.001))*np.exp(-1j * t)/2
+            #return func1(perturb_times+data/omega*2*np.pi/360)
+            #return func1(perturb_times+data*2*np.pi/360)
+            #return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/50-1, len(data), order=2)
             return signal
+            #return np.exp(-1j * data * 2 * np.pi / 360) / 2
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2
             #return func1(perturb_times+data/omega*2*np.pi/360)
