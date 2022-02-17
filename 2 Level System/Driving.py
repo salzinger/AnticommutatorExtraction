@@ -196,7 +196,7 @@ def func(perturb_times, omega):
 
 
 
-def noisy_func(gamma, perturb_times, omega, bath, rise_time):
+def noisy_func(gamma, perturb_times, omega, bath, rise_time=0):
     if bath == 'Forward3MHzcsv.txt':
 
         #there

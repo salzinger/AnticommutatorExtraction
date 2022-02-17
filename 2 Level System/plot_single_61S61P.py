@@ -52,7 +52,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
         perturb_times = np.linspace(0, pertubation_length, timesteps)
         fs = timesteps / endtime
         # print(len(perturb_times))
-        for rise_time in np.logspace(np.log(20), np.log(5000), num=20, base=np.e):
+        for rise_time in np.linspace(2050, 2100, 1):
 
             g=Omega_R
 
@@ -268,9 +268,10 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
-            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(noisy_func(gamma, perturb_times, omega, bath, rise_time))), -np.angle(noisy_func(gamma, perturb_times, omega, bath, rise_time))/np.pi, label="Phase drift filtered",
-                              linewidth="0.4",
-                              color='black')
+
+            #ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(noisy_func(gamma, perturb_times, omega, bath, rise_time))), -np.angle(noisy_func(gamma, perturb_times, omega, bath, rise_time))/np.pi, label="Phase drift filtered",
+            #                  linewidth="0.4",
+            #                  color='black')
 
             ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath, rise_time)), label="Amp of Phase drift filtered",
                               linewidth="0.4",
