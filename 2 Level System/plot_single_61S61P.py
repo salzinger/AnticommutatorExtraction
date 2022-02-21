@@ -52,7 +52,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
         perturb_times = np.linspace(0, pertubation_length, timesteps)
         fs = timesteps / endtime
         # print(len(perturb_times))
-        for rise_time in np.linspace(2050, 2100, 1):
+        for rise_time in np.linspace(500, 2600, 1):
 
             g=Omega_R
 
