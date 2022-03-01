@@ -35,35 +35,44 @@ figure = plt.plot()
 c = Bloch(figure)
 c.make_sphere()
 
+Flist = []
+
 for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
     #print("Omega_R: ", Omega_R)
+    # print("sampling: ", sampling_rate)
+    init_state = productstateZ(0, 0, N)
+    # timesteps = int(endtime * sampling_rate)
+    data = np.loadtxt('10MHz_gamma.txt')
+    timesteps = 2 * len(data)
+    endtime = 6
+    pertubation_length = endtime / 1
+    # t1 = np.linspace(0, endtime, timesteps)
+    # t2 = np.linspace(0, endtime, timesteps)
+    perturb_times = np.linspace(0, pertubation_length, timesteps)
+    fs = timesteps / endtime
+    # print(len(perturb_times))
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
-    for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
-        # print("sampling: ", sampling_rate)
-        init_state = productstateZ(0, 0, N)
-        # timesteps = int(endtime * sampling_rate)
-        data = np.loadtxt('10MHz_gamma.txt')
-        timesteps = 2 * len(data)
-        endtime = 6
-        pertubation_length = endtime / 1
-        # t1 = np.linspace(0, endtime, timesteps)
-        # t2 = np.linspace(0, endtime, timesteps)
-        perturb_times = np.linspace(0, pertubation_length, timesteps)
-        fs = timesteps / endtime
-        # print(len(perturb_times))
-        for rise_time in np.linspace(500, 2600, 1):
+
+    for rise_time in np.linspace(0, 1500, 1):
+
+        rise_time = int(rise_time)
+
+        print("rise_time= ", rise_time)
+
+
+        for second_rise_time in np.linspace(0, 2100, 1):
 
             g=Omega_R
 
-            rise_time = int(rise_time)
+            second_rise_time = int(second_rise_time)
 
-            print("rise_time= ", rise_time)
+            print("second_rise_time= ", second_rise_time)
 
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              noisy_func(gamma, perturb_times, omega, bath, rise_time))
+                              noisy_func(gamma, perturb_times, omega, bath, rise_time, second_rise_time))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time)))
+                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time, second_rise_time)))
             '''
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             # data / 0.4)
@@ -97,9 +106,9 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
             S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              noisy_func(gamma, perturb_times, omega, bath, rise_time))
+                              noisy_func(gamma, perturb_times, omega, bath, rise_time, second_rise_time))
             S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time)))
+                              np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time, second_rise_time)))
             # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
             #                 data[0:32000]/0.4)
 
@@ -181,10 +190,10 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             pertubation_length = endtime / 1
             perturb_times = np.linspace(0, pertubation_length, timesteps)
 
-            with open('counts_z_new1.txt') as f:
+            with open('counts_z_full_norm.txt') as f:
                 linescountsz = f.readlines()
 
-            with open('phase_fits_new1.txt') as f:
+            with open('phase_fits_full_norm.txt') as f:
                 linesphase = f.readlines()
 
 
@@ -199,7 +208,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             yerror = []
             xerror = []
             x = []
-            total=[]
+            total = []
+            offset = []
 
             Ntot = 29.46153846153846
             de = 1.8333333333333333#-1.8
@@ -207,7 +217,12 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             Ntot = 24
             Ntot_std = 4
 
+            Ntot = 38.416666666666664
+            Ntot_std = 6.48
+
             de = 1.5
+
+            #de = 1.5
             de_std=0.5
 
             #Ntot = 26.4
@@ -216,23 +231,162 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #de = 1.5
             #de_std=0.5
 
+            norm = []
+
+            for element in range(2, 53):
+
+                norm.append(2*float(linesphase[element][50:59])-de)
+
+            mean_norm = np.mean(norm)
+
+            print("Norm = ", mean_norm, "std_mean = ", np.sqrt(np.var(norm))/len(norm))
+
+
+            #mean_norm = (24-de + mean_norm)/2
+
+            #mean_norm = 24 - de
+
+            for element in range(0, 51):
+
+                norm[element] = mean_norm
+
+            #print(2*np.mean(norm)-de)
+
+            #norm = 2*np.mean(norm)-de
+
+
+
             for element in range(2, 53):
                 tmw.append(float(linescountsz[element][0:5])*15)
 
-                z.append((float(linescountsz[element][7:15])-de)/(Ntot-de)-0.5)
+                z.append(float(linescountsz[element][6:15]))
 
-                zerror.append(float(linescountsz[element][16:25])/(Ntot-de))
+                zerror.append(float(linescountsz[element][16:25]))
 
-                amp.append((float(linesphase[element][15:29]))/(Ntot-de))
+                amp.append(float(linesphase[element][15:29]))
 
-                phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
+                #phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
 
-                total.append(np.sqrt(  ( (float(linesphase[element][15:29]))/(Ntot-de) )**2   +  ( (float(linescountsz[element][7:15])-de)/(Ntot-de)  -  0.5 )**2  )  )
+                phase.append(float(linesphase[element][29:38]) * 2 * np.pi / 360 + np.pi)
+
+                offset.append(float(linesphase[element][50:59]))
+
+                total.append( np.sqrt(  ( float(linesphase[element][15:29]) )**2  +  ( float(linescountsz[element][6:15]))**2 )  )
+
+            for element in range(56, 107):
+                amperror.append(float(linesphase[element][9:17]))
+                try:
+                    phaseerror.append(float(linesphase[element][20:30])*2*np.pi/360)
+                except:
+                    print("ERROR NAN")
+                    phaseerror.append(200 * 2 * np.pi / 360)
+
+            '''
+
+            norm = []
+
+            for element in range(2, 53):
+
+                norm.append(2*float(linesphase[element][50:59])-de)
+
+            mean_norm = np.mean(norm)
+
+            print("Norm = ", mean_norm, "std_mean = ", np.sqrt(np.var(norm))/len(norm))
+
+
+            #mean_norm = (24-de + mean_norm)/2
+
+            #mean_norm = 24 - de
+
+            for element in range(0, 51):
+
+                norm[element] = mean_norm
+
+            #print(2*np.mean(norm)-de)
+
+            #norm = 2*np.mean(norm)-de
+
+
+
+            for element in range(2, 53):
+                tmw.append(float(linescountsz[element][0:5])*15)
+
+                z.append((float(linescountsz[element][6:15])-de)/norm[element-2] - 0.5)
+
+                zerror.append(float(linescountsz[element][16:25])/norm[element-2])
+
+                amp.append(float(linesphase[element][15:29])/norm[element-2])
+
+                #phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
+
+                phase.append(float(linesphase[element][29:38]) * 2 * np.pi / 360 + np.pi)
+
+                offset.append(float(linesphase[element][50:59]))
+
+                total.append( np.sqrt(  ( float(linesphase[element][15:29]) / norm[element-2] )**2  +  ( (float(linescountsz[element][6:15])-de) / norm[element-2]  -  0.5)**2 )  )
+
+            for element in range(56, 107):
+                amperror.append(float(linesphase[element][9:17])/(norm[element-2-56]))
+                try:
+                    phaseerror.append(float(linesphase[element][20:30])*2*np.pi/360)
+                except:
+                    print("ERROR NAN")
+                    phaseerror.append(200 * 2 * np.pi / 360)
+
+######################################################################
+
+
+            norm = []
+
+            for element in range(2, 53):
+
+                norm.append(2*float(linesphase[element][46:54])-de)
+
+            mean_norm = np.mean(norm)
+
+            print(mean_norm)
+
+            for element in range(0, 51):
+
+                norm[element] = mean_norm
+
+
+            for element in range(2, 53):
+                tmw.append(float(linescountsz[element][0:5])*15)
+
+                z.append((float(linescountsz[element][6:15])-de)/norm[element-2] - 0.5)
+
+                zerror.append(float(linescountsz[element][16:25])/norm[element-2])
+
+                amp.append(float(linesphase[element][15:26])/norm[element-2])
+
+                #phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
+
+                phase.append(float(linesphase[element][26:36]) * 2 * np.pi / 360 + np.pi)
+
+                offset.append(float(linesphase[element][50:59]))
+
+                total.append( np.sqrt(  ( float(linesphase[element][15:26]) / norm[element-2] )**2  +  ( (float(linescountsz[element][6:15])-de) / norm[element-2]  -  0.5)**2 )  )
 
 
             for element in range(56, 107):
-                amperror.append(float(linesphase[element][9:17])/(Ntot-de))
-                phaseerror.append(float(linesphase[element][20:32])*2*np.pi/360)
+                amperror.append(float(linesphase[element][9:17])/(norm[element-2-56]))
+                try:
+                    phaseerror.append(float(linesphase[element][20:30])*2*np.pi/360)
+                except:
+                    print("ERROR NAN")
+                    phaseerror.append(200 * 2 * np.pi / 360)
+
+            '''
+
+
+            print("phases: ", phase)
+
+            print("z: ", z)
+
+            print("amps : ", amp)
+
+            print("total : ", np.mean(total))
 
 
 
@@ -273,7 +427,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #                  linewidth="0.4",
             #                  color='black')
 
-            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath, rise_time)), label="Amp of Phase drift filtered",
+            ax[0, 0].errorbar(np.linspace(0, perturb_times[-1], len(data)), np.abs(noisy_func(gamma, perturb_times, omega, bath, rise_time, second_rise_time)), label="Amp of Phase drift filtered",
                               linewidth="0.4",
                               color='black')
 
@@ -292,7 +446,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #discr=[]
             rho_measured = np.array([])
             rho_ideal = np.array([])
-            F=[]
+
+            F = []
             F1 = []
             F2 = []
             F3 = []
@@ -358,8 +513,16 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #print(np.std(F2))
             #print(np.mean(F3))
             #print(np.std(F3))
-            print(np.mean(F4))
-            print(np.min(F4))
+
+            Fmean = np.mean(F4)
+            Fmin = np.min(F4)
+
+            print(Fmean)
+            print(Fmin)
+
+            Flist.append([Fmean, Fmin, rise_time, second_rise_time])
+
+
             #print(np.std(F4))
             #print(np.sum(diz))
             #print(np.sum(dix))
@@ -447,6 +610,12 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[1, 1].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
                                 color="blue", label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
 
+
+
+            ax[1, 0].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+            ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+            ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
+
             ax[1, 1].set_ylim([-0.68, 0.68])
             ax[1, 1].legend(loc="lower center", fontsize=12)
 
@@ -459,7 +628,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             ax[0, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
             ax[1, 0].set_ylabel('Magnetization', fontsize=14)
 
-
+            print(Flist)
             #plt.show()
 
             #plt.yticks(np.arange(0, 6, 0.25))
@@ -469,6 +638,72 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #plt.savefig("Omega_R =  %.2f.png" % (
             #    Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
+print(Flist)
+
 c.render()
 plt.show()
+
+
+fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+
+
+
+#ax[0].errorbar(tmw, total , np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
+ #                   color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$", markersize="4", marker="s", linestyle="")
+ax[0].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
+                    color='purple', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
+ax[0].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
+                    color="blue", label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
+
+ax[0].plot(perturb_times, -np.real(expect_single[0]), color='blue', linestyle="-")
+ax[0].plot(perturb_times, -np.real(expect_single[2]), color='purple', linestyle="-")
+
+ax[0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
+
+ax[0].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle/2}$", markersize="5", marker="o",
+                  linestyle="")
+
+
+#ax[0].errorbar(tmw, total, np.sqrt(np.array(amperror) ** 2 + np.array(zerror) ** 2),
+#                  color="grey",
+#                  #label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$",
+#                  label=r"Total",
+#                  markersize="4", marker="s", linestyle="")
+
+ax[0].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+ax[0].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+ax[0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
+
+ax[0].set_ylim([-0.6, 0.75])
+
+
+
+
+#ax[0].set_ylim([-0.68, 0.68])
+ax[0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+ax[0].set_ylabel('Magnetization', fontsize=14)
+ax[0].legend(loc="lower center", fontsize=12)
+
+
+
+
+ax[1].errorbar(tmw, F2,
+                  label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$",
+                  linestyle="--", markersize="3", marker="o",
+                  color='black')
+
+ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+ax[1].set_ylabel('', fontsize=14)
+ax[1].set_ylabel('Fidelity', fontsize=14)
+ax[1].legend(loc="lower left", fontsize=12)
+ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+
+
+
+plt.show()
+
+
+
+
+
 

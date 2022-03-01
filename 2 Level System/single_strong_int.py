@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 
-N = 2
+N = 1
 
 #omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz

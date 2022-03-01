@@ -196,7 +196,7 @@ def func(perturb_times, omega):
 
 
 
-def noisy_func(gamma, perturb_times, omega, bath, rise_time=0):
+def noisy_func(gamma, perturb_times, omega, bath, rise_time=0, second_rise_time=0):
     if bath == 'Forward3MHzcsv.txt':
 
         #there
@@ -275,11 +275,11 @@ def noisy_func(gamma, perturb_times, omega, bath, rise_time=0):
         rise_time1=2100
 
 
-        signal[0:rise_time1]=(1-np.exp(-np.linspace(0,10,rise_time1)))*signal[0:rise_time1]
+        signal[0:rise_time]=(1-np.exp(-np.linspace(0,5,rise_time)))*signal[0:rise_time]
 
         #rise_time=2250
 
-        signal[int(len(signal)/2):int(len(signal)/2)+rise_time1] = (1 - np.exp(-np.linspace(0, 10, rise_time1))) * signal[int(len(signal)/2):int(len(signal)/2)+rise_time1]
+        signal[int(len(signal)/2):int(len(signal)/2)+second_rise_time] = (1 - np.exp(-np.linspace(0, 5, second_rise_time))) * signal[int(len(signal)/2):int(len(signal)/2)+second_rise_time]
         #print(len(data))
 
 
