@@ -283,9 +283,10 @@ ax[1, 1].plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', lin
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
-ax[1, 1].set_ylabel('Magnetization', fontsize=16)
-ax[1, 1].legend(loc="upper right", fontsize=10)
+ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=14)
+ax[1, 1].set_ylabel('Magnetization', fontsize=14)
+ax[1, 1].legend(loc="lower center", fontsize=12)
+ax[1, 1].set_ylim([-0.6, 0.6])
 
 
 
