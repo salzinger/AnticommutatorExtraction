@@ -297,9 +297,9 @@ def noisy_func(gamma, perturb_times, omega, bath, rise_time=0, second_rise_time=
             #func1 = lambda t: (1-np.exp(-100*t+0.001))*np.exp(-1j * t)/2
             #return func1(perturb_times+data/omega*2*np.pi/360)
             #return func1(perturb_times+data*2*np.pi/360)
-            #return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data)/1000-1, len(data), order=1)
+            return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, len(data) /64, len(data), order=2)
             #return butter_bandpass_filter(signal, 0.01, len(data)/550-1, len(data), order=2)
-            return signal
+            #return signal
             #return np.exp(-1j * data * 2 * np.pi / 360) / 2
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2

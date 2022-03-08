@@ -37,10 +37,11 @@ c.make_sphere()
 
 Flist = []
 
-for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
+for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
     #print("Omega_R: ", Omega_R)
     # print("sampling: ", sampling_rate)
     init_state = productstateZ(0, 0, N)
+    print(Omega_R)
     # timesteps = int(endtime * sampling_rate)
     data = np.loadtxt('10MHz_gamma.txt')
     timesteps = 2 * len(data)
@@ -54,16 +55,16 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
-    for rise_time in np.linspace(0, 1500, 1):
+    for rise_time in np.linspace(700, 1000, 1, endpoint=1):
 
         rise_time = int(rise_time)
 
         print("rise_time= ", rise_time)
 
 
-        for second_rise_time in np.linspace(0, 2100, 1):
+        for second_rise_time in np.linspace(900, 1500, 1, endpoint=1):
 
-            g=Omega_R
+            g = Omega_R
 
             second_rise_time = int(second_rise_time)
 
@@ -523,7 +524,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             print(Fmean)
             print(Fmin)
 
-            Flist.append([Fmean, Fmin, Fend, rise_time, second_rise_time])
+            Flist.append([np.round((Fmean-.9887002869959799)*100, decimals=3), np.round((Fmin-.9591676085073163)*100, decimals=3), np.round((Fend-.9967099830257092)*100 , decimals=3), rise_time, second_rise_time, Omega_R/(2*np.pi)])
 
 
             #print(np.std(F4))
