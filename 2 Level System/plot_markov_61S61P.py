@@ -217,7 +217,7 @@ S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega)
 
 result_m0 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
                     init_state,
-                    perturb_times, [np.sqrt(0.15/15) * sigmaz(0, N), np.sqrt(0.15/15) * sigmaz(0, N)], Exps,
+                    perturb_times, [np.sqrt(0.25/15) * sigmaz(0, N), np.sqrt(0.25/15) * sigmaz(0, N)], Exps,
                     options=opts)
 
 m0 = np.array(result_m0.expect[:])
@@ -244,7 +244,7 @@ result_m30 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]]
 
 
 
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/100$', linestyle='')
+ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/60$', linestyle='')
 
 ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 

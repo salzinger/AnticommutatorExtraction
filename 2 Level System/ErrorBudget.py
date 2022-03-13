@@ -37,14 +37,47 @@ c.make_sphere()
 
 Flist = []
 
+init_state = productstateZ(0, 0, N)
+Omega_R = 2*np.pi*1
+# timesteps = int(endtime * sampling_rate)
+data = np.loadtxt('10MHz_gamma.txt')
+timesteps = 2 * len(data)
+endtime = 6
+pertubation_length = endtime / 1
+# t1 = np.linspace(0, endtime, timesteps)
+# t2 = np.linspace(0, endtime, timesteps)
+perturb_times = np.linspace(0, pertubation_length, timesteps)
+fs = timesteps / endtime
+# print(len(perturb_times))
 
+S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                  noisy_func(gamma, perturb_times, omega, bath, 0, 0))
+S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                  np.conj(noisy_func(gamma, perturb_times, omega, bath, 0, 0)))
 
+result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+                        perturb_times, [], e_ops=Exps, options=opts)
+
+states = result_single.states
+
+expect_single = np.array(result_single.expect[:])
+
+statesaverage = np.array(result_single.states[timesteps - 1])
+
+sigma = 2 * np.pi *0.085
+
+expectaverage = np.array(result_single.expect[:])*np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
+
+gnorm = np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
+
+i=1
 
 for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
+
     #print("Omega_R: ", Omega_R)
     # print("sampling: ", sampling_rate)
     init_state = productstateZ(0, 0, N)
-    print(Omega_R)
+    #print(Omega_R)
     # timesteps = int(endtime * sampling_rate)
     data = np.loadtxt('10MHz_gamma.txt')
     timesteps = 2 * len(data)
@@ -56,28 +89,39 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
     fs = timesteps / endtime
     # print(len(perturb_times))
 
-    S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                      noisy_func(gamma, perturb_times, omega, bath, 0, 0))
-    S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                      np.conj(noisy_func(gamma, perturb_times, omega, bath, 0, 0)))
 
-    result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
-                            perturb_times, e_ops=Exps, options=opts)
+    for Omega_R in np.linspace(2 * np.pi - 2 * sigma, 2 * np.pi + 2 * sigma, 6, endpoint=1):
 
-    states = result_single.states
+        i += 1
+        S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                          noisy_func(gamma, perturb_times, omega, bath, 0, 0))
+        S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                          np.conj(noisy_func(gamma, perturb_times, omega, bath, 0, 0)))
 
-    expect_single = np.array(result_single.expect[:])
+        result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]],  init_state,
+                                perturb_times, [], e_ops=Exps, options=opts)
+
+        #print(np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma))
+        gnorm += np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
+
+        statesaverage += np.array(result_single.states[timesteps - 1])
+        expectaverage += np.array(result_single.expect[:])*np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
+
+    #print(i)
+
+    statesaverage = statesaverage / gnorm
+    expectaverage = expectaverage / gnorm
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
-    for rise_time in np.linspace(700, 1000, 1, endpoint=1):
+    for rise_time in np.linspace(0*700, 1000, 1, endpoint=1):
 
         rise_time = int(rise_time)
 
         print("rise_time= ", rise_time)
 
 
-        for second_rise_time in np.linspace(900, 1500, 1, endpoint=1):
+        for second_rise_time in np.linspace(0*900, 1500, 1, endpoint=1):
 
             g = Omega_R
 
@@ -104,11 +148,11 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
 
             result_single_mod = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
-                                    perturb_times, e_ops=Exps, options=opts)
+                                    perturb_times,  [], e_ops=Exps, options=opts)
 
-            states_mod = result_single.states
+            states_mod = result_single_mod.states
 
-            expect_single_mod = np.array(result_single.expect[:])
+            expect_single_mod = np.array(result_single_mod.expect[:])
 
 
 
@@ -302,106 +346,6 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
                 except:
                     print("ERROR NAN")
                     phaseerror.append(200 * 2 * np.pi / 360)
-
-            '''
-
-            norm = []
-
-            for element in range(2, 53):
-
-                norm.append(2*float(linesphase[element][50:59])-de)
-
-            mean_norm = np.mean(norm)
-
-            print("Norm = ", mean_norm, "std_mean = ", np.sqrt(np.var(norm))/len(norm))
-
-
-            #mean_norm = (24-de + mean_norm)/2
-
-            #mean_norm = 24 - de
-
-            for element in range(0, 51):
-
-                norm[element] = mean_norm
-
-            #print(2*np.mean(norm)-de)
-
-            #norm = 2*np.mean(norm)-de
-
-
-
-            for element in range(2, 53):
-                tmw.append(float(linescountsz[element][0:5])*15)
-
-                z.append((float(linescountsz[element][6:15])-de)/norm[element-2] - 0.5)
-
-                zerror.append(float(linescountsz[element][16:25])/norm[element-2])
-
-                amp.append(float(linesphase[element][15:29])/norm[element-2])
-
-                #phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
-
-                phase.append(float(linesphase[element][29:38]) * 2 * np.pi / 360 + np.pi)
-
-                offset.append(float(linesphase[element][50:59]))
-
-                total.append( np.sqrt(  ( float(linesphase[element][15:29]) / norm[element-2] )**2  +  ( (float(linescountsz[element][6:15])-de) / norm[element-2]  -  0.5)**2 )  )
-
-            for element in range(56, 107):
-                amperror.append(float(linesphase[element][9:17])/(norm[element-2-56]))
-                try:
-                    phaseerror.append(float(linesphase[element][20:30])*2*np.pi/360)
-                except:
-                    print("ERROR NAN")
-                    phaseerror.append(200 * 2 * np.pi / 360)
-
-######################################################################
-
-
-            norm = []
-
-            for element in range(2, 53):
-
-                norm.append(2*float(linesphase[element][46:54])-de)
-
-            mean_norm = np.mean(norm)
-
-            print(mean_norm)
-
-            for element in range(0, 51):
-
-                norm[element] = mean_norm
-
-
-            for element in range(2, 53):
-                tmw.append(float(linescountsz[element][0:5])*15)
-
-                z.append((float(linescountsz[element][6:15])-de)/norm[element-2] - 0.5)
-
-                zerror.append(float(linescountsz[element][16:25])/norm[element-2])
-
-                amp.append(float(linesphase[element][15:26])/norm[element-2])
-
-                #phase.append(float(linesphase[element][29:41])*2*np.pi/360+np.pi)
-
-                phase.append(float(linesphase[element][26:36]) * 2 * np.pi / 360 + np.pi)
-
-                offset.append(float(linesphase[element][50:59]))
-
-                total.append( np.sqrt(  ( float(linesphase[element][15:26]) / norm[element-2] )**2  +  ( (float(linescountsz[element][6:15])-de) / norm[element-2]  -  0.5)**2 )  )
-
-
-            for element in range(56, 107):
-                amperror.append(float(linesphase[element][9:17])/(norm[element-2-56]))
-                try:
-                    phaseerror.append(float(linesphase[element][20:30])*2*np.pi/360)
-                except:
-                    print("ERROR NAN")
-                    phaseerror.append(200 * 2 * np.pi / 360)
-
-            '''
-
-
             #print("phases: ", phase)
 
             #print("z: ", z)
@@ -472,6 +416,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             rho_ideal = np.array([])
 
             F = []
+            Fsim = []
             F1 = []
             F2 = []
             F3 = []
@@ -490,13 +435,18 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
                 np.append(rho_measured, (qeye(2)*(2*total[t]) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2)
 
-                #F.append(np.sqrt(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2
+                F.append(np.sqrt(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2
 
-                                  #* ((qeye(2)*(2*total[t]) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2).unit()).tr()))
+                                  * ((qeye(2)*(2*total[t]) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2).unit()).tr()))
 
-                F.append(np.sqrt(((qeye(2) + expect_single_mod[1][t*511]*sigmaz(0, 1)*2 + expect_single_mod[2][t*511]*sigmay(0, 1)*2 + expect_single_mod[0][t*511]*sigmax(0, 1)*2).dag()/2
+                #Fsim.append(np.sqrt(((qeye(2) + expect_single_mod[1][t*511]*sigmaz(0, 1)*2 + expect_single_mod[2][t*511]*sigmay(0, 1)*2 + expect_single_mod[0][t*511]*sigmax(0, 1)*2).dag()/2
 
-                                  * ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2).unit()).tr()))
+                #                  * ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).unit()).tr()))
+
+
+                Fsim.append(np.sqrt(((qeye(2) + expectaverage[1][t*511]*sigmaz(0, 1)*2 + expectaverage[2][t*511]*sigmay(0, 1)*2 + expectaverage[0][t*511]*sigmax(0, 1)*2).dag()/2
+
+                                  * ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).unit()).tr()))
 
                 #F.append(np.sqrt( (  ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).dag()
                 #          * (qeye(2) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2   ).tr()))
@@ -543,11 +493,12 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             #print(np.std(F3))
 
             Fmean = np.mean(F)
+            Fmodmean = np.mean(Fsim)
             Fmin = np.min(F)
             Fend = F[-1]
 
             print(Fmean)
-            print(Fmin)
+            print(Fmodmean)
 
             Flist.append([np.round((Fmean-.9887002869959799)*100, decimals=3), np.round((Fmin-.9591676085073163)*100, decimals=3), np.round((Fend-.9967099830257092)*100 , decimals=3), rise_time, second_rise_time, Omega_R/(2*np.pi)])
 
@@ -566,6 +517,9 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
             ax[0, 1].errorbar(tmw, F, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal} \rho_{measured}]}$", linestyle="--", markersize="4", marker="o",
                           color='black')
+
+            ax[0, 1].errorbar(tmw, Fsim, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal} \rho_{modified}]}$", linestyle="--", markersize="4", marker="o",
+                          color='green')
 
             #ax[0, 1].errorbar(tmw, F2, label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$", linestyle="", markersize="3", marker="o",
             #             color='blue')
