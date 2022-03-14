@@ -50,10 +50,12 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 fs = timesteps / endtime
 # print(len(perturb_times))
 
+rise_time = 0
+
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                  noisy_func(gamma, perturb_times, omega, bath, 0, 0))
+                  noisy_func(gamma, perturb_times, omega, bath, rise_time, 0))
 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                  np.conj(noisy_func(gamma, perturb_times, omega, bath, 0, 0)))
+                  np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time, 0)))
 
 result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                         perturb_times, [], e_ops=Exps, options=opts)
@@ -62,9 +64,21 @@ states = result_single.states
 
 expect_single = np.array(result_single.expect[:])
 
-statesaverage = np.array(result_single.states[timesteps - 1])
+rise_time = 5
 
-sigma = 2 * np.pi *0.085
+S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                  noisy_func(gamma, perturb_times, omega, bath, rise_time, 0))
+S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
+                  np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time, 0)))
+
+result_single1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+                        perturb_times, [], e_ops=Exps, options=opts)
+
+
+
+statesaverage = np.array(result_single1.states[timesteps - 1])
+
+sigma = 2 * np.pi * 0.06
 
 expectaverage = np.array(result_single.expect[:])*np.exp(-0.5*((Omega_R - 2 * np.pi)/sigma)**2)/(np.sqrt(2*np.pi)*sigma)
 
@@ -94,9 +108,9 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
         i += 1
         S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                          noisy_func(gamma, perturb_times, omega, bath, 0, 0))
+                          noisy_func(gamma, perturb_times, omega, bath, rise_time, 0))
         S2 = Cubic_Spline(perturb_times[0], perturb_times[-1],
-                          np.conj(noisy_func(gamma, perturb_times, omega, bath, 0, 0)))
+                          np.conj(noisy_func(gamma, perturb_times, omega, bath, rise_time, 0)))
 
         result_single = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]],  init_state,
                                 perturb_times, [], e_ops=Exps, options=opts)
@@ -114,7 +128,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
     fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
-    for rise_time in np.linspace(0*700, 1000, 1, endpoint=1):
+    for rise_time in np.linspace(5, 1000, 1, endpoint=1):
 
         rise_time = int(rise_time)
 
@@ -144,7 +158,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             plt.ylim(-1, 2.25)
             plt.show()
             '''
-
+            Omega_R=2*np.pi
 
 
             result_single_mod = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
@@ -441,7 +455,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
                 #Fsim.append(np.sqrt(((qeye(2) + expect_single_mod[1][t*511]*sigmaz(0, 1)*2 + expect_single_mod[2][t*511]*sigmay(0, 1)*2 + expect_single_mod[0][t*511]*sigmax(0, 1)*2).dag()/2
 
-                #                  * ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).unit()).tr()))
+                  #                * ((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2)/2).unit()).tr()))
 
 
                 Fsim.append(np.sqrt(((qeye(2) + expectaverage[1][t*511]*sigmaz(0, 1)*2 + expectaverage[2][t*511]*sigmay(0, 1)*2 + expectaverage[0][t*511]*sigmax(0, 1)*2).dag()/2
@@ -496,9 +510,12 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             Fmodmean = np.mean(Fsim)
             Fmin = np.min(F)
             Fend = F[-1]
+            Fmodend = Fsim[-1]
 
             print(Fmean)
             print(Fmodmean)
+            print(Fend)
+            print(Fmodend)
 
             Flist.append([np.round((Fmean-.9887002869959799)*100, decimals=3), np.round((Fmin-.9591676085073163)*100, decimals=3), np.round((Fend-.9967099830257092)*100 , decimals=3), rise_time, second_rise_time, Omega_R/(2*np.pi)])
 
