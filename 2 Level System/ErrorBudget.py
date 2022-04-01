@@ -431,6 +431,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
             F = []
             Fsim = []
+            Ferror = []
             F1 = []
             F2 = []
             F3 = []
@@ -452,6 +453,11 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
                 F.append(np.sqrt(((qeye(2) + expect_single[1][t*511]*sigmaz(0, 1)*2 + expect_single[2][t*511]*sigmay(0, 1)*2 + expect_single[0][t*511]*sigmax(0, 1)*2).dag()/2
 
                                   * ((qeye(2)*(2*total[t]) + z[t]*sigmaz(0, 1)*2 + amp[t] * np.cos(phase[t])*sigmay(0, 1)*2 + amp[t] * np.sin(phase[t])*sigmax(0, 1)*2)/2).unit()).tr()))
+                #print(phaseerror[t])
+
+                Ferror.append(zerror[t]*np.sqrt(((qeye(2).dag()/2 + expect_single[1][t*511]*sigmaz(0, 1).dag() + expect_single[2][t*511]*sigmay(0, 1).dag() + expect_single[0][t*511]*sigmax(0, 1).dag())
+
+                                  * ((qeye(2)*2*np.sqrt( np.array(amp[t])**2 + np.array(z[t])**2) + z[t]*sigmaz(0, 1) + amp[t] * np.cos(phase[t])*sigmay(0, 1) + amp[t] * np.sin(phase[t])*sigmax(0, 1)))).tr()))
 
                 #Fsim.append(np.sqrt(((qeye(2) + expect_single_mod[1][t*511]*sigmaz(0, 1)*2 + expect_single_mod[2][t*511]*sigmay(0, 1)*2 + expect_single_mod[0][t*511]*sigmax(0, 1)*2).dag()/2
 
@@ -532,7 +538,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             #ax[1, 0].errorbar(tmw, F, label=r"$Fidelity $", linestyle="--", markersize="4", marker="o",
             #              color='black')
 
-            ax[0, 1].errorbar(tmw, F, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal} \rho_{measured}]}$", linestyle="--", markersize="4", marker="o",
+            ax[0, 1].errorbar(tmw, F, Ferror, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal} \rho_{measured}]}$", linestyle="--", markersize="4", marker="o",
                           color='black')
 
             ax[0, 1].errorbar(tmw, Fsim, label=r"$F =\sqrt{ Tr[\rho^\dagger_{ideal} \rho_{modified}]}$", linestyle="--", markersize="4", marker="o",

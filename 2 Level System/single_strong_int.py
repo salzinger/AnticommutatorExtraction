@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 
-N = 1
+N = 8
 
 #omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
@@ -242,7 +242,7 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
                               linewidth="0.4",
                               color='#85bb65')
 
-            ax[0, 1].plot(perturb_times, np.real(expect_single[1])*np.exp(-perturb_times**(-0.5)), color='#85bb65', linestyle="-")
+            ax[0, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
             ax[0, 1].plot(perturb_times, np.sqrt(np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='black', linestyle="-")
             ax[0, 1].errorbar(tmw, amp, amperror, color="black", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$", markersize="4", marker="s",
                          linestyle="")
@@ -272,20 +272,25 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
 
 
 
-
-
+            ax[1, 1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle}$", markersize="5",
+                              marker="o",
+                              linestyle="")
+            ax[1, 1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
             ax[1, 1].plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
-            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='#85bb65', linestyle="-")
-            ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
-            ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
-                         linestyle="")
+            ax[1, 1].plot(perturb_times, -np.real(expect_single[2]), color='purple', linestyle="-")
+            #ax[1, 1].plot(perturb_times, np.sqrt(np.real(expect_single[1])**2+np.real(expect_single[0])**2+np.real(expect_single[2])**2), color='grey', linestyle="--", label="")
+            #ax[1, 1].errorbar(tmw, total, color="grey", markersize="4", marker="o", label=r"$\sqrt{\langle \sigma_z \rangle^2 + \langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
+            #             linestyle="")
 
             ax[1, 1].errorbar(tmw, amp * np.cos(phase),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                                color='#85bb65', label=r"$\langle \sigma_x \rangle}$", markersize="4", marker="o", linestyle="")
+                                color='purple', label=r"$\langle \sigma_x \rangle}$", markersize="4", marker="o", linestyle="")
             ax[1, 1].errorbar(tmw, amp * np.sin(phase),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
                                 color="black", label=r"$\langle \sigma_y \rangle}$", markersize="4", marker="s", linestyle="")
             ax[1, 1].set_ylim([-0.68, 0.68])
             ax[1, 1].legend(loc="lower center", fontsize=12)
+
+            ax[1, 1].set_xlabel(r'Time [$\mu$s]', fontsize=14)
+            ax[1, 1].set_ylabel('Magnetization', fontsize=14)
 
             #plt.show()
 
