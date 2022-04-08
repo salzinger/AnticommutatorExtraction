@@ -301,10 +301,10 @@ def noisy_func(gamma, perturb_times, omega, bath, rise_time=0, second_rise_time=
             if rise_time==0:
                 return  np.exp(-1j * data * 2 * np.pi / 360) / 2
             else:
-                return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, rise_time*len(data)/64, len(data), order=3)
+                #return butter_bandpass_filter(np.exp(-1j * data * 2 * np.pi/360)/2, 0.01, rise_time*len(data)/64, len(data), order=3)
             #return butter_bandpass_filter(signal, 0.01, len(data)/550-1, len(data), order=2)
                 #return signal
-            #return np.exp(-1j * data * 2 * np.pi/360)/2 * np.exp(-np.linspace(0,6,len(data)) * 0.15)
+                return np.exp(-1j * data * 2 * np.pi/360)/2
             #func1(perturb_times + data * 2 * np.pi / 360)
         else:
             func1 = lambda t: np.exp(-1j * t * omega)/2

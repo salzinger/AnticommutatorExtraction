@@ -518,6 +518,8 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             Fend = F[-1]
             Fmodend = Fsim[-1]
 
+
+            print("")
             print(Fmean)
             print(Fmodmean)
             print(Fend)
