@@ -209,7 +209,7 @@ result_m3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
 
 
 
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = 0.5$  MHz', linestyle='')
+ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = 0.5$  MHz', linestyle='', markersize="4")
 
 ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
@@ -229,13 +229,13 @@ ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.0, color='grey', lin
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#800020', label='$\gamma = 40$  MHz', linestyle='', markersize="5")
+ax[1, 1].errorbar(x0, y3, y3e, marker="o", color='#800020', label='$\gamma = 40$  MHz', linestyle='', markersize="4")
 ax[1, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#800020', linestyle='-')
 
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$\mu s$]', fontsize=14)
-ax[1, 1].set_ylabel(r'$\langle \sigma_z \rangle / 2 $', fontsize=14)
+ax[1, 1].set_xlabel('Time [$\mu s$]', fontsize=16)
+ax[1, 1].set_ylabel(r'$\langle \sigma_z \rangle / 2 $', fontsize=16)
 ax[1, 1].legend(loc="lower center", fontsize=12)
 ax[1, 1].set_ylim([-0.6, 0.6])
 ax[1, 1].set_xlim([-0.005, 0.074])

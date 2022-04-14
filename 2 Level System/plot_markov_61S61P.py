@@ -248,9 +248,9 @@ ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omeg
 
 ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
-ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
-ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
-ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.0, color='grey', linestyle='--')
+#ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
+#ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
+#ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.0, color='grey', linestyle='--')
 
 #ax[1, 1].plot(perturb_times, np.real(expect2[1]), color='#008b8b', label="Time Dependant")
 #ax[1, 1].plot(perturb_times, means[0], color='g',
@@ -283,10 +283,12 @@ ax[1, 1].plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', lin
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=14)
-ax[1, 1].set_ylabel('Magnetization', fontsize=14)
-ax[1, 1].legend(loc="lower center", fontsize=12)
-ax[1, 1].set_ylim([-0.6, 0.6])
+ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
+ax[1, 1].set_ylabel(r'$\langle S_z\rangle$', fontsize=16)
+ax[1, 1].legend(loc="lower center", fontsize=14)
+ax[1, 1].set_ylim([-0.55, 0.55])
+ax[1, 1].set_yticks(ticks=np.array([-0.5,-0.25,0.,0.25,0.5]))
+ax[1, 1].set_xlim([0., 3.05])
 
 
 

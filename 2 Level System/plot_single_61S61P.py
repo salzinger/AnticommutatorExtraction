@@ -616,6 +616,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
 
 
+
             ax[1, 0].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
             ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
             ax[1, 0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
@@ -623,14 +624,14 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             ax[1, 1].set_ylim([-0.68, 0.68])
             ax[1, 1].legend(loc="lower center", fontsize=12)
 
-            ax[1, 0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+            ax[1, 0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
             ax[1, 0].set_ylabel('', fontsize=14)
             ax[1, 0].set_ylabel('Fidelity', fontsize=14)
-            ax[1, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-            ax[1, 1].set_ylabel('Magnetization', fontsize=14)
+            ax[1, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
+            ax[1, 1].set_ylabel('Magnetization', fontsize=16)
 
-            ax[0, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-            ax[1, 0].set_ylabel('Magnetization', fontsize=14)
+            ax[0, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
+            ax[1, 0].set_ylabel('Magnetization', fontsize=16)
 
             print(Flist)
             #plt.show()
@@ -648,25 +649,34 @@ c.render()
 plt.show()
 
 
-fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+fig, ax = plt.subplots(3, 1, figsize=(10, 10))
 
+ax[0].errorbar(perturb_times, data,
+                  linewidth="0.4",
+                  color='#85bb65')
 
+#ax[0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+ax[0].set_ylabel(r'$\Phi_B(t)$', fontsize=16)
+#ax[0].legend(loc="lower center", fontsize=12)
+
+#ax[0].set_ylim([-0.6, 0.75])
+ax[0].set_xlim([0, 6.051])
 
 #ax[0].errorbar(tmw, total , np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
  #                   color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$", markersize="4", marker="s", linestyle="")
 
-ax[0].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
-                    color='black', label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
+ax[1].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
+                    color='black', label=r"$\langle S_x \rangle$", markersize="4", marker="s", linestyle="")
 
-ax[0].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                    color='#800080', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
+ax[1].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
+                    color='#800080', label=r"$\langle S_y \rangle$", markersize="4", marker="o", linestyle="")
 
-ax[0].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle/2}$", markersize="5", marker="o",
+ax[1].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle S_z \rangle$", markersize="5", marker="o",
                   linestyle="")
 
-ax[0].plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
-ax[0].plot(perturb_times, -np.real(expect_single[2]), color='#800080', linestyle="-")
-ax[0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
+ax[1].plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
+ax[1].plot(perturb_times, -np.real(expect_single[2]), color='#800080', linestyle="-")
+ax[1].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
 
 
 
@@ -677,33 +687,34 @@ ax[0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle=
 #                  label=r"Total",
 #                  markersize="4", marker="s", linestyle="")
 
-ax[0].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
-ax[0].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
-ax[0].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
+ax[1].plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+ax[1].plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
+ax[1].plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linestyle='--')
 
-ax[0].set_ylim([-0.6, 0.75])
+ax[1].set_ylim([-0.6, 0.75])
+ax[1].set_xlim([0, 6.051])
+ax[1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 
 
 
 
 #ax[0].set_ylim([-0.68, 0.68])
-ax[0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-ax[0].set_ylabel('Magnetization', fontsize=14)
-ax[0].legend(loc="lower center", fontsize=12)
+ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
+ax[1].set_ylabel(r'Spin', fontsize=16)
+ax[1].legend(loc="lower center", fontsize=14)
 
 
 
 
-ax[1].errorbar(tmw, F2,
+ax[2].errorbar(tmw, F2,
                   label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$",
-                  linestyle="--", markersize="3", marker="o",
+                  linestyle="dotted", markersize="3", marker="o",
                   color='black')
 
-ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-ax[1].set_ylabel('', fontsize=14)
-ax[1].set_ylabel('Fidelity', fontsize=14)
-ax[1].legend(loc="lower left", fontsize=12)
-ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
+ax[2].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
+ax[2].set_ylabel('Fidelity', fontsize=16)
+ax[2].set_xlim([0, 6.051])
+#ax[2].legend(loc="lower left", fontsize=12)
 
 
 
