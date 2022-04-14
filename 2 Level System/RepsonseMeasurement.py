@@ -236,15 +236,21 @@ def lorentzian(frequencies, amplitude, omega_0, gamma):
     return func(frequencies)
 
 
-ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), (0.1*np.sin(0.2*(np.linspace(0, f[0][-1], 100)-13.6))/(np.linspace(0, f[0][-1], 100)-13.6))**2, marker="o", color='grey', label=r'$sinc$', linestyle='-', markersize="0")
+ftt=psd(-np.sin(2*np.pi*13.6*np.array(x0))*0.15,9,0.1)
 
-ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
+#ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
+#ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), (0.1*np.sin(0.2*(np.linspace(0, f[0][-1], 100)-13.6))/(np.linspace(0, f[0][-1], 100)-13.6))**2, marker="o", color='grey', label=r'$sinc$', linestyle='-', markersize="0")
+
+#ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
+
+ax[0, 0].errorbar(ftt[0], ftt[1], marker="o", color='#85bb65', label=r'$theory', linestyle='-', markersize="0")
+
+#ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
+
+#ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
 
 ax[0, 0].errorbar(f[0], f[1], marker="o", color='black', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
 
