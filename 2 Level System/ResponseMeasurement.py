@@ -265,20 +265,20 @@ fttcos=psd(np.cos(2*np.pi*np.array(x0))*0.15, 9, 0.1)
 
 #ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[1, 1].errorbar(ftt[0]/13.6, fttcos[1], marker="o",color='#85bb65', label=r'Anticomm', linestyle='', markersize="1")
+ax[1, 1].errorbar(ftt[0]/13.6, fttcos[1], marker="o",color='#85bb65', linestyle='', markersize="1")
 
-ax[1, 1].errorbar(ftt[0]/13.6, ftt[1], marker="o",  color='black', label=r'Comm', linestyle='', markersize="1")
+ax[1, 1].errorbar(ftt[0]/13.6, ftt[1], marker="o",  color='black', linestyle='', markersize="1")
 
 #ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
 
 #ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[1, 1].errorbar(f[0]/13.6, f[1], marker="o",  color='#85bb65', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="0.05")
+ax[1, 1].errorbar(f[0]/13.6, f[1], marker="o",  color='#85bb65', linestyle='', markersize="0.05")
 
 #ax[0, 0].fill_between(f[0], f[1]+ferror**2, f[1]-ferror**2,  color='grey', alpha=0.2)
 
 
-ax[1, 1].errorbar(f1[0]/13.6, f1[1], marker="o",color='black', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="0.05")
+ax[1, 1].errorbar(f1[0]/13.6, f1[1], marker="o", color='black', linestyle='', markersize="0.05")
 
 
 
@@ -301,18 +301,18 @@ f = psd(y0, 9, 0.1)
 
 f1 = psd(y3, 9, 0.1)
 
-
-ax[1, 1].errorbar(f[0]/13.6, f[1], np.ones(9)*ferror[0]**2, marker="o", linestyle='', color='#85bb65', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', markersize="6")
+ax[1, 1].errorbar(f1[0]/13.6, f1[1], np.ones(9)*f1error[0]**2, marker="o", color='black', label=r'Hermitian', linestyle='', markersize="6")
+ax[1, 1].errorbar(f[0]/13.6, f[1], np.ones(9)*ferror[0]**2, marker="o", linestyle='', color='#85bb65', label=r'Non-Hermitian', markersize="6")
 
 #ax[0, 0].fill_between(f[0], f[1]+ferror**2, f[1]-ferror**2,  color='grey', alpha=0.2)
 
 
-ax[1, 1].errorbar(f1[0]/13.6, f1[1], np.ones(9)*f1error[0]**2, marker="o", color='black', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="6")
+
 
 
 ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
 ax[1, 1].set_ylabel(r'Correlation Spectrum', fontsize=16)
-
+ax[1, 1].legend(loc="upper right", fontsize=12)
 
 
 
@@ -392,7 +392,7 @@ for f in range(1, 4):
 #ax[0, 1].legend(loc="lower center", fontsize=12)
 
 
-ax[0, 1].errorbar(x0, y0, y0e, marker="o", color='#85bb65', label=r'Anticommutator $\langle \{ \sigma_z(t_p),\sigma_z(t) \} \rangle$', linestyle='', markersize="4")
+ax[0, 1].errorbar(x0, y0, y0e, marker="o", color='#85bb65', label=r'$\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="4")
 
 ax[0, 1].plot(perturb_times, np.cos(2*np.pi*perturb_times)*0.15, color='#85bb65', linestyle='-')
 
@@ -412,7 +412,7 @@ ax[0, 1].plot(perturb_times, np.cos(2*np.pi*perturb_times)*0.15, color='#85bb65'
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[0, 1].errorbar(x0, y3, y3e, marker="^", color='black', label=r'Commutator $\langle[ \sigma_z(t_p),\sigma_z(t)] \rangle$', linestyle='', markersize="4")
+ax[0, 1].errorbar(x0, y3, y3e, marker="^", color='black', label=r'$\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="4")
 
 ax[0, 1].plot(perturb_times, -np.sin(2*np.pi*perturb_times)*0.15, color='black', linestyle='-')
 
@@ -422,7 +422,8 @@ ax[0, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
 ax[0, 1].set_ylabel(r'$\langle S_z \rangle$', fontsize=16)
 ax[0, 1].legend(loc="lower center", fontsize=12)
 ax[0, 1].set_ylim([-0.2, 0.2])
-#ax[1, 1].set_xlim([-0.005, 0.074])
+ax[0, 1].set_xlim([-0.005, 1.372])
+ax[1, 1].set_xlim([-3, 3])
 
 
 
