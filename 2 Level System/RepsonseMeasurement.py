@@ -185,10 +185,10 @@ for element in range(1, 10):
     y0e.append((float(linesm0e[element][8:18])))
 
 
-print(len(x0))
-print(len(y0))
-print(x0)
-print(y3)
+#print(len(x0))
+#print(len(y0))
+#print(x0)
+#print(y3)
 
 #t1 = np.linspace(0, endtime, int(timesteps))
 
@@ -213,7 +213,7 @@ ft = np.fft.fft(y0)
 
 freq = np.fft.fftfreq(ft.size, x0[1])
 
-print(ft)
+#print(ft)
 
 #äplot_acf(data=np.array(y0), x=np.array(x0), lags=8)
 # Show the AR as a plot
@@ -224,7 +224,7 @@ def psd(data, samples, sample_time):
     fs = samples / sample_time
     F, P = signal.welch(
         long, fs,
-        nperseg=samples)
+        nperseg=samples, scaling='spectrum', nfft=5000, return_onesided=0)
     return F , P
 
 f = psd(y0, 9, 0.1)
@@ -235,9 +235,28 @@ def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
     return func(frequencies)
 
+ferror=0
+
+f1error=0
+
+for e in range(0, len(y0e)):
+    ferror += y0e[e]**2
+    f1error += y3e[e]**2
+
+print(ferror)
+
+print(np.sqrt(ferror))
+
+ferror=np.ones(5000)*np.sqrt(ferror)
+
+f1error=np.ones(5000)*np.sqrt(f1error)
 
 
-ftt=psd(-np.sin(2*np.pi*13.6*np.array(x0))*0.15,9,0.1)
+
+
+ftt=psd(-np.sin(2*np.pi*13.6*np.array(x0))*0.15, 9, 0.1)
+
+fttcos=psd(np.cos(2*np.pi*13.6*np.array(x0))*0.15, 9, 0.1)
 
 
 #ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
@@ -246,22 +265,70 @@ ftt=psd(-np.sin(2*np.pi*13.6*np.array(x0))*0.15,9,0.1)
 
 #ax[0, 0].errorbar(np.linspace(0, f[0][-1], 100), lorentzian(np.linspace(0, f[0][-1], 100), 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[0, 0].errorbar(ftt[0], ftt[1], marker="o", color='#85bb65', label=r'$theory', linestyle='-', markersize="0")
+ax[0, 0].errorbar(ftt[0], fttcos[1], marker="o", color='black', label=r'Anticomm', linestyle='', markersize="1")
+
+ax[0, 0].errorbar(ftt[0], ftt[1], marker="o", color='#85bb65', label=r'Comm', linestyle='', markersize="1")
 
 #ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.025, 13.6, 10), marker="o", color='#85bb65', label=r'$Lorentz$', linestyle='-', markersize="0")
 
 #ax[0, 0].errorbar(f[0], lorentzian(f[0], 0.0091, 13.6, 10), marker="o", color='black', label=r'$Lorentz$', linestyle='-', markersize="0")
 
-ax[0, 0].errorbar(f[0], f[1], marker="o", color='black', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+ax[0, 0].errorbar(f[0], f[1], marker="o", color='black', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="0.05")
+
+#ax[0, 0].fill_between(f[0], f[1]+ferror**2, f[1]-ferror**2,  color='grey', alpha=0.2)
 
 
-ax[0, 0].errorbar(f1[0], f1[1], marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+ax[0, 0].errorbar(f1[0], f1[1], marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="0.05")
+
+
+
+
+
+
+
+
+
+
+def psd(data, samples, sample_time):
+    long = data
+    fs = samples / sample_time
+    F, P = signal.welch(
+        long, fs,
+        nperseg=samples, scaling='spectrum', return_onesided=0)
+    return F , P
+
+f = psd(y0, 9, 0.1)
+
+f1 = psd(y3, 9, 0.1)
+
+
+ax[0, 0].errorbar(f[0], f[1], np.ones(9)*ferror[0]**2, marker="o", color='black', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="6")
+
+#ax[0, 0].fill_between(f[0], f[1]+ferror**2, f[1]-ferror**2,  color='grey', alpha=0.2)
+
+
+ax[0, 0].errorbar(f1[0], f1[1], np.ones(9)*f1error[0]**2, marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p), \sigma_z(t)\} \rangle$', linestyle='', markersize="6")
+
+
+
+
+
+
+
+
+
+
+
+
+#ax[0, 0].errorbar(f1[0], f1[1], f1error**2, marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='', markersize="1")
+
+#ax[0, 0].fill_between(f[0], f1[1]+f1error**2, f1[1]-f1error**2,  color='#85bb65', alpha=0.2)
 
 
 ft1 = np.fft.fft(y3)
 
 
-print(ft1)
+#print(ft1)
 
 
 freq1 = np.fft.fftfreq(ft1.size, x0[1])
@@ -274,45 +341,56 @@ freq1 = np.fft.fftfreq(ft1.size, x0[1])
 #ax[0, 0].errorbar(freq1, np.real(ft1), marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
 
 
+#ferror=np.ones(50)*np.sqrt(ferror)
 
-ax[1, 0].errorbar(freq, np.abs(ft), marker="o", color='black', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+#f1error=np.ones(50)*np.sqrt(f1error)
+
+ax[1, 0].errorbar(freq, np.abs(ft), np.ones(9)*ferror[0], marker="o", color='black', label=r'abs(comm)', linestyle='--', markersize="4")
 
 
-ax[1, 0].errorbar(freq1, np.abs(ft1), marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+ax[1, 0].errorbar(freq1, np.abs(ft1), np.ones(9)*f1error[0], marker="o", color='#85bb65', label=r'abs(anticomm)', linestyle='--', markersize="4")
+
+ax[1, 0].legend(loc="lower center", fontsize=12)
 
 
 
 
 for f in range(1, 4):
-    print(ft[f])
-    print(ft[-4+f])
-    ft[f] += ft[-4+f]
+    #print(ft[f])
+    #print(ft[-4+f])
+    #ft[f] += ft[-4+f]
     #print(ft1[f])
     #print(ft1[-4+f])
-    ft1[f] += ft1[-4+f]
+    #ft1[f] += ft1[-4+f]
     None
 
-ft=ft/2
-ft1=ft1/2
+#ft=ft/2
+#ft1=ft1/2
 
-ax[0, 1].errorbar(freq, np.real(ft), marker="o", color='black', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+ax[0, 1].errorbar(freq, np.real(ft), np.ones(9)*ferror[0], marker="o", color='black', label=r'real comm', linestyle='--', markersize="4")
 
 
-ax[0, 1].errorbar(freq1, np.real(ft1), marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
+ax[0, 1].errorbar(freq, np.imag(ft), np.ones(9)*ferror[0], marker="o", color='black', label=r'imag comm', linestyle='dotted', markersize="4")
+
+
+ax[0, 1].errorbar(freq1, np.real(ft1), np.ones(9)*f1error[0], marker="o", color='#85bb65', label='real anticomm', linestyle='--', markersize="4")
+
+
+ax[0, 1].errorbar(freq1, np.imag(ft1), np.ones(9)*f1error[0], marker="o", color='#85bb65', label=r'imag anticomm', linestyle='dotted', markersize="4")
 
 #ax[0, 1].errorbar(freq, np.abs(ft), marker="o", color='black', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
 
 
 #ax[0, 1].errorbar(freq1, np.abs(ft1), marker="o", color='#85bb65', label=r'$\langle \{\sigma_z(t_p),\sigma_z(t)\} \rangle$', linestyle='--', markersize="4")
 
-ax[0, 1].set_xlim([-1, 39])
+#ax[0, 1].set_xlim([-1, 39])
+
+ax[0, 1].legend(loc="lower center", fontsize=12)
 
 
+ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='#85bb65', label=r'Anticommutator $\langle \{ \sigma_z(t_p),\sigma_z(t) \} \rangle$', linestyle='', markersize="4")
 
-
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label=r'$\langle [ \sigma_z(t_p),\sigma_z(t)]\rangle$', linestyle='', markersize="4")
-
-ax[1, 1].plot(perturb_times, -np.real(m0[1])*0.15/0.5, color='black', linestyle='-')
+ax[1, 1].plot(perturb_times, -np.real(m0[1])*0.15/0.5, color='#85bb65', linestyle='-')
 
 ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.15, color='grey', linestyle='--')
 ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.15, color='grey', linestyle='--')
@@ -330,8 +408,9 @@ ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.0, color='grey', lin
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#85bb65', label=r'$\langle [ \sigma_z(t_p),\sigma_z(t)]\rangle$', linestyle='', markersize="4")
-ax[1, 1].plot(perturb_times, -np.sin(2*np.pi*13.6*perturb_times)*0.15, color='#85bb65', linestyle='-')
+ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='black', label=r'Commutator $\langle[ \sigma_z(t_p),\sigma_z(t)] \rangle$', linestyle='', markersize="4")
+
+ax[1, 1].plot(perturb_times, -np.sin(2*np.pi*13.6*perturb_times)*0.15, color='black', linestyle='-')
 
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
