@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 N = 1
 
-omega = 2 * np.pi * 16 * 10 ** 3  # MHz
+omega = 2 * np.pi * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
 #omega = 0  # MHz
@@ -275,23 +275,39 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
             '''
 
-            samples = 2 * 10 ** 7 #min 8 * 10 ** 6
-            sample_time = 2
+            factor = 3
 
-            gamma3 = average_psd(3, omega, samples, sample_time, 400) #min 40
-            gamma5 = average_psd(5, omega, samples, sample_time, 400)
-            gamma15 = average_psd(15, omega, samples, sample_time, 400)
-            gamma30 = average_psd(30, omega, samples, sample_time, 400)
+            #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
+            omega= 2 * np.pi * 21 * 10 ** factor #MHz
+            sample_time = 3 # * 10 **(1-factor)
+            samples=sample_time*64 * 10 ** (factor)
+            gamma0 = average_psd(0, omega, samples, sample_time, 4)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 4) #min 40 or 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 4)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 4)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 4)
+
+            print("welch sum" , np.sum(gamma0[1]))
 
 
 
             # ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
             #           marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
+
+            ax[0, 0].plot(-gamma0[0], gamma0[1], linestyle='',
+                          marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='none', markeredgecolor = 'black')
+            ax[0, 0].plot(gamma0[0], 0.5 * lorentzian(gamma0[0], 1, omega / (2 * np.pi), 1/sample_time), linestyle='-',
+                          linewidth=1,
+                          color='black')
+
+
             ax[0, 0].plot(-gamma3[0], gamma3[1], linestyle='',
                           marker='^', markersize='4', label=r"$\gamma=\Omega_R/5$", color='#025669', markerfacecolor='none', markeredgecolor = '#025669')
             ax[0, 0].plot(gamma3[0], 0.5 * lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           linewidth=1,
                           color='#025669')
+
+
 
             ax[0, 0].plot(-gamma5[0], gamma5[1], linestyle='',
                           marker='D', markersize='4', label=r"$\gamma=\Omega_R/3$", markerfacecolor='none', markeredgecolor = '#800080')
@@ -324,7 +340,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             # ax[0, 0].axvspan(20998.5, 21001.5, facecolor='g', alpha=0.5)
 
-            ax[0, 0].set_xlim([15990, 16010])
+            ax[0, 0].set_xlim([int(omega/2/np.pi)-10*10**(factor-3), int(omega/2/np.pi)+10*10**(factor-3)])
             ax[0, 0].set_ylim(bottom=0)
             # ax[0, 0].set_xlim([-21020, -20980])
             # [0:int(len(perturb_times) / 2)]
@@ -352,7 +368,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             ax[0, 0].set_xlabel(r'$\Delta$f [$\Omega_R$]', fontsize=16)
             ax[0, 0].set_ylabel(r'PSD [$V^2$/Hz]', fontsize=16)
-            plt.xticks(np.linspace(-10, 10, 5))
+            #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
             plt.show()
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111
 

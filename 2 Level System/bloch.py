@@ -80,17 +80,26 @@ print("z:", z3)
 
 c = Bloch()
 c.make_sphere()
-c.vector_color = ["grey", 'black', '#800020']
-c.point_color = ['black', '#800020']
-vec1 = [-np.real(x2), 0, 0]
-vec2 = [-np.real(x2), np.real(y2), np.real(z2)]
-vec3 = [-np.real(x3), np.real(y3), np.real(z3)]
-th = np.linspace(0, 2*np.pi, 20)
+c.vector_color = ["grey", 'black', '#85bb65']
+c.point_color = ['grey']
+c.point_size = [1]
 
-xz = -np.ones(20)*np.real(x3)
+c.point_marker=['o']
+vec1 = [-np.real(x2)+0.051, 0, 0]
+vec2 = [-np.real(x2), np.real(y2), np.real(z2)]
+vec3 = [-np.real(x3)/1.5, np.real(y3)/1.5, np.real(z3)]
+th = np.linspace(0, 2*np.pi, 200)
+
+xz = -np.ones(200)*np.real(x3)
 yz = np.sin(th)*np.real(z3)
 zz = np.cos(th)*np.real(z3)
-c.add_points([xz, yz, zz],'m')
+c.add_points([xz, yz, zz], 'm')
+
+
+xz = -np.ones(200)*np.real(x3)/1.5
+yz = np.sin(th)*np.real(z3)
+zz = np.cos(th)*np.real(z3)
+c.add_points([xz, yz, zz], 'm')
 
 c.add_vectors(vec1)
 c.add_vectors(vec2)

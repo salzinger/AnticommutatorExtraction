@@ -25,7 +25,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
     fs = samples / sample_time
     F, P = signal.welch(
         long, fs,
-        nperseg=samples)
+        nperseg=samples, return_onesided=0)
     i=1
     for x in range(0, averages-1):
         i+=1
@@ -36,7 +36,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
 
         f, Pxx_den = signal.welch(
             long, fs,
-            nperseg=samples)
+            nperseg=samples, return_onesided=0)
 
         F += f
         P += Pxx_den
@@ -45,6 +45,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
+    func = lambda omega: amplitude / (gamma * np.pi * (2 * ((omega - omega_0) / gamma) ** 2 + 0.5))
     return func(frequencies)
 
 
@@ -368,10 +369,11 @@ def noisy_func(gamma, perturb_times, omega, bath, rise_time=0, second_rise_time=
         #print(perturb_times+phase_noise)
         #lab_frame:
         #func1 = lambda t: 0.5j * np.exp(-1j * t * omega) - 0.5j * np.exp(1j * t * omega)
+
         if omega == 0:
             return np.exp(-1j * phase_noise[0])/2
         else:
-            func1 = lambda t: np.exp(-1j * t * omega)
+            func1 = lambda t: np.exp(-1j * t * omega) + np.exp(1j * t * omega)
             return func1(perturb_times+phase_noise[0]/omega*(np.pi/2)**2)/2
         #rotating_frame:
         #func1 = lambda t: np.exp(-1j * t * omega)
