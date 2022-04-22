@@ -22,22 +22,35 @@ def get_fft(data, x=None):
 
 def autocorr(x):
     result = np.correlate(x, x, mode='full')
-    return result[len(x)-1:]/len(x)
+    return result[int(len(x)/2):]
 
-def autocorr1(x, t=0):
-    return np.corrcoef(np.array([x[:-t], x[t:]]))/len(x)
+def autocorr1(x):
+    r2 = np.fft.ifft(np.abs(np.fft.fft(x))**2).real
+    return r2[:len(x)//2]
+
+def autocorr2(x, t=0):
+    return np.corrcoef(np.array([x[:-t], x[t:]]))
+
+def autocorr3(x):
+    r2 = np.fft.ifft(np.abs(np.fft.fft(x))**2).real
+    return r2[:len(x)//2]
+
+def autocorr4(x):
+    r2=np.fft.ifft(np.abs(np.fft.fft(x))**2).real
+    c=(r2/x.shape-np.mean(x)**2)#/np.std(x)**2
+    return c#[:len(x)//2]
 
 def autocross(x, y):
     c = np.correlate(x, y, "same")
     v = [c[i]/( len(x)-abs( i - (len(x)/2)  ) ) for i in range(len(c))]
-    return v/len(x)
+    return v
 
 def average_psd(gamma,omega,samples,sample_time,averages):
     long = sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
     fs = samples / sample_time
     F, P = signal.welch(
         long, fs,
-        nperseg=samples, return_onesided=0, average='median')#, nfft=2*samples)
+        nperseg=samples, return_onesided=0, average='median', scaling='density')#, nfft=2*samples)
     i=1
     for x in range(0, averages-1):
         i+=1
@@ -48,10 +61,10 @@ def average_psd(gamma,omega,samples,sample_time,averages):
 
         f, Pxx_den = signal.welch(
             long, fs,
-            nperseg=samples, return_onesided=0, average='median')#, nfft=2*samples)
+            nperseg=samples, return_onesided=0, average='median', scaling='density')#, nfft=2*samples)
 
         F += f
-        P += Pxx_den
+        P += Pxx_den/sample_time
 
     return F / averages, P / averages
 
