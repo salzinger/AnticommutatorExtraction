@@ -64,9 +64,9 @@ def average_psd(gamma,omega,samples,sample_time,averages):
             nperseg=samples, return_onesided=0, average='median', scaling='density')#, nfft=2*samples)
 
         F += f
-        P += Pxx_den/sample_time
+        P += Pxx_den
 
-    return F / averages, P / averages
+    return F / averages, P / averages /sample_time
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)

@@ -278,20 +278,20 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             factor = 3
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
-            omega= 2 * np.pi * 21 * 10 ** factor #MHz
-            sample_time = np.pi/2 # * 10 **(1-factor)
-            samples = int(sample_time * 64 * 10 ** (factor+1))
+            omega= 2 * np.pi * 20 * 10 ** factor #MHz
+            sample_time = np.pi/2 * 2  # * 10 **(1-factor)
+            samples = int(sample_time * 64 * 10 ** (factor+2))
 
             #print(samples)
-            gamma0 = average_psd(0, omega, samples, sample_time, 4)
-            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 4) #min 40 or 400 for good results
-            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 4)
-            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 4)
-            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 4)
+            gamma0 = average_psd(0, omega, samples, sample_time, 1)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 10) #min 40 or 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 10)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 10)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 10)
 
             print("welch sum" , np.sum(gamma0[1]))
 
-            print("Lorentz sum", np.sum(lorentzian(gamma0[0], 1, omega / (2 * np.pi), 1/10))/sample_time)
+            print("Lorentz sum", np.sum(lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi))/sample_time)
             '''
             long = sqrt(2) * noisy_func(0, np.linspace(0, sample_time, samples), omega, "markovian")
 
@@ -360,7 +360,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             ax[0, 0].plot(-gamma0[0], 2*gamma0[1], linestyle='',
                           marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
-            ax[0, 0].plot(gamma0[0], lorentzian(gamma0[0], 1, omega / (2 * np.pi), 1/10)/sample_time, linestyle='-',
+            ax[0, 0].plot(gamma0[0], lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi)/sample_time, linestyle='-',
                           linewidth=1,
                           color='black')
 
