@@ -279,51 +279,83 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 21 * 10 ** factor #MHz
-            sample_time = 3 # * 10 **(1-factor)
-            samples=sample_time*64 * 10 ** (factor)
-            gamma0 = average_psd(0, omega, samples, sample_time, 4)
-            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 4) #min 40 or 400 for good results
-            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 4)
-            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 4)
-            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 4)
+            sample_time = np.pi/2 # * 10 **(1-factor)
+            samples = int(sample_time * 64 * 10 ** (factor+1))
+
+            print(samples)
+            gamma0 = average_psd(0, omega, samples, sample_time, 40)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 40) #min 40 or 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 40)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 40)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 40)
 
             print("welch sum" , np.sum(gamma0[1]))
 
+            long = sqrt(2) * noisy_func(3, np.linspace(0, sample_time, samples), omega, "markovian")
+
+            # generate some data
+            x = np.arange(0., np.pi, np.pi/10)
+            y = np.sin(x)
+            y = np.random.uniform(size=300)
+            y=long
+            yunbiased = y - np.mean(y)
+            ynorm = np.sum(yunbiased ** 2)
+            acor = np.correlate(yunbiased, yunbiased, "same") / ynorm
+            # use only second half
+            acor = acor[int(len(acor) / 2):]
+
+            #plt.plot(acor)
+            #plt.show()
+
+            #auto =np.array(autocross(long,long))
+
+            auto = np.array(autocorr(long))
+
+            print(auto)
 
 
             # ax[0, 0].plot(f_real, Pxx_real, linestyle='-',
             #           marker='s', markersize='6', linewidth=0.55, label="PSD $\gamma=3$ MHz Exp", color="#85bb65")
 
-            ax[0, 0].plot(-gamma0[0], gamma0[1], linestyle='',
-                          marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='none', markeredgecolor = 'black')
-            ax[0, 0].plot(gamma0[0], 0.5 * lorentzian(gamma0[0], 1, omega / (2 * np.pi), 1/sample_time), linestyle='-',
+            ax[1, 1].plot(np.linspace(0, len(auto), auto.size), auto, linestyle='',
+                          marker='^', markersize='4', label=r"$autocorrelation$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
+
+            ax[0, 1].plot(np.linspace(0, len(acor), acor.size), acor, linestyle='',
+                          marker='^', markersize='4', label=r"$autocorrelation$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
+
+            #ax[1, 0].plot(np.linspace(0, len(auto), auto.size), np.real(auto), linestyle='',
+            #              marker='^', markersize='4', label=r"$autocorrelation$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
+
+            ax[0, 0].plot(-gamma0[0], 2*gamma0[1], linestyle='',
+                          marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
+            ax[0, 0].plot(gamma0[0], lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi), linestyle='-',
                           linewidth=1,
                           color='black')
 
 
-            ax[0, 0].plot(-gamma3[0], gamma3[1], linestyle='',
+            ax[0, 0].plot(-gamma3[0],2* gamma3[1], linestyle='',
                           marker='^', markersize='4', label=r"$\gamma=\Omega_R/5$", color='#025669', markerfacecolor='none', markeredgecolor = '#025669')
-            ax[0, 0].plot(gamma3[0], 0.5 * lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
+            ax[0, 0].plot(gamma3[0], lorentzian(gamma3[0], 1, omega / (2 * np.pi), 3), linestyle='-',
                           linewidth=1,
                           color='#025669')
 
 
 
-            ax[0, 0].plot(-gamma5[0], gamma5[1], linestyle='',
+            ax[0, 0].plot(-gamma5[0], 2*gamma5[1], linestyle='',
                           marker='D', markersize='4', label=r"$\gamma=\Omega_R/3$", markerfacecolor='none', markeredgecolor = '#800080')
-            ax[0, 0].plot(gamma5[0], 0.5 * lorentzian(gamma5[0], 1, omega / (2 * np.pi), 5), linestyle='-',
+            ax[0, 0].plot(gamma5[0], lorentzian(gamma5[0], 1, omega / (2 * np.pi), 5), linestyle='-',
                           linewidth=1,
                           color='#800080')
 
-            ax[0, 0].plot(-gamma15[0], gamma15[1], linestyle='',
+            ax[0, 0].plot(-gamma15[0],2*gamma15[1], linestyle='',
                           marker='v', markersize='4', label=r"$\gamma=\Omega_R$", markerfacecolor='none', markeredgecolor = "#CC7722")
-            ax[0, 0].plot(gamma15[0], 0.5 * lorentzian(gamma15[0], 1, omega / (2 * np.pi), 15), linestyle='-',
+            ax[0, 0].plot(gamma15[0], lorentzian(gamma15[0], 1, omega / (2 * np.pi), 15), linestyle='-',
                            linewidth=1,
                           color="#CC7722")
 
-            ax[0, 0].plot(-gamma30[0], gamma30[1], linestyle='',
+            ax[0, 0].plot(-gamma30[0], 2*gamma30[1], linestyle='',
                           marker='s', markersize='4', label=r"$\gamma=2\Omega_R$", markerfacecolor='none', markeredgecolor = "#800020")
-            ax[0, 0].plot(gamma30[0], 0.5 * lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
+            ax[0, 0].plot(gamma30[0], lorentzian(gamma30[0], 1, omega / (2 * np.pi), 30), linestyle='-',
                           linewidth=1,
                           color="#800020")
             # ax[0, 0].plot(f1, Pxx_den1, linestyle='',

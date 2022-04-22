@@ -20,12 +20,24 @@ def get_fft(data, x=None):
     ff = fft(data) / n_samples * 2
     return f, ff
 
+def autocorr(x):
+    result = np.correlate(x, x, mode='full')
+    return result[len(x)-1:]/len(x)
+
+def autocorr1(x, t=0):
+    return np.corrcoef(np.array([x[:-t], x[t:]]))/len(x)
+
+def autocross(x, y):
+    c = np.correlate(x, y, "same")
+    v = [c[i]/( len(x)-abs( i - (len(x)/2)  ) ) for i in range(len(c))]
+    return v/len(x)
+
 def average_psd(gamma,omega,samples,sample_time,averages):
     long = sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
     fs = samples / sample_time
     F, P = signal.welch(
         long, fs,
-        nperseg=samples, return_onesided=0)
+        nperseg=samples, return_onesided=0, average='median')#, nfft=2*samples)
     i=1
     for x in range(0, averages-1):
         i+=1
@@ -36,7 +48,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
 
         f, Pxx_den = signal.welch(
             long, fs,
-            nperseg=samples, return_onesided=0)
+            nperseg=samples, return_onesided=0, average='median')#, nfft=2*samples)
 
         F += f
         P += Pxx_den
