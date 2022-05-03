@@ -279,15 +279,15 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
-            sample_time = np.pi/2 * 2  # * 10 **(1-factor)
+            sample_time = np.pi/2 * 1  # * 10 **(1-factor)
             samples = int(sample_time * 64 * 10 ** (factor+2))
 
             #print(samples)
             gamma0 = average_psd(0, omega, samples, sample_time, 1)
-            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 10) #min 40 or 400 for good results
-            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 10)
-            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 10)
-            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 10)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 1) #min 40 or 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 1)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 1)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 1)
 
             print("welch sum" , np.sum(gamma0[1]))
 
@@ -379,7 +379,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
                           linewidth=1,
                           color='#800080')
 
-            ax[0, 0].plot(-gamma15[0],2*gamma15[1], linestyle='',
+            ax[0, 0].plot(-gamma15[0], 2*gamma15[1], linestyle='',
                           marker='v', markersize='4', label=r"$\gamma=\Omega_R$", markerfacecolor='none', markeredgecolor = "#CC7722")
             ax[0, 0].plot(gamma15[0], lorentzian(gamma15[0], 1, omega / (2 * np.pi), 15)/sample_time, linestyle='-',
                            linewidth=1,
@@ -433,7 +433,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             ax[0, 0].legend(loc="upper right")
 
             ax[0, 0].set_xlabel(r'$\Delta$f [$\Omega_R$]', fontsize=16)
-            ax[0, 0].set_ylabel(r'PSD [$V^2$/Hz]', fontsize=16)
+            ax[0, 0].set_ylabel(r'PSD / P$_{Carrier}$ [1/Hz]', fontsize=16)
             #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
             plt.show()
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111

@@ -209,9 +209,9 @@ result_m3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]],
 
 
 
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=\Omega_R/60$', linestyle='', markersize="4")
+ax[0, 1].errorbar(x0, y0, y0e, marker="o", color='black', label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=\Omega_R/60$', linestyle='', markersize="4")
 
-ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
+ax[0, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
 #ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
 #ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
@@ -229,18 +229,36 @@ ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[1, 1].errorbar(x0, y3, y3e, marker="o", color='#85bb65',  label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=2.9\Omega_R$', linestyle='', markersize="4")
-ax[1, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#85bb65', linestyle='-')
+ysum3=[]
+thsum3=[]
+ysum=[]
+for i in range(0,len(perturb_times) ):
+    thsum3.append(np.sum(np.real(result_m3.expect[1][0:i])))
+for i in range(0,len(y3) ):
+    ysum3.append(np.sum(y3[0:i]))
+    ysum.append(np.sum(y0[0:i]))
+
+
+ax[0, 1].errorbar(x0, y3, y3e, marker="o", color='#85bb65',  label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=2.9\Omega_R$', linestyle='', markersize="4")
+ax[0, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#85bb65', linestyle='-')
+
+ax[1, 1].errorbar(x0, ysum3, y3e, marker="o", color='#85bb65',  label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=2.9\Omega_R$', linestyle='', markersize="4")
+
+ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
+ax[1, 1].set_ylabel(r'$\Sigma_t  \langle S_z \rangle_t $', fontsize=16)
+#ax[0, 1].errorbar(x0, ysum, y3e, marker="o", color='black',  label=r'$\Omega_{Rp}=1.3\Omega_R, \gamma=2.9\Omega_R$', linestyle='', markersize="4")
+ax[1, 1].set_xlim([-0.005, .97])
+#ax[0, 1].plot(perturb_times, thsum3, color='#85bb65', linestyle='-')
 
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
-ax[1, 1].set_ylabel(r'$\langle S_z \rangle $', fontsize=16)
-ax[1, 1].legend(loc="upper right", fontsize=12)
-ax[1, 1].set_ylim([-0.6, 0.6])
-ax[1, 1].set_xlim([-0.005, .97])
+ax[0, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
+ax[0, 1].set_ylabel(r'$\langle S_z \rangle $', fontsize=16)
+ax[0, 1].legend(loc="upper right", fontsize=12)
+ax[0, 1].set_ylim([-0.6, 0.6])
+ax[0, 1].set_xlim([-0.005, .97])
 
-ax[1, 1].set_yticks(ticks=np.array([-0.5,-0.25,0.,0.25,0.5]))
+ax[0, 1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 
 
 
