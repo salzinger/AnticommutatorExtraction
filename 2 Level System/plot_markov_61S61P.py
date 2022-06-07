@@ -4,6 +4,11 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+  "text.usetex": True,
+
+})
+
 
 N = 1
 
@@ -283,10 +288,12 @@ ax[1, 1].plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', lin
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
-ax[1, 1].set_ylabel(r'$\langle S_z\rangle$', fontsize=16)
-ax[1, 1].legend(loc="lower center", fontsize=14)
+ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=26)
+ax[1, 1].set_ylabel(r'$\langle S_z\rangle$', fontsize=26)
+ax[1, 1].legend(loc="lower center", fontsize=16)
+ax[1, 1].tick_params(axis="both", labelsize=16)
 ax[1, 1].set_ylim([-0.55, 0.55])
+
 ax[1, 1].set_yticks(ticks=np.array([-0.5,-0.25,0.,0.25,0.5]))
 ax[1, 1].set_xlim([0., 3.05])
 

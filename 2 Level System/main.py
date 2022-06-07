@@ -4,6 +4,11 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
+
+plt.rcParams.update({
+  "text.usetex": True,
+})
+
 N = 1
 
 omega = 2 * np.pi * 21 * 10 ** 3  # MHz
@@ -219,6 +224,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             #################### SPECTRA ######################################## 11111111111111111111111111111111111111111111111111111111111
 
             fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+
             '''
             freq = np.fft.fftfreq(perturb_times.shape[-1], d=1 / sampling_rate)
             fourier = Smean  # np.max(Smean) #np.abs(np.fft.fft(brownian_func(gamma, perturb_times, omega, sampling_rate)))
@@ -275,7 +281,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
             '''
 
-            factor = 3
+            factor = 2
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
@@ -358,11 +364,11 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             #ax[1, 0].plot(np.linspace(0, len(auto), auto.size), np.real(auto), linestyle='',
             #              marker='^', markersize='4', label=r"$autocorrelation$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
 
-            ax[0, 0].plot(-gamma0[0], 2*gamma0[1], linestyle='',
-                          marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
-            ax[0, 0].plot(gamma0[0], lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi)/sample_time, linestyle='-',
-                          linewidth=1,
-                          color='black')
+            #ax[0, 0].plot(-gamma0[0], 2*gamma0[1], linestyle='',
+            #              marker='^', markersize='4', label=r"$\gamma=0$", color='#025669', markerfacecolor='black', markeredgecolor = 'black')
+            #ax[0, 0].plot(gamma0[0], lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi)/sample_time, linestyle='-',
+            #              linewidth=1,
+            #              color='black')
 
 
             ax[0, 0].plot(-gamma3[0],2* gamma3[1], linestyle='',
@@ -430,10 +436,13 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             # ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
             # ax[0, 1].set_xlim([0.099, 0.101])
 
-            ax[0, 0].legend(loc="upper right")
+            ax[0, 0].legend(loc="upper left", fontsize=16)
+
+            ax[0, 1].tick_params(axis="both", labelsize=16)
 
             ax[0, 0].set_xlabel(r'$\Delta$f [$\Omega_R$]', fontsize=16)
             ax[0, 0].set_ylabel(r'PSD / P$_{Carrier}$ [1/Hz]', fontsize=16)
+            ax[0, 0].set_xticks(ticks=np.array([-3, -2, -1, 0., 1, 2, 3]))
             #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
             plt.show()
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111

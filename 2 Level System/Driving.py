@@ -46,7 +46,7 @@ def autocross(x, y):
     return v
 
 def average_psd(gamma,omega,samples,sample_time,averages):
-    long = 0.1 * sqrt(2)*noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
+    long = sqrt(2)*noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
     fs = samples / sample_time
     F, P = signal.welch(
         long, fs,

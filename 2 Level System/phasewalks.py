@@ -4,6 +4,11 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+  "text.usetex": True,
+
+})
+
 N = 1
 
 omega = 2 * np.pi * 16 * 10 ** 3  # MHz
@@ -189,11 +194,16 @@ data = np.append(data / 180, data_reversed / 180)
 
 # ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
 ###ax[0, 1].set_xlim([0, 0.1])
-ax[0, 1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
-ax[0, 1].set_ylabel(r'$\Phi_B(t)$', fontsize=16)
+ax[0, 1].set_xlabel(r'Time [$ 1/\Omega_R$] $3\pi$', fontsize=26)
+ax[0, 1].set_ylabel(r'$\Phi_B(t)$', fontsize=26)
+ax[0, 1].tick_params(axis="both", labelsize=16)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax[0, 1].legend(loc="lower left", fontsize=14)
+ax[0, 1].legend(loc="lower left", fontsize=16)
+
+
+ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
+
 ax[0, 1].set_xlim([0, 3])
 ax[0, 1].set_ylim([-3, 3])
 plt.show()

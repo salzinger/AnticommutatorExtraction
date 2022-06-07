@@ -4,6 +4,11 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({
+  "text.usetex": True,
+
+})
+
 
 N = 1
 
@@ -656,7 +661,7 @@ ax[0].errorbar(perturb_times, data,
                   color='#85bb65')
 
 #ax[0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-ax[0].set_ylabel(r'$\Phi_B(t)$', fontsize=16)
+ax[0].set_ylabel(r'$\Phi_B(t)$', fontsize=18)
 #ax[0].legend(loc="lower center", fontsize=12)
 
 #ax[0].set_ylim([-0.6, 0.75])
@@ -699,8 +704,8 @@ ax[1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 
 
 #ax[0].set_ylim([-0.68, 0.68])
-ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
-ax[1].set_ylabel(r'Spin', fontsize=16)
+ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=18)
+ax[1].set_ylabel(r'Spin', fontsize=18)
 ax[1].legend(loc="lower center", fontsize=14)
 
 
@@ -711,8 +716,8 @@ ax[2].errorbar(tmw, F2,
                   linestyle="dotted", markersize="3", marker="o",
                   color='black')
 
-ax[2].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=16)
-ax[2].set_ylabel('Fidelity', fontsize=16)
+ax[2].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=18)
+ax[2].set_ylabel('Fidelity', fontsize=18)
 ax[2].set_xlim([0, 6.051])
 #ax[2].legend(loc="lower left", fontsize=12)
 
