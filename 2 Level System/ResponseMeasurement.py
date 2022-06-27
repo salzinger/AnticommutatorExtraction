@@ -135,6 +135,7 @@ for n in range(0, Nsamples):
     samplederrory0.append(ftty0samples)
 
 
+
 print(np.sqrt(ferror))
 
 print(samplederrory0)
