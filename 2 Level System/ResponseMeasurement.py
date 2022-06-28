@@ -66,9 +66,9 @@ for element in range(1, 10):
     y0.append((float(linesm0[element][8:18])))
     y3.append((float(linesm3[element][8:18])))
 
-    y3e.append((float(linesm3e[0][0:5])))
+    y3e.append(0.011718)
 
-    y0e.append((float(linesm0e[element][8:18])))
+    y0e.append(0.012739)
 
 ft = np.fft.fft(y0)
 
@@ -104,7 +104,7 @@ ferror = 0
 
 f1error = 0
 
-Nsamples = 100
+Nsamples = 10
 
 y0samples = []
 
@@ -120,25 +120,24 @@ for e in range(0, len(y0e)):
     y3samples.append(np.random.normal(y3[e], y3e[e], Nsamples))
 
 
-y0shuffled = []
-
-y0reshuffled = []
-
 samplederrory0 = []
 
 
 for n in range(0, Nsamples):
+    y0reshuffled = []
     for e in range(0, len(y0e)):
-        y0shuffled.append(y0samples[e][n])
-    y0reshuffled.append(y0shuffled)
-    ftty0samples = np.real(np.fft.fft(y0reshuffled))
+        y0reshuffled.append(y0samples[e][n])
+    ftty0samples = np.real(np.fft.fft(y0reshuffled, n=int(1.5 * len(y0))))
     samplederrory0.append(ftty0samples)
 
 
+print(np.sqrt(np.var(samplederrory0, axis=1)))
+
+print(np.sqrt(np.var(samplederrory0, axis=0)))
 
 print(np.sqrt(ferror))
 
-print(samplederrory0)
+#print(samplederrory0)
 
 
 
@@ -176,7 +175,7 @@ f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
                   label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), samplederrory0, marker="o", color='#85bb65', linestyle='', markersize="3",
+ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65', linestyle='', markersize="3",
                   label=r'SAMPLED Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
 ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
