@@ -9,6 +9,8 @@ plt.rcParams.update({
 
 })
 
+plt.rc('figure', figsize=(11.69, 8.27))
+
 N = 1
 
 omega = 2 * np.pi * 16 * 10 ** 3  # MHz
@@ -206,6 +208,7 @@ ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
 
 ax[0, 1].set_xlim([0, 3])
 ax[0, 1].set_ylim([-3, 3])
+plt.savefig("SingleWalk.pdf")
 plt.show()
 ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 
@@ -227,7 +230,7 @@ S = noisy_func(gamma, perturb_times, omega, bath)
 
 
 plt.plot(perturb_times, S, color='#CC7722', linestyle='-', linewidth=1.0)
-plt.show()
+#plt.show()
 
 
 
