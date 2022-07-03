@@ -4,10 +4,15 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
+
 plt.rcParams.update({
   "text.usetex": True,
 
 })
+
+
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
 
 plt.rc('figure', figsize=(11.69, 8.27))
 
@@ -204,11 +209,19 @@ ax[0, 1].tick_params(axis="both", labelsize=16)
 ax[0, 1].legend(loc="lower left", fontsize=16)
 
 
+ax[1, 0].set_xlabel(r'Time [$ 1/\Omega_R$] $3\pi$', fontsize=12)
+ax[1, 0].set_ylabel(r'$\Phi_B(t)$', fontsize=12)
+ax[1, 0].tick_params(axis="both", labelsize=12)
+# ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
+# ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
+ax[1, 0].legend(loc="lower left", fontsize=12)
+
+
 ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
 
 ax[0, 1].set_xlim([0, 3])
 ax[0, 1].set_ylim([-3, 3])
-plt.savefig("SingleWalk.pdf")
+plt.savefig("SingleWalk1.pdf")
 plt.show()
 ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 
