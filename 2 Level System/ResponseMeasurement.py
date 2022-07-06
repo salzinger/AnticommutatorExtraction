@@ -265,8 +265,8 @@ ax[0, 1].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) *
 
 
 
-ax[0, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
-ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=16)
+ax[0, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
+ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].set_xlim([-2.5, 2.5])
 
@@ -357,8 +357,8 @@ ax[1, 0].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
                                                                       / ((om) ** 2 - Omega ** 2)), marker="o",
                   color='purple', linestyle='--', markersize="0")
 
-ax[1, 0].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
-ax[1, 0].set_ylabel(r'Correlation Spectrum', fontsize=16)
+ax[1, 0].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
+ax[1, 0].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[1, 0].legend(loc="lower right", fontsize=16)
 ax[1, 0].set_xlim([-2.5, 2.5])
 
@@ -422,10 +422,10 @@ f1 = psd(y3, 7, 0.1)
 # ax[0, 1].errorbar(f[0]/13.6, f[1], np.ones(len(f1[1]))*ferror[0]**2, marker="o", linestyle='', color='#85bb65', label=r'Non-Hermitian', markersize="6")
 
 
-ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
+ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
 
-ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
-ax[1, 1].set_ylabel(r'Correlation Spectrum', fontsize=16)
+ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
+ax[1, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[1, 1].legend(loc="lower right", fontsize=16)
 ax[1, 1].set_xlim([-2.5, 2.5])
 
@@ -440,12 +440,12 @@ y0e = y0e[0:len(y0)]
 y3e = y3e[0:len(y0)]
 
 ax[0, 0].errorbar(x0, y0, y0e, marker="o", color='#85bb65',
-                  label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="4")
+                  label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="6")
 
 ax[0, 0].plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.15, color='#85bb65', linestyle='-')
 
-ax[0, 0].errorbar(x0, y3, y3e, marker="^", color='black',
-                  label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="4")
+ax[0, 0].errorbar(x0, y3, y3e, marker="o", color='black',
+                  label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="6")
 
 ax[0, 0].plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.15, color='black', linestyle='-')
 
@@ -454,8 +454,8 @@ ydiv = []
 for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
-ax[0, 0].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
-ax[0, 0].set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=16)
+ax[0, 0].set_xlabel('Time [$1/\Omega_R$]', fontsize=20)
+ax[0, 0].set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=20)
 ax[0, 0].legend(loc="lower center", fontsize=16)
 ax[0, 0].set_ylim([-0.2, 0.2])
 ax[0, 0].set_xlim([-0.005, 1.372])
