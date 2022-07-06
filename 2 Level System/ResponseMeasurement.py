@@ -3,6 +3,7 @@ import numpy as np
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
+from scipy import integrate
 
 
 plt.rcParams.update({
@@ -84,15 +85,40 @@ def psd(data, samples, sample_time):
     return F, P
 
 
-x0 = x0[0:9]
+x0 = np.array(x0[0:9])
 
-y0 = y0[0:9]
+y0 = np.array(y0[0:9])
 
-y3 = y3[0:9]
+y3 = np.array(y3[0:9])
 
 f = psd(y0, 7, 0.1)
 
 f1 = psd(y3, 7, 0.1)
+
+omegas = np.linspace(-3, 3, num=100)
+
+integrals = []
+integrals0 = []
+
+x1 = np.linspace(x0[0], x0[-1])#np.array(x0[0:9])
+
+y0 = np.array(y0[0:9])
+
+y31 = -np.sin(x1*2*np.pi)*0.15#np.array(y3[0:9])
+
+print("y3", y3)
+print("x0", x0)
+print("omegas", omegas)
+
+for o in omegas:
+    integrals.append(2*np.pi*integrate.simps(y3*np.exp(-1j*o*x0*2*np.pi), x0))
+
+for o in omegas:
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
+
+print("integrals", integrals)
+
+
 
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
@@ -180,6 +206,12 @@ ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65
 
 ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
                   label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+ax[0, 1].errorbar(omegas, np.imag(integrals), marker="o", color='grey', linestyle='', markersize="3",
+                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+ax[0, 1].errorbar(omegas, np.real(integrals0), marker="o", color='blue', linestyle='', markersize="3",
+                  label=r'NonHermitian simpson integral')
 
 ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
                   color='purple', linestyle='', markersize="0.5",
