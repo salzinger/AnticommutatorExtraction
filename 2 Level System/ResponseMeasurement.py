@@ -5,11 +5,15 @@ from Driving import *
 import matplotlib.pyplot as plt
 from scipy import integrate
 
-
 plt.rcParams.update({
   "text.usetex": True,
-
 })
+
+
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+
+plt.rc('figure', figsize=(11.69, 8.27))
 
 N = 1
 
@@ -95,7 +99,7 @@ f = psd(y0, 7, 0.1)
 
 f1 = psd(y3, 7, 0.1)
 
-omegas = np.linspace(-3, 3, num=100)
+omegas = np.linspace(-3, 3, num=25)
 
 integrals = []
 integrals0 = []
@@ -190,34 +194,43 @@ freqsamples=np.fft.fftfreq(ftty0samples.size, x0[1])
 #print(len(ftty0))
 #print(len(freq))
 
+
+fserror = np.ones(len(omegas)) * np.sqrt(ferror)
+
+f1serror = np.ones(len(omegas)) * np.sqrt(f1error)
+
 ferror = np.ones(len(ftty0)) * np.sqrt(ferror)
 
 f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
+
 
 # ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3", label=r"$ NonHermitian  Re FT \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle $")
 
 # ax[0, 1].errorbar(freq, np.imag(ftty3), f1error, marker="s", color='black', linestyle='', markersize="3", label=r"$ Hermitian  Im FT \langle \[ \sigma_z(0),\sigma_z(t) \] \rangle $")
 
-ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
+#ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
+#                  label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
+
+#ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65', linestyle='', markersize="3",
+#                  label=r'SAMPLED Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
+
+#ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
+#                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+ax[0, 1].errorbar(omegas, np.imag(integrals), fserror, marker="o", color='black', linestyle='', markersize="6",
+                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+#ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
+#                  alpha=0.5)
+
+ax[0, 1].errorbar(omegas, np.real(integrals0), f1serror, marker="o", color='#85bb65', linestyle='', markersize="6",
                   label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65', linestyle='', markersize="3",
-                  label=r'SAMPLED Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
+#ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
+#                  color='purple', linestyle='', markersize="0.5",
+#                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
-                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
-
-ax[0, 1].errorbar(omegas, np.imag(integrals), marker="o", color='grey', linestyle='', markersize="3",
-                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
-
-ax[0, 1].errorbar(omegas, np.real(integrals0), marker="o", color='blue', linestyle='', markersize="3",
-                  label=r'NonHermitian simpson integral')
-
-ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
-                  color='purple', linestyle='', markersize="0.5",
-                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
-
-ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
+#ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
 
 Omega = 1
 T = 1.3
@@ -229,27 +242,91 @@ ax[0, 1].errorbar(om, 0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1")
 
-ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
-                  markersize="0.05", label="Coth(T=0)")
+#ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
+#                  markersize="0.05", label="Coth(T=0)")
 
 ax[0, 1].errorbar(om, 0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1")
+
+
+ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='purple', linestyle='',
+                  markersize="0.01", label="Coth(T=0)")
 
 om = om[int(len(om) / 2):len(om)]
 ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
             Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
         2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                                                                       / ((om) ** 2 - Omega ** 2)), marker="o",
-                  color='purple', linestyle='', markersize="0.05")
+                  color='purple', linestyle='--', markersize="0", linewidth='1')
+
+ax[0, 1].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), fserror, marker="o", color='purple', linestyle='', markersize="0",
+                  label=r'Coth(T=0)*Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
 
 
 ax[0, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=16)
-ax[0, 1].legend(loc="lower right", fontsize=12)
+ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].set_xlim([-2.5, 2.5])
 
-ax[1, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
+ax[0, 1].axvline(x=0., color="purple", ymin=0.05, ymax=0.95, linewidth='0.2')
+
+
+
+
+
+
+
+
+
+
+
+
+
+omegas = np.linspace(-3, 3, num=250)
+
+integrals = []
+integrals0 = []
+
+x1 = np.linspace(x0[0], x0[-1])#np.array(x0[0:9])
+
+y0 = np.array(y0[0:9])
+
+y31 = -np.sin(x1*2*np.pi)*0.15#np.array(y3[0:9])
+
+#print("y3", y3)
+#print("x0", x0)
+#print("omegas", omegas)
+
+for o in omegas:
+    integrals.append(2*np.pi*integrate.simps(y3*np.exp(-1j*o*x0*2*np.pi), x0))
+
+for o in omegas:
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
+
+print("integrals", integrals)
+
+
+fserror = np.ones(len(omegas)) * np.sqrt(ferror[0])
+
+f1serror = np.ones(len(omegas)) * np.sqrt(f1error[0])
+
+ax[1, 0].errorbar(omegas,  np.imag(integrals), color='black', linestyle='-', markersize="0", marker='o', linewidth='0.5',
+                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+ax[1, 0].errorbar(omegas, np.real(integrals0), marker="o", color='#85bb65', linestyle='-', markersize="0", linewidth='0.5',
+                  label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
+
+ax[1, 0].fill_between(omegas, np.real(integrals0)+f1serror/2, np.real(integrals0)-f1serror/2,  color='#85bb65', alpha=0.1,)
+
+ax[1, 0].fill_between(omegas, np.imag(integrals)+fserror/2, np.imag(integrals)-fserror/2,  color='black', alpha=0.1,)
+
+#ax[1, 0].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), marker="o",
+#                  color='purple', linestyle='', markersize="0.5",
+#                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
+
+#ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
 
 Omega = 1
 T = 1.3
@@ -257,10 +334,44 @@ om = ftt[0] / 13.6
 
 #print(om)
 
-ax[1, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
+ax[1, 0].errorbar(om, 0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1")
+
+ax[1, 0].errorbar(om, (0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
+                  color='black', linestyle='', markersize="1")
+
+#ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
+#                  markersize="0.05", label="Coth(T=0)")
+
+#ax[1, 0].errorbar(om, 0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+#    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+#                  / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1")
+
+om = om[int(len(om) / 2):len(om)]
+ax[1, 0].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
+            Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
+                  color='purple', linestyle='--', markersize="0")
+
+ax[1, 0].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
+ax[1, 0].set_ylabel(r'Correlation Spectrum', fontsize=16)
+ax[1, 0].legend(loc="lower right", fontsize=16)
+ax[1, 0].set_xlim([-2.5, 2.5])
+
+Omega = 1
+T = 1.3
+om = ftt[0] / 13.6
+
+#print(om)
+
+ax[1, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="6",
                   label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-ax[1, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
+ax[1, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="6",
                   label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
 ax[1, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
@@ -272,7 +383,7 @@ ax[1, 1].errorbar(om, 0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1")
 
-ax[1, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
+ax[1, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='purple', linestyle='',
                   markersize="0.05", label="Coth(T=0)")
 
 ax[1, 1].errorbar(om, 0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
@@ -280,11 +391,14 @@ ax[1, 1].errorbar(om, 0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np
                   / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1")
 
 om = om[int(len(om) / 2):len(om)]
+
 ax[1, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
             Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
         2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                                                                       / ((om) ** 2 - Omega ** 2)), marker="o",
                   color='purple', linestyle='', markersize="0.05")
+
+ax[1, 1].axvline(x=0., color="purple", ymin=0.05, ymax=0.95)
 
 
 # ax[0, 1].errorbar(om, ftt[1], marker="o",  color='black', linestyle='', markersize="1")
@@ -308,13 +422,11 @@ f1 = psd(y3, 7, 0.1)
 # ax[0, 1].errorbar(f[0]/13.6, f[1], np.ones(len(f1[1]))*ferror[0]**2, marker="o", linestyle='', color='#85bb65', label=r'Non-Hermitian', markersize="6")
 
 
-ax[1, 1].legend(loc="lower right", fontsize=12)
-
 ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
 
 ax[1, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=16)
 ax[1, 1].set_ylabel(r'Correlation Spectrum', fontsize=16)
-ax[1, 1].legend(loc="lower right", fontsize=12)
+ax[1, 1].legend(loc="lower right", fontsize=16)
 ax[1, 1].set_xlim([-2.5, 2.5])
 
 
@@ -344,7 +456,7 @@ for n in range(0, len(y0)):
 
 ax[0, 0].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
 ax[0, 0].set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=16)
-ax[0, 0].legend(loc="lower center", fontsize=12)
+ax[0, 0].legend(loc="lower center", fontsize=16)
 ax[0, 0].set_ylim([-0.2, 0.2])
 ax[0, 0].set_xlim([-0.005, 1.372])
 # ax[1, 0].set_xlim([-3, 3])
