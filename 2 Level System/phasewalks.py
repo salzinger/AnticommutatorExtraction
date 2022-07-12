@@ -53,7 +53,9 @@ gamma1 = 0  # MHz
 
 
 
-fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
+
+fig.set_dpi(250.0)
 
 for gamma in [3, 5, 15, 30]:
 
@@ -201,16 +203,36 @@ data = np.append(data / 180, data_reversed / 180)
 
 # ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
 ###ax[0, 1].set_xlim([0, 0.1])
-ax[0, 1].set_xlabel(r'Time [$ 1/\Omega_R$] $3\pi$', fontsize=26)
-ax[0, 1].set_ylabel(r'$\Phi_B(t)$', fontsize=26)
-ax[0, 1].tick_params(axis="both", labelsize=16)
+ax[0, 1].set_xlabel(r'Time [$ 1/\Omega_R$]', fontsize=12)
+ax[0, 1].set_ylabel(r'$\Phi_B(t) [\pi]$', fontsize=12)
+ax[0, 1].tick_params(axis="both", labelsize=12)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax[0, 1].legend(loc="lower left", fontsize=16)
+ax[0, 1].legend(loc="lower left", fontsize=12)
+
+data = np.loadtxt('10MHz_gamma.txt')
+# print(len(data))
+#data_reversed = -data[::-1]
+
+# there
+data = np.cumsum(data)/180
+
+data = data[40:56]*50
+
+datalarge = []
+
+for d in range(0, len(data)):
+    i=0
+    while i < 100:
+        datalarge.append(data[d])
+        i += 1
+    datalarge.append(data[d])
+
+ax[1, 0].plot(np.linspace(0, 4, len(datalarge)), 0.1*np.cos(datalarge+2*np.pi*np.linspace(0, 4, len(datalarge))), color='black', linewidth="2")
 
 
-ax[1, 0].set_xlabel(r'Time [$ 1/\Omega_R$] $3\pi$', fontsize=12)
-ax[1, 0].set_ylabel(r'$\Phi_B(t)$', fontsize=12)
+ax[1, 0].set_xlabel(r'Time [$ 1/\omega_{MW}$]', fontsize=12)
+ax[1, 0].set_ylabel(r'$E(t) [V/m]$', fontsize=12)
 ax[1, 0].tick_params(axis="both", labelsize=12)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
@@ -221,7 +243,7 @@ ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
 
 ax[0, 1].set_xlim([0, 3])
 ax[0, 1].set_ylim([-3, 3])
-plt.savefig("SingleWalk1.pdf")
+#plt.savefig("SingleWalk1.pdf")
 plt.show()
 ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 

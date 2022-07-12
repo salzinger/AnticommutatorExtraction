@@ -10,6 +10,12 @@ plt.rcParams.update({
 })
 
 
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+
+plt.rc('figure', figsize=(11.69, 8.27))
+
+
 N = 1
 
 #omega = 2 * np.pi * 21 * 10 ** 3  # MHz
@@ -661,7 +667,7 @@ ax[0].errorbar(perturb_times, data,
                   color='#85bb65')
 
 #ax[0].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
-ax[0].set_ylabel(r'$\Phi_B(t)$', fontsize=18)
+ax[0].set_ylabel(r'$\Phi_B(t)[\pi]$', fontsize=18)
 #ax[0].legend(loc="lower center", fontsize=12)
 
 #ax[0].set_ylim([-0.6, 0.75])

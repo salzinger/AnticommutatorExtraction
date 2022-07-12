@@ -312,15 +312,18 @@ fserror = np.ones(len(omegas)) * np.sqrt(ferror[0])
 
 f1serror = np.ones(len(omegas)) * np.sqrt(f1error[0])
 
-ax[1, 0].errorbar(omegas,  np.imag(integrals), color='black', linestyle='-', markersize="0", marker='o', linewidth='0.5',
+ax[1, 0].errorbar(omegas,  np.imag(integrals), color='black', linestyle='-', markersize="0", marker='o', linewidth='1.5',
                   label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-ax[1, 0].errorbar(omegas, np.real(integrals0), marker="o", color='#85bb65', linestyle='-', markersize="0", linewidth='0.5',
+ax[1, 0].errorbar(omegas, np.real(integrals0), marker="o", color='#85bb65', linestyle='-', markersize="0", linewidth='1.5',
                   label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-ax[1, 0].fill_between(omegas, np.real(integrals0)+f1serror/2, np.real(integrals0)-f1serror/2,  color='#85bb65', alpha=0.1,)
+ax[1, 0].fill_between(omegas, np.real(integrals0)+f1serror/2, np.real(integrals0)-f1serror/2,  color='#85bb65', alpha=0.1)
 
-ax[1, 0].fill_between(omegas, np.imag(integrals)+fserror/2, np.imag(integrals)-fserror/2,  color='black', alpha=0.1,)
+ax[1, 0].fill_between(omegas, np.imag(integrals)+fserror/2, np.imag(integrals)-fserror/2,  color='black', alpha=0.1)
+
+ax[1, 0].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), marker="o",
+                  color='purple', linestyle='--', markersize="0",label=r'Coth(T=0)*Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$')
 
 #ax[1, 0].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), marker="o",
 #                  color='purple', linestyle='', markersize="0.5",
@@ -334,14 +337,14 @@ om = ftt[0] / 13.6
 
 #print(om)
 
-ax[1, 0].errorbar(om, 0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
-    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1")
+#ax[1, 0].errorbar(om, 0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+#    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+#                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1")
 
-ax[1, 0].errorbar(om, (0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
-        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
-                  color='black', linestyle='', markersize="1")
+#ax[1, 0].errorbar(om, (0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+#        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+#                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
+#                  color='black', linestyle='', markersize="1")
 
 #ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
 #                  markersize="0.05", label="Coth(T=0)")
@@ -351,11 +354,11 @@ ax[1, 0].errorbar(om, (0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * n
 #                  / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1")
 
 om = om[int(len(om) / 2):len(om)]
-ax[1, 0].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
-            Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
-        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
-                  color='purple', linestyle='--', markersize="0")
+#ax[1, 0].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
+#            Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+#        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+#                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
+#                  color='purple', linestyle='--', markersize="0")
 
 ax[1, 0].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
 ax[1, 0].set_ylabel(r'Correlation Spectrum', fontsize=20)
