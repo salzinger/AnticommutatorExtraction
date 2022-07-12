@@ -253,6 +253,19 @@ ax[0, 1].errorbar(om, 0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np
 ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='purple', linestyle='',
                   markersize="0.01", label="Coth(T=0)")
 
+Temp = 0.0001
+
+#ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='grey', linestyle='-',
+#                  markersize="1", label="Coth(T)")
+
+ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4) + 1), marker="o", color='grey', linestyle='',
+                  markersize="1", label="Tanh(T)")
+
+ax#[0, 1].errorbar(om,  2/(np.exp(2*om/Temp/10**4) + 1)*(0.15 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+  #  2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+  #                / ((om) ** 2 - Omega ** 2)), marker="o", color='grey', linestyle='-',
+  #                markersize="1", label=r"Tanh(T)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
+
 om = om[int(len(om) / 2):len(om)]
 ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
             Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
@@ -263,12 +276,17 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.15 * (
 ax[0, 1].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), fserror, marker="o", color='purple', linestyle='', markersize="0",
                   label=r'Coth(T=0)*Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
+ax[0, 1].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.real(integrals0), fserror, marker="o", color='grey', linestyle='', markersize="0",
+                  label=r'Tanh(T=0)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$))')
+
 
 
 ax[0, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].set_xlim([-2.5, 2.5])
+
+ax[0, 1].set_ylim([-1.5, 1.5])
 
 ax[0, 1].axvline(x=0., color="purple", ymin=0.05, ymax=0.95, linewidth='0.2')
 

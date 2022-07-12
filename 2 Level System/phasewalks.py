@@ -217,7 +217,9 @@ data = np.loadtxt('10MHz_gamma.txt')
 # there
 data = np.cumsum(data)/180
 
-data = data[40:56]*50
+data = data[40:56]*30
+
+data[0]=0
 
 datalarge = []
 
