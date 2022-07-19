@@ -711,7 +711,7 @@ ax[1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 
 #ax[0].set_ylim([-0.68, 0.68])
 ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=18)
-ax[1].set_ylabel(r'Spin', fontsize=18)
+ax[1].set_ylabel(r'Spin $\langle S_i \rangle$', fontsize=18)
 ax[1].legend(loc="lower center", fontsize=14)
 
 
