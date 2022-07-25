@@ -265,8 +265,19 @@ omega = 800
 
 S = noisy_func(gamma, perturb_times, omega, bath)
 
+data=np.cumsum(data)/180
 
-plt.plot(perturb_times, S, color='#CC7722', linestyle='-', linewidth=1.0)
+plt.errorbar(np.linspace(0, 3, len(data)), data, label="Phase drift",
+                  linewidth="0.4",
+                  color='black')
+plt.ylabel(r'$\Phi_B(t) [\pi]$')
+plt.xlabel(r'Time $[1/\Omega_R]$')
+
+
+plt.show()
+
+
+#plt.plot(perturb_times, S, color='#CC7722', linestyle='-', linewidth=1.0)
 #plt.show()
 
 

@@ -70,7 +70,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
     func = lambda omega: amplitude/gamma/np.pi/(2*((omega-omega_0)/gamma)**2 + 1/2)
-    func = lambda omega: amplitude / (gamma * np.pi * (2 * ((omega - omega_0) / gamma) ** 2 + 0.5))*0.01
+    #func = lambda omega: amplitude / (gamma * np.pi * (2 * ((omega - omega_0) / gamma) ** 2 + 0.5))*0.01
     return func(frequencies)
 
 

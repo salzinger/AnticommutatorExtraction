@@ -27,6 +27,8 @@ omega = 0  # MHz
 
 Omega_R = 2 * np.pi * 14.6 * 10 ** 0  # MHz
 
+Omega_R = 2 * np.pi * 15 * 10 ** 0  # MHz
+
 gamma = 2 * np.pi * 15.0  # MHz
 
 J = 0 * 10 ** 0  # MHz

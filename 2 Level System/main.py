@@ -24,7 +24,7 @@ gamma = 2 * np.pi * 15.0  # MHz
 
 J = 0 * 2 * np.pi * 25.7 * 10 ** 0  # MHz
 
-averages = 150
+averages = 15
 
 sampling_rate = 2 * np.pi * 64 * 10 ** 3  # MHz
 endtime = 0.2
@@ -281,7 +281,7 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
             '''
 
-            factor = 2
+            factor = 3
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
@@ -440,9 +440,9 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
 
             ax[0, 1].tick_params(axis="both", labelsize=16)
 
-            ax[0, 0].set_xlabel(r'$\Delta$f [$\Omega_R$]', fontsize=16)
+            ax[0, 0].set_xlabel(r'$\omega$ [$\Omega_R$]', fontsize=26)
             ax[0, 0].set_ylabel(r'PSD / P$_{Carrier}$ [1/Hz]', fontsize=16)
-            ax[0, 0].set_xticks(ticks=np.array([-3, -2, -1, 0., 1, 2, 3]))
+            #ax[0, 0].set_xticks(ticks=np.array([-3, -2, -1, 0., 1, 2, 3]))
             #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
             plt.show()
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111
