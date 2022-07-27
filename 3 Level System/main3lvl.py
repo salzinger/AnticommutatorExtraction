@@ -26,12 +26,12 @@ pertubation_length = endtime / 1
 t1 = np.linspace(0, endtime, timesteps)
 t2 = np.linspace(0, endtime, timesteps)
 
-noise_amplitude = 0.000
+noise_amplitude = 1.000
 
 perturb_times = np.linspace(0, pertubation_length, timesteps)
 random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
-S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
+#S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
 
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, 0, N), sigmaz(0, N - 1, N), upup(0, N),
         sigmap(0, 0, N), sigmam(0, 0, N), downdown(0, N), anan(0, N)]
