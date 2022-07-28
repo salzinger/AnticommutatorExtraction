@@ -4,19 +4,30 @@ import matplotlib.pyplot as plt
 from Atoms3lvl import *
 from Driving3lvl import *
 import numpy as np
+from scipy import integrate
 
-N = 2
+plt.rcParams.update({
+  "text.usetex": True,
+})
 
-omega = 2. * np.pi * 100
 
-Omega_R = 2. * np.pi * 5.6
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
 
-J = 0
+plt.rc('figure', figsize=(11.69, 8.27))
+
+N = 3
+
+omega = 2. * np.pi * 0
+
+Omega_R = 2 * np.pi * 1
+
+J = 0 * Omega_R/2/np.pi
 
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 1
+endtime = 10
 timesteps = int(endtime * sampling_rate)
 
 gamma1 = 0
@@ -41,14 +52,30 @@ Anticommutatorlist = []
 
 opts = Options(store_states=True, store_final_state=True)
 
-result_t1 = mesolve(H0(omega, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
+result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
 
-result_t1t2 = mesolve(H0(omega, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
-Perturb = MagnetizationX(N)
-Measure = MagnetizationY(N)
+fig, ax = plt.subplots(2, 1, figsize=(10, 10))
 
-result_AB = mesolve(H0(omega, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+ax[0].errorbar(t1, np.real(result_t1.expect[0]), label="MagX")
+ax[0].errorbar(t1, np.real(result_t1.expect[1]), label="MagZ")
+ax[0].errorbar(t1, np.real(result_t1.expect[2]), label="MagY")
+#ax[0].plot(t2, np.imag(Commutatorlist), label="Im(Commutator)")
+
+#ax[1].plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)")
+#ax[1].plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)")
+
+ax[0].legend()
+#ax[1].legend()
+ax[0].set_xlabel('t_1')
+#ax[1].set_xlabel('t_measure - t_perturb')
+plt.show()
+
+Perturb = MagnetizationZ(N)
+Measure = MagnetizationZ(N)
+
+result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
 for t in range(0, timesteps):
     prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
@@ -59,24 +86,61 @@ for t in range(0, timesteps):
 
     AntiCommutator = prod_AB + prod_BA
 
-    Commutatorlist.append(1j * Commutator[0][0][0])
+    Commutatorlist.append(Commutator[0][0][0])
     Anticommutatorlist.append(AntiCommutator[0][0][0])
     # print('Commutator:', 1j * Commutator[0][0])
     # print('AntiCommutator: ', AntiCommutator[0][0])
 
-#freq = np.fft.fftfreq(t2.shape[-1])
-#plt.plot(freq, np.real(np.fft.fft(Commutatorlist)), linestyle='--', marker='o', markersize='5', label="Commutator")
-#plt.plot(freq, np.real(np.fft.fft(Anticommutatorlist)), linestyle='--', marker='o', markersize='5',
-#         label="Anticommutator")
-#plt.xlim(-1 / 2, 1 / 2)
-#plt.legend()
-# plt.show()
 
-plt.plot(t2, np.real(Commutatorlist), label="Commutator")
-plt.plot(t2, np.real(Anticommutatorlist), label="Anticommutator")
-plt.legend()
-plt.xlabel('t_measure - t_perturb')
+fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+
+ax[0].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)")
+ax[0].plot(t2[1:len(t2)], np.imag(Commutatorlist[1:len(t2)]), label="Im(Commutator)")
+
+ax[1].plot(t2[1:len(t2)], np.real(Anticommutatorlist[1:len(t2)]), label="Re(Anticommutator)")
+ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
+
+ax[0].legend()
+ax[1].legend()
+ax[0].set_xlabel('t_measure - t_perturb')
+ax[1].set_xlabel('t_measure - t_perturb')
 plt.show()
+
+
+
+omegas = np.linspace(-1.5*Omega_R, 1.5*Omega_R, num=150)
+
+integrals = []
+integrals0 = []
+
+x1 = np.linspace(t2[1], t2[-1])#np.array(x0[0:9])
+
+y0 = np.array(Anticommutatorlist)
+
+y31 = np.array(Commutatorlist)
+
+for o in omegas:
+    integrals.append(-2*np.pi*integrate.simps(y31*np.exp(1j*o*t2*2*np.pi), t2))
+
+for o in omegas:
+    integrals0.append(-2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
+
+
+#freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
+plt.plot(omegas, integrals, linestyle='--', marker='o', markersize='5', label="Commutator")
+plt.plot(omegas, integrals0, linestyle='--', marker='o', markersize='5', label="Anticommutator")
+#plt.xlim(-2 / Omega_R, 2 / Omega_R)
+plt.legend()
+plt.show()
+
+'''
+freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
+plt.plot(freq, np.fft.fft(Commutatorlist[1:len(t2)]), linestyle='--', marker='o', markersize='5', label="Commutator")
+plt.plot(freq, np.fft.fft(Anticommutatorlist[1:len(t2)]), linestyle='--', marker='o', markersize='5', label="Anticommutator")
+#plt.xlim(-2 / Omega_R, 2 / Omega_R)
+plt.legend()
+plt.show()
+'''
 
 
 spectra_cb = [ohmic_spectrum]

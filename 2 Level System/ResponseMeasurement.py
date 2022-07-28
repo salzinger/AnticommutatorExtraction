@@ -108,7 +108,7 @@ x1 = np.linspace(x0[0], x0[-1])#np.array(x0[0:9])
 
 y0 = np.array(y0[0:9])
 
-y31 = -np.sin(x1*2*np.pi)*0.16#np.array(y3[0:9])
+y31 = np.array(y3[0:9]) #-np.sin(x1*2*np.pi)*0.16#
 
 print("y3", y3)
 print("x0", x0)
@@ -284,7 +284,7 @@ ax[0, 1].errorbar(om, (1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1)), marker="o", c
 
 Temp = 2*10**(-6)
 
-ax[0, 1].errorbar(om, (1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1)), marker="o", color='purple', linestyle='', markersize="0.1", linewidth='0.5', label=r"Tanh($\frac{h\Omega_R}{k_B T}$) for $T=0,1,2,10,15 \mu $K")
+ax[0, 1].errorbar(om, (1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1)), marker="o", color='purple', linestyle='', markersize="0.1", linewidth='0.5', label=r"tanh($\frac{h\omega}{k_B T}$) for $T=0,1,2,10,15 \mu $K")
 
 #ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.527) + 1), marker="o", color='purple', linestyle='',
 #                  markersize="0.1", label=r"Tanh($\frac{h\Omega_R}{k_B T}$) for $T=0,1,5,10 \mu $K")
@@ -337,7 +337,7 @@ om = om[int(len(om) / 2):len(om)]
 ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)), marker="o",
-                  color='grey', linestyle='-', markersize="0", linewidth='2', label=r"Tanh($\frac{h\Omega_R}{k_B T}$) Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
+                  color='grey', linestyle='-', markersize="0", linewidth='2', label=r"tanh($\frac{h\omega}{k_B T}$) Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
 
 #ax[0, 1].errorbar(omegas, (np.heaviside(omegas, 1) - np.heaviside(-omegas, 1)) * np.imag(integrals), fserror, marker="o", color='purple', linestyle='', markersize="0",
 #                  label=r'Coth(T=0)*Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
@@ -347,7 +347,7 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 
 
 
-ax[0, 1].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
+ax[0, 1].set_xlabel('Frequency $\omega$ [$\Omega$]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].tick_params(axis="both", labelsize=16)
@@ -378,7 +378,7 @@ x1 = np.linspace(x0[0], x0[-1])#np.array(x0[0:9])
 
 y0 = np.array(y0[0:9])
 
-y31 = -np.sin(x1*2*np.pi)*0.16#np.array(y3[0:9])
+y31 = np.array(y3[0:9]) #-np.sin(x1*2*np.pi)*0.16
 
 #print("y3", y3)
 #print("x0", x0)
@@ -402,7 +402,7 @@ ax[1, 0].errorbar(omegas,  np.imag(integrals), color='black', linestyle='-', mar
 
 Temp = 10**(-9)
 ax[1, 0].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='-', markersize="0", linewidth='1.5',
-                  label=r"Tanh($\frac{h\Omega_R}{k_B T}$)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
+                  label=r"tanh($\frac{h\omega}{k_B T}$)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
 
 
 
@@ -471,7 +471,7 @@ om = om[int(len(om) / 2):len(om)]
 #                                                                      / ((om) ** 2 - Omega ** 2)), marker="o",
 #                  color='purple', linestyle='--', markersize="0")
 
-ax[1, 0].set_xlabel('Frequency [$\Omega_R$]', fontsize=20)
+ax[1, 0].set_xlabel(r'Frequency $\omega$ [$\Omega$]', fontsize=20)
 ax[1, 0].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[1, 0].legend(loc="lower right", fontsize=16)
 ax[1, 0].set_xlim([-2.5, 2.5])
@@ -492,7 +492,7 @@ x1 = np.linspace(x0[0], x0[-1])#np.array(x0[0:9])
 
 y0 = np.array(y0[0:9])
 
-y31 = -np.sin(x1*2*np.pi)*0.16#np.array(y3[0:9])
+y31 = np.array(y3[0:9]) #-np.sin(x1*2*np.pi)*0.16
 
 print("y3", y3)
 print("x0", x0)

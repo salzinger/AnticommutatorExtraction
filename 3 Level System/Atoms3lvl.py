@@ -129,10 +129,10 @@ def MagnetizationY(N):
     return sum / N / 2
 
 
-def H0(omega, J, N):
+def H0(omega, Omega_R, J, N):
     H = 0
     for j in range(0, N):
-        H += 1 * omega / 2 * sigmaz(0, j, N)
+        H += 1 * omega / 2 * sigmaz(0, j, N) - Omega_R *sigmax(0, j , N) / 2
         for i in range(0, N):
             if i != j:
                 H += J * (sigmap(0, i, N) * sigmam(0, j, N) + sigmam(0, i, N) * sigmap(0, j, N)) / (np.abs(i-j))**3

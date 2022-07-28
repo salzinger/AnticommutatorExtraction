@@ -294,7 +294,7 @@ ax[1, 1].legend(loc="lower center", fontsize=12)
 ax[1, 1].tick_params(axis="both", labelsize=12)
 ax[1, 1].set_ylim([-0.55, 0.55])
 
-ax[1, 1].set_yticks(ticks=np.array([-0.5,-0.25,0.,0.25,0.5]))
+ax[1, 1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 ax[1, 1].set_xlim([0., 3.05])
 
 
