@@ -6,36 +6,29 @@ from Driving3lvl import *
 import numpy as np
 from scipy import integrate
 
-plt.rcParams.update({
-  "text.usetex": True,
-})
 
 
-#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
-
-plt.rc('figure', figsize=(11.69, 8.27))
-
-N = 3
+N = 2
 
 omega = 2. * np.pi * 0
 
 Omega_R = 2 * np.pi * 1
 
-J = 0 * Omega_R/2/np.pi
+J = 2 * np.pi * 5
 
 bandwidth = 20
 
 sampling_rate = 1000
 endtime = 10
 timesteps = int(endtime * sampling_rate)
+timesteps = 500
 
 gamma1 = 0
 
 pertubation_length = endtime / 1
 
 t1 = np.linspace(0, endtime, timesteps)
-t2 = np.linspace(0, endtime, timesteps)
+t2 = np.linspace(0, 4, timesteps)
 
 noise_amplitude = 1.000
 
@@ -57,6 +50,16 @@ result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, []
 result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
 fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+
+plt.rcParams.update({
+  "text.usetex": True,
+})
+
+
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+
+plt.rc('figure', figsize=(11.69/1.7, 8.27))
 
 ax[0].errorbar(t1, np.real(result_t1.expect[0]), label="MagX")
 ax[0].errorbar(t1, np.real(result_t1.expect[1]), label="MagZ")
@@ -92,23 +95,28 @@ for t in range(0, timesteps):
     # print('AntiCommutator: ', AntiCommutator[0][0])
 
 
-fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+fig, ax = plt.subplots(2, 1)
 
-ax[0].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)")
-ax[0].plot(t2[1:len(t2)], np.imag(Commutatorlist[1:len(t2)]), label="Im(Commutator)")
+#ax[1].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)", color="black")
+#ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
 
-ax[1].plot(t2[1:len(t2)], np.real(Anticommutatorlist[1:len(t2)]), label="Re(Anticommutator)")
-ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
+ax[0].plot(t2[1:len(t2)], np.imag(Commutatorlist[1:len(t2)]), label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
+ax[0].plot(t2[1:len(t2)], np.real(Anticommutatorlist[1:len(t2)]), label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
 
-ax[0].legend()
-ax[1].legend()
-ax[0].set_xlabel('t_measure - t_perturb')
-ax[1].set_xlabel('t_measure - t_perturb')
-plt.show()
+ax[0].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
+#ax[1].set_xlabel('t_measure - t_perturb')
+
+ax[0].set_ylabel(r'Expectation Value', fontsize=18)
+ax[0].legend(loc="lower right", fontsize=16)
+#ax[1, 1].set_xlim([-1.5, 1.5])
+ax[0].tick_params(axis="both", labelsize=16)
+
+
+#plt.show()
 
 
 
-omegas = np.linspace(-1.5*Omega_R, 1.5*Omega_R, num=150)
+omegas = np.linspace(-1.5*Omega_R, 1.5*Omega_R, num=1500)
 
 integrals = []
 integrals0 = []
@@ -120,17 +128,26 @@ y0 = np.array(Anticommutatorlist)
 y31 = np.array(Commutatorlist)
 
 for o in omegas:
-    integrals.append(-2*np.pi*integrate.simps(y31*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals.append(2*np.pi*integrate.simps(y31*np.exp(1j*o*t2*2*np.pi), t2))
 
 for o in omegas:
-    integrals0.append(-2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
 
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
-plt.plot(omegas, integrals, linestyle='--', marker='o', markersize='5', label="Commutator")
-plt.plot(omegas, integrals0, linestyle='--', marker='o', markersize='5', label="Anticommutator")
+ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
+ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
+
+ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
+#ax[1].set_xlabel('t_measure - t_perturb')
+
+#ax[0].set_ylabel(r'Expectation Value', fontsize=18)
+ax[1].legend(loc="lower right", fontsize=16)
+#ax[1].set_xlim([-2.5, 2.5])
+ax[1].tick_params(axis="both", labelsize=16)
+ax[1].set_ylabel(r'Correlation Spectrum', fontsize=18)
 #plt.xlim(-2 / Omega_R, 2 / Omega_R)
-plt.legend()
+#plt.legend()
 plt.show()
 
 '''
