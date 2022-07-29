@@ -8,7 +8,7 @@ from scipy import integrate
 
 
 
-N = 2
+N = 9
 
 omega = 2. * np.pi * 0
 
@@ -19,16 +19,16 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 10
+endtime = 2
 timesteps = int(endtime * sampling_rate)
-timesteps = 500
+timesteps = 200
 
 gamma1 = 0
 
 pertubation_length = endtime / 1
 
 t1 = np.linspace(0, endtime, timesteps)
-t2 = np.linspace(0, 4, timesteps)
+t2 = np.linspace(0, 5, timesteps)
 
 noise_amplitude = 1.000
 
@@ -107,7 +107,7 @@ ax[0].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
 
 ax[0].set_ylabel(r'Expectation Value', fontsize=18)
-ax[0].legend(loc="lower right", fontsize=16)
+ax[0].legend( fontsize=16) #loc="lower right",
 #ax[1, 1].set_xlim([-1.5, 1.5])
 ax[0].tick_params(axis="both", labelsize=16)
 
@@ -133,16 +133,19 @@ for o in omegas:
 for o in omegas:
     integrals0.append(2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
 
+Temp=5*10**(-6)
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
 ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
 ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
 
+#(1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*
+
 ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
 
 #ax[0].set_ylabel(r'Expectation Value', fontsize=18)
-ax[1].legend(loc="lower right", fontsize=16)
+ax[1].legend( fontsize=16) #loc="lower right",
 #ax[1].set_xlim([-2.5, 2.5])
 ax[1].tick_params(axis="both", labelsize=16)
 ax[1].set_ylabel(r'Correlation Spectrum', fontsize=18)
