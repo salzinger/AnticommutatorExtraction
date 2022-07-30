@@ -117,7 +117,7 @@ def MagnetizationY(N):
 def H0(omega, J, N):
     H = 0
     for j in range(0, N):
-        H += 1 * omega / 2 * sigmaz(j, N) #+ Qobj([[0, 0], [0, 0*2*np.pi*(-0.07)]])
+        H += 1 * omega / 2 * sigmaz(j, N)  #+ Qobj([[0, 0], [0, 0*2*np.pi*(-0.07)]])
         for i in range(0, N):
             if i != j:
                 if np.abs(i - j) == 1:

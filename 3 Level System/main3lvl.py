@@ -8,7 +8,7 @@ from scipy import integrate
 
 
 
-N = 9
+N = 2
 
 omega = 2. * np.pi * 0
 
@@ -19,7 +19,7 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 2
+endtime = 20
 timesteps = int(endtime * sampling_rate)
 timesteps = 200
 
@@ -43,9 +43,39 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, 0, N)
 Commutatorlist = []
 Anticommutatorlist = []
 
-opts = Options(store_states=True, store_final_state=True)
+opts = Options(store_states=True, store_final_state=True, nsteps=10**9)
 
-result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
+print(simdiag([H0(omega, Omega_R, J, N)]))
+
+state=Qobj([[0.00000000e+00],
+ [-2.49790022e-18],
+ [2.04123791e-17],
+ [3.31027757e-16],
+ [1.97841758e-33],
+ [7.07106781e-01],
+ [2.85562076e-16],
+ [-7.07106781e-01],
+ [-2.65277364e-35]])
+
+
+s2 = Qobj(state.data.toarray().reshape((9,1)),
+            dims=[[3,3],[1,1]])
+
+#print(s2)
+
+#print(productstateX(0, N - 1, N))
+
+#print(state)
+
+#result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
+result_t1 = mesolve(H0(omega, Omega_R, J, N), s2, t1, [], Exps, options=opts)
+
+
+
+
+#print(spin_coherent(N, 2, 2, type='ket'))
+
+#result_t1 = mesolve(H0(omega, Omega_R, J, N), thermal_dm(N,N), t1, [], Exps, options=opts)
 
 result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
 
@@ -78,7 +108,24 @@ plt.show()
 Perturb = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
-result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+
+print("Pertubed=", Perturb*result_t1.states[timesteps - 1])
+
+state=Qobj([[0.00000000e+00],
+ [-2.e-18],
+ [2.e-17],
+ [3.e-16],
+ [1.e-33],
+ [7.e-31],
+ [2.e-16],
+ [-7.e-31],
+ [-2.e-35]])
+
+
+s2 = Qobj(state.data.toarray().reshape((9,1)),
+            dims=[[3,3],[1,1]])
+
+result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[timesteps - 1]+s2, t2, [], Exps, options=opts)
 
 for t in range(0, timesteps):
     prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
@@ -133,13 +180,15 @@ for o in omegas:
 for o in omegas:
     integrals0.append(2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
 
-Temp=5*10**(-6)
+Temp=25*10**(-6)
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
 ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
+ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
 ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
 
-#(1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*
+ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
+
 
 ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')

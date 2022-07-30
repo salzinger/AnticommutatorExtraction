@@ -3,6 +3,7 @@ import numpy as np
 from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
+from scipy import integrate
 
 
 plt.rcParams.update({
