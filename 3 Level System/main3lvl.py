@@ -6,9 +6,7 @@ from Driving3lvl import *
 import numpy as np
 from scipy import integrate
 
-
-
-N = 2
+N = 10
 
 omega = 2. * np.pi * 0
 
@@ -19,7 +17,7 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 20
+endtime = 1500
 timesteps = int(endtime * sampling_rate)
 timesteps = 200
 
@@ -27,7 +25,7 @@ gamma1 = 0
 
 pertubation_length = endtime / 1
 
-t1 = np.linspace(0, endtime, timesteps)
+t1 = np.linspace(0, endtime, 5)
 t2 = np.linspace(0, 5, timesteps)
 
 noise_amplitude = 1.000
@@ -45,21 +43,68 @@ Anticommutatorlist = []
 
 opts = Options(store_states=True, store_final_state=True, nsteps=10**9)
 
-print(simdiag([H0(omega, Omega_R, J, N)]))
+diag = simdiag([H0(omega, Omega_R, J, N)])
 
-state=Qobj([[0.00000000e+00],
- [-2.49790022e-18],
- [2.04123791e-17],
- [3.31027757e-16],
- [1.97841758e-33],
- [7.07106781e-01],
- [2.85562076e-16],
- [-7.07106781e-01],
- [-2.65277364e-35]])
+print(diag)
+
+print(productstateX(0, N - 1, N))
+
+Temperature = 1
+
+Z = np.sum(np.exp(-diag[0][0]/(2*10**4*Temperature)))   #Omegas in MHz, T in K
+
+#print(diag[0])
+
+#print(diag[0][0])
+
+#print(diag[1][0])
+
+print(Z)
+
+density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z  * diag[1][0]*diag[1][0].dag()
+
+#print(density_matrix)
+
+for n in range(1, len(diag[1:])):
+    density_matrix += np.exp(-diag[0][0][n]/(2*10**4*Temperature))/Z * diag[1][n]*diag[1][n].dag()
 
 
-s2 = Qobj(state.data.toarray().reshape((9,1)),
-            dims=[[3,3],[1,1]])
+
+#print(density_matrix)
+
+state1=Qobj([[0],
+ [0],
+ [0],
+ [0],
+ [0],
+ [7.0711e-01],
+ [0],
+ [-7.0711e-01],
+ [0]])
+
+state1=Qobj(
+[[0],
+ [0],
+ [0],
+ [0],
+ [-1.337e-01],
+ [6.943e-01],
+ [0],
+ [6.9434e-01],
+ [-1.337e-01]])
+
+Temperature=10**(-5)
+
+state = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z  * diag[1][0]
+
+#print(density_matrix)
+
+for n in range(1, len(diag[1:])):
+    state += np.exp(-diag[0][0][n]/(2*10**4*Temperature))/Z * diag[1][n]
+
+
+#s2 = Qobj(state.data.toarray().reshape((9,1)),
+#            dims=[[3,3],[1,1]])
 
 #print(s2)
 
@@ -67,8 +112,8 @@ s2 = Qobj(state.data.toarray().reshape((9,1)),
 
 #print(state)
 
-#result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
-result_t1 = mesolve(H0(omega, Omega_R, J, N), s2, t1, [], Exps, options=opts)
+result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
+#result_t1 = mesolve(H0(omega, Omega_R, J, N), s2, t1, [], Exps, options=opts)
 
 
 
@@ -77,7 +122,7 @@ result_t1 = mesolve(H0(omega, Omega_R, J, N), s2, t1, [], Exps, options=opts)
 
 #result_t1 = mesolve(H0(omega, Omega_R, J, N), thermal_dm(N,N), t1, [], Exps, options=opts)
 
-result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[timesteps - 1], t2, [], Exps, options=opts)
+result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[- 1], t2, [], Exps, options=opts)
 
 fig, ax = plt.subplots(2, 1, figsize=(10, 10))
 
@@ -109,7 +154,7 @@ Perturb = MagnetizationZ(N)
 Measure = MagnetizationZ(N)
 
 
-print("Pertubed=", Perturb*result_t1.states[timesteps - 1])
+#print("Pertubed=", Perturb*result_t1.states[timesteps - 1])
 
 state=Qobj([[0.00000000e+00],
  [-2.e-18],
@@ -122,24 +167,45 @@ state=Qobj([[0.00000000e+00],
  [-2.e-35]])
 
 
-s2 = Qobj(state.data.toarray().reshape((9,1)),
-            dims=[[3,3],[1,1]])
+s2 = Qobj(state.data.toarray().reshape((9, 1)),
+            dims=[[3, 3], [1, 1]])
 
-result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[timesteps - 1]+s2, t2, [], Exps, options=opts)
+
+result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[- 1], t2, [], Exps, options=opts)
+
+dm = 0
+
+#Commutator= (Measure* result_t1t2.states[t - 1] ).tr()
 
 for t in range(0, timesteps):
-    prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
+    if dm == 1:
+        prod_AB = result_t1t2.states[t - 1].tr() * (Measure * result_AB.states[t - 1]).tr()
 
-    prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+        prod_BA = result_AB.states[t - 1].tr() * (Measure * result_t1t2.states[t - 1]).tr()
 
-    Commutator = prod_AB - prod_BA
 
-    AntiCommutator = prod_AB + prod_BA
+        Commutator = prod_AB - prod_BA
 
-    Commutatorlist.append(Commutator[0][0][0])
-    Anticommutatorlist.append(AntiCommutator[0][0][0])
-    # print('Commutator:', 1j * Commutator[0][0])
-    # print('AntiCommutator: ', AntiCommutator[0][0])
+        AntiCommutator = prod_AB + prod_BA
+
+        Commutatorlist.append(Commutator)
+        Anticommutatorlist.append(AntiCommutator)
+
+    else:
+        prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
+
+        prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+
+        Commutator = prod_AB - prod_BA
+
+        print(Commutator)
+
+        AntiCommutator = prod_AB + prod_BA
+
+        Commutatorlist.append(Commutator[0][0][0])
+        Anticommutatorlist.append(AntiCommutator[0][0][0])
+        # print('Commutator:', 1j * Commutator[0][0])
+        # print('AntiCommutator: ', AntiCommutator[0][0])
 
 
 fig, ax = plt.subplots(2, 1)
@@ -184,10 +250,10 @@ Temp=25*10**(-6)
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
 ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
-ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
+#ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
 ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
 
-ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
+#ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
 
 
 ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
