@@ -6,7 +6,7 @@ from Driving3lvl import *
 import numpy as np
 from scipy import integrate
 
-N = 8
+N = 9
 
 omega = 2. * np.pi * 0
 
@@ -17,7 +17,7 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 1
+endtime = 1000
 timesteps = int(endtime * sampling_rate)
 t1timesteps = 2
 t2timesteps = 200
