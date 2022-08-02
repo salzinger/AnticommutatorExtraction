@@ -6,7 +6,7 @@ from Driving3lvl import *
 import numpy as np
 from scipy import integrate
 
-N = 10
+N = 8
 
 omega = 2. * np.pi * 0
 
@@ -17,20 +17,21 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 1500
+endtime = 1
 timesteps = int(endtime * sampling_rate)
-timesteps = 200
+t1timesteps = 2
+t2timesteps = 200
 
 gamma1 = 0
 
 pertubation_length = endtime / 1
 
-t1 = np.linspace(0, endtime, 5)
-t2 = np.linspace(0, 5, timesteps)
+t1 = np.linspace(0, endtime, t1timesteps)
+t2 = np.linspace(0, 3, t2timesteps)
 
 noise_amplitude = 1.000
 
-perturb_times = np.linspace(0, pertubation_length, timesteps)
+perturb_times = np.linspace(0, pertubation_length, t1timesteps)
 random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
 #S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
@@ -61,7 +62,7 @@ Z = np.sum(np.exp(-diag[0][0]/(2*10**4*Temperature)))   #Omegas in MHz, T in K
 
 print(Z)
 
-density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z  * diag[1][0]*diag[1][0].dag()
+density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z * diag[1][0]*diag[1][0].dag()
 
 #print(density_matrix)
 
@@ -177,7 +178,7 @@ dm = 0
 
 #Commutator= (Measure* result_t1t2.states[t - 1] ).tr()
 
-for t in range(0, timesteps):
+for t in range(0, t2timesteps):
     if dm == 1:
         prod_AB = result_t1t2.states[t - 1].tr() * (Measure * result_AB.states[t - 1]).tr()
 
@@ -202,7 +203,7 @@ for t in range(0, timesteps):
 
         AntiCommutator = prod_AB + prod_BA
 
-        Commutatorlist.append(Commutator[0][0][0])
+        Commutatorlist.append(-1.j*Commutator[0][0][0])
         Anticommutatorlist.append(AntiCommutator[0][0][0])
         # print('Commutator:', 1j * Commutator[0][0])
         # print('AntiCommutator: ', AntiCommutator[0][0])
@@ -213,8 +214,8 @@ fig, ax = plt.subplots(2, 1)
 #ax[1].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)", color="black")
 #ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
 
-ax[0].plot(t2[1:len(t2)], np.imag(Commutatorlist[1:len(t2)]), label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
-ax[0].plot(t2[1:len(t2)], np.real(Anticommutatorlist[1:len(t2)]), label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
+ax[0].plot(t2[1:len(t2)], Commutatorlist[1:len(t2)], label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
+ax[0].plot(t2[1:len(t2)], Anticommutatorlist[1:len(t2)], label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
 
 ax[0].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
@@ -241,22 +242,22 @@ y0 = np.array(Anticommutatorlist)
 y31 = np.array(Commutatorlist)
 
 for o in omegas:
-    integrals.append(2*np.pi*integrate.simps(y31*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals.append(2*np.pi*integrate.simps(y31*np.exp(-1j*o*t2*2*np.pi), t2))
 
 for o in omegas:
-    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*t2*2*np.pi), t2))
 
 Temp=25*10**(-6)
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
-ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
+ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ Im(FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle))$", color="black")
 #ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
-ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
+ax[1].plot(omegas, np.real(integrals0), linestyle='-', marker='o', markersize='0', label=r"$ Re(FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle))$", color="#85bb65")
 
 #ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
 
 
-ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
+ax[1].set_xlabel(r'Frequency $\omega$ [$\Omega$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
 
 #ax[0].set_ylabel(r'Expectation Value', fontsize=18)
