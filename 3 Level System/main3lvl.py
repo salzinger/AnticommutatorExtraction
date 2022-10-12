@@ -6,7 +6,7 @@ from Driving3lvl import *
 import numpy as np
 from scipy import integrate
 
-N = 10
+N = 1
 
 omega = 2. * np.pi * 0
 
@@ -126,15 +126,15 @@ result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[- 1], t2, [], E
 
 fig, ax = plt.subplots(2, 1, figsize=(10, 10))
 
-plt.rcParams.update({
-  "text.usetex": True,
-})
+#plt.rcParams.update({
+#  "text.usetex": True,
+#})
 
 
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+#plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
 
-plt.rc('figure', figsize=(11.69/1.7, 8.27))
+#plt.rc('figure', figsize=(11.69/1.7, 8.27))
 
 ax[0].errorbar(t1, np.real(result_t1.expect[0]), label="MagX")
 ax[0].errorbar(t1, np.real(result_t1.expect[1]), label="MagZ")

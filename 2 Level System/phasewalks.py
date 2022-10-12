@@ -246,7 +246,8 @@ ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
 ax[0, 1].set_xlim([0, 3])
 ax[0, 1].set_ylim([-3, 3])
 #plt.savefig("SingleWalk1.pdf")
-plt.show()
+#plt.savefig("test.png")
+#plt.show()
 ################### END OF PHASE WALKS ############################################ 3333333333333333333333
 
 

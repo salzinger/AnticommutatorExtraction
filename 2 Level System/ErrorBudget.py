@@ -513,6 +513,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             #print(np.std(F3))
 
             Fmean = np.mean(F)
+            Fstd=np.std(F)
             Fmodmean = np.mean(Fsim)
             Fmin = np.min(F)
             Fend = F[-1]
@@ -520,10 +521,13 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
 
             print("")
-            print(Fmean)
-            print(Fmodmean)
-            print(Fend)
-            print(Fmodend)
+
+            print("Fmean=", Fmean)
+            print("Fmeanerror=", Fstd)
+            print("Fmodmean=", Fmodmean)
+            print("Fend=", Fend)
+            print("Fenderror=", Ferror[-1])
+            print("Fmodend=", Fmodend)
 
             Flist.append([np.round((Fmean-.9887002869959799)*100, decimals=3), np.round((Fmin-.9591676085073163)*100, decimals=3), np.round((Fend-.9967099830257092)*100 , decimals=3), rise_time, second_rise_time, Omega_R/(2*np.pi)])
 

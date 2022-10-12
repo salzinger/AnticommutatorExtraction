@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 
 
-plt.rcParams.update({
-  "text.usetex": True,
-})
+#plt.rcParams.update({
+#  "text.usetex": True,
+#})
 
-N = 1
+N = 2
 
-omega = 2 * np.pi * 21 * 10 ** 3  # MHz
+omega = 2 * np.pi * 0 * 21 * 10 ** 3  # MHz
 #omega = 2 * np.pi * 21 * 10 ** (-20)  # MHz
 
 #omega = 0  # MHz
@@ -74,7 +74,7 @@ opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 # plt.show()
 
 
-for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
+for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
     #print("Omega_R: ", Omega_R)
     for s in np.logspace(1 * omega, 10 * omega, num=1, base=np.e):
         # print("sampling: ", sampling_rate)
@@ -135,8 +135,14 @@ for o in np.linspace(2*np.pi*23, 2*np.pi*25, 1):
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                               perturb_times, e_ops=Exps, options=opts)
             concmean = []
-            # for t in range(0, timesteps):
-            # concmean.append(concurrence(result2.states[t]))
+            print(result2.states[10])
+            for t in range(0, timesteps):
+                concmean.append(concurrence(result2.states[t]))
+
+            plt.plot(perturb_times, concmean)
+            plt.show()
+
+            print(concmean)
 
             # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
             states2 = np.array(result2.states[timesteps - 1])

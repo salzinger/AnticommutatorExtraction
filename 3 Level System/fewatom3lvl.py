@@ -10,7 +10,7 @@ Omega_R = 2 * np.pi  # MHz
 
 gamma = 0.05 * np.pi  # MHz
 
-J = 0 * np.pi / N  # MHz
+J = 2 * np.pi / N  # MHz
 
 bath = "markovian"
 
@@ -38,7 +38,7 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 print(init_state)
 
 print('H0...')
-print(H0(omega, J, N))
+print(H0(omega, Omega_R, J, N))
 print('H1...')
 print(H1(Omega_R, N))
 print('H2...')
@@ -50,11 +50,17 @@ noise = noisy_func(gamma, perturb_times, omega, bath)
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise)
 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise))
 
-result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+result1 = mesolve([H0(omega, Omega_R, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
+
+print(result1.states[10])
+
 concmean = []
-# for t in range(0, timesteps):
-# concmean.append(concurrence(result2.states[t]))
+#for t in range(0, timesteps):
+#    concmean.append(concurrence(result1.states[t]))
+
+#plt.plot(perturb_times,concmean)
+#plt.show()
 
 # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
 states1 = np.array(result1.states[timesteps - 1])
@@ -75,7 +81,7 @@ while i < 200:  # averages + int(2 * gamma):
     # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
     # data / 0.4)
 
-    result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+    result1 = mesolve([H0(omega, Omega_R, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
     states1 += np.array(result1.states[timesteps - 1])
@@ -175,20 +181,20 @@ S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
 if N==1:
 
-    result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
+    result2 = mesolve([H0(omega, Omega_R, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
                        ], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
 else:
-    result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
-                                        [-Omega_R * sigmap(1, 1, N), S21], [-Omega_R * sigmam(1, 1, N), S22],
-                                        [-Omega_R * sigmap(1, 2, N), S31], [-Omega_R * sigmam(1, 2, N), S32],
-                                        [-Omega_R * sigmap(1, 3, N), S41], [-Omega_R * sigmam(1, 3, N), S42],
+    result2 = mesolve([H0(omega, Omega_R, J, N), [-Omega_R * sigmap(1, 0, N), S11], [-Omega_R * sigmam(1, 0, N), S12],
+                                        [-Omega_R * sigmap(1, 1, N), S21], [-Omega_R * sigmam(1, 1, N), S22]#,
+                                        #[-Omega_R * sigmap(1, 2, N), S31], [-Omega_R * sigmam(1, 2, N), S32],
+                                        #[-Omega_R * sigmap(1, 3, N), S41], [-Omega_R * sigmam(1, 3, N), S42],
                        ], init_state,
                       perturb_times, e_ops=Exps, options=opts)
-concmean = []
-# for t in range(0, timesteps):
-# concmean.append(concurrence(result2.states[t]))
+#concmean = []
+#for t in range(0, timesteps):
+#    concmean.append(concurrence(result2.states[t]))
 
 # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
 states2 = np.array(result2.states[timesteps - 1])
@@ -216,10 +222,10 @@ while i < 200:  # averages + int(2 * gamma):
     S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
     S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
 
-    result2 = mesolve([H0(omega, J, N), [Omega_R * sigmap(1, 0, N), S11], [Omega_R * sigmam(1, 0, N), S12],
-                                        [Omega_R * sigmap(1, 1, N), S21], [Omega_R * sigmam(1, 1, N), S22],
-                                        [Omega_R * sigmap(1, 2, N), S31], [Omega_R * sigmam(1, 2, N), S32],
-                                        [Omega_R * sigmap(1, 3, N), S41], [Omega_R * sigmam(1, 3, N), S42],
+    result2 = mesolve([H0(omega, Omega_R, J, N), [Omega_R * sigmap(1, 0, N), S11], [Omega_R * sigmam(1, 0, N), S12],
+                                        [Omega_R * sigmap(1, 1, N), S21], [Omega_R * sigmam(1, 1, N), S22]#,
+                                        #[Omega_R * sigmap(1, 2, N), S31], [Omega_R * sigmam(1, 2, N), S32],
+                                        #[Omega_R * sigmap(1, 3, N), S41], [Omega_R * sigmam(1, 3, N), S42],
                        ], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
@@ -299,7 +305,7 @@ noise = noisy_func(gamma, perturb_times, omega, bath)
 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise)
 S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise))
 
-result3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+result3 = mesolve([H0(omega, Omega_R, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
 # for t in range(0, timesteps):
@@ -324,7 +330,7 @@ while i < 200:  # averages + int(2 * gamma):
     # S = Cubic_Spline(perturb_times[0], perturb_times[-1],
     # data / 0.4)
 
-    result3 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
+    result3 = mesolve([H0(omega, Omega_R, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
     states3 += np.array(result3.states[timesteps - 1])
@@ -343,6 +349,7 @@ expect3 = expect3 / i
 Smean = Smean / i
 Pmean = Pmean / i
 concmean = np.array(concmean) / i
+
 
 # print(Qobj(states2))
 # print((expect2[5]+expect2[8]).mean())
