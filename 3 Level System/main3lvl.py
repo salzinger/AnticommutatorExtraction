@@ -17,20 +17,21 @@ J = 2 * np.pi * 5
 bandwidth = 20
 
 sampling_rate = 1000
-endtime = 1500
+endtime = 1
 timesteps = int(endtime * sampling_rate)
-timesteps = 200
+t1timesteps = 2
+t2timesteps = 200
 
 gamma1 = 0
 
 pertubation_length = endtime / 1
 
-t1 = np.linspace(0, endtime, 5)
-t2 = np.linspace(0, 5, timesteps)
+t1 = np.linspace(0, endtime, t1timesteps)
+t2 = np.linspace(0, 3, t2timesteps)
 
 noise_amplitude = 1.000
 
-perturb_times = np.linspace(0, pertubation_length, timesteps)
+perturb_times = np.linspace(0, pertubation_length, t1timesteps)
 random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
 
 #S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
@@ -61,7 +62,7 @@ Z = np.sum(np.exp(-diag[0][0]/(2*10**4*Temperature)))   #Omegas in MHz, T in K
 
 print(Z)
 
-density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z  * diag[1][0]*diag[1][0].dag()
+density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z * diag[1][0]*diag[1][0].dag()
 
 #print(density_matrix)
 
@@ -124,7 +125,7 @@ result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, []
 
 result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[- 1], t2, [], Exps, options=opts)
 
-fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
 #plt.rcParams.update({
 #  "text.usetex": True,
@@ -136,17 +137,17 @@ fig, ax = plt.subplots(2, 1, figsize=(10, 10))
 
 #plt.rc('figure', figsize=(11.69/1.7, 8.27))
 
-ax[0].errorbar(t1, np.real(result_t1.expect[0]), label="MagX")
-ax[0].errorbar(t1, np.real(result_t1.expect[1]), label="MagZ")
-ax[0].errorbar(t1, np.real(result_t1.expect[2]), label="MagY")
+ax[0,0].errorbar(t1, np.real(result_t1.expect[0]), label="MagX")
+ax[0,0].errorbar(t1, np.real(result_t1.expect[1]), label="MagZ")
+ax[0,0].errorbar(t1, np.real(result_t1.expect[2]), label="MagY")
 #ax[0].plot(t2, np.imag(Commutatorlist), label="Im(Commutator)")
 
 #ax[1].plot(t2, np.real(Anticommutatorlist), label="Re(Anticommutator)")
 #ax[1].plot(t2, np.imag(Anticommutatorlist), label="Im(Anticommutator)")
 
-ax[0].legend()
+ax[0,0].legend()
 #ax[1].legend()
-ax[0].set_xlabel('t_1')
+ax[0,0].set_xlabel('t_1')
 #ax[1].set_xlabel('t_measure - t_perturb')
 plt.show()
 
@@ -177,7 +178,7 @@ dm = 0
 
 #Commutator= (Measure* result_t1t2.states[t - 1] ).tr()
 
-for t in range(0, timesteps):
+for t in range(0, t2timesteps):
     if dm == 1:
         prod_AB = result_t1t2.states[t - 1].tr() * (Measure * result_AB.states[t - 1]).tr()
 
@@ -202,27 +203,27 @@ for t in range(0, timesteps):
 
         AntiCommutator = prod_AB + prod_BA
 
-        Commutatorlist.append(Commutator[0][0][0])
+        Commutatorlist.append(-1.j*Commutator[0][0][0])
         Anticommutatorlist.append(AntiCommutator[0][0][0])
         # print('Commutator:', 1j * Commutator[0][0])
         # print('AntiCommutator: ', AntiCommutator[0][0])
 
 
-fig, ax = plt.subplots(2, 1)
+fig, ax = plt.subplots(2, 2)
 
 #ax[1].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)", color="black")
 #ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
 
-ax[0].plot(t2[1:len(t2)], np.imag(Commutatorlist[1:len(t2)]), label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
-ax[0].plot(t2[1:len(t2)], np.real(Anticommutatorlist[1:len(t2)]), label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
+ax[0,0].plot(t2[1:len(t2)], Commutatorlist[1:len(t2)], label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
+ax[0,0].plot(t2[1:len(t2)], Anticommutatorlist[1:len(t2)], label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
 
-ax[0].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
+ax[0,0].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
 
-ax[0].set_ylabel(r'Expectation Value', fontsize=18)
-ax[0].legend( fontsize=16) #loc="lower right",
+ax[0,0].set_ylabel(r'Expectation Value', fontsize=18)
+ax[0,0].legend( fontsize=16) #loc="lower right",
 #ax[1, 1].set_xlim([-1.5, 1.5])
-ax[0].tick_params(axis="both", labelsize=16)
+ax[0,0].tick_params(axis="both", labelsize=16)
 
 
 #plt.show()
@@ -241,29 +242,278 @@ y0 = np.array(Anticommutatorlist)
 y31 = np.array(Commutatorlist)
 
 for o in omegas:
-    integrals.append(2*np.pi*integrate.simps(y31*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals.append(2*np.pi*integrate.simps(y31*np.exp(-1j*o*t2*2*np.pi), t2))
 
 for o in omegas:
-    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(1j*o*t2*2*np.pi), t2))
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*t2*2*np.pi), t2))
 
 Temp=25*10**(-6)
 
 #freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
-ax[1].plot(omegas, integrals, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="black")
+ax[1,0].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ Im(FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle))$", color="black")
 #ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
-ax[1].plot(omegas, integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="#85bb65")
+ax[1,0].plot(omegas, np.real(integrals0), linestyle='-', marker='o', markersize='0', label=r"$ Re(FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle))$", color="#85bb65")
 
 #ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
 
 
-ax[1].set_xlabel(r'Frequency [$\Omega_R$]', fontsize=18)
+ax[1,0].set_xlabel(r'Frequency $\omega$ [$\Omega$]', fontsize=18)
 #ax[1].set_xlabel('t_measure - t_perturb')
 
 #ax[0].set_ylabel(r'Expectation Value', fontsize=18)
-ax[1].legend( fontsize=16) #loc="lower right",
+ax[1,0].legend( fontsize=16) #loc="lower right",
 #ax[1].set_xlim([-2.5, 2.5])
-ax[1].tick_params(axis="both", labelsize=16)
-ax[1].set_ylabel(r'Correlation Spectrum', fontsize=18)
+ax[1,0].tick_params(axis="both", labelsize=16)
+ax[1,0].set_ylabel(r'Correlation Spectrum', fontsize=18)
+#plt.xlim(-2 / Omega_R, 2 / Omega_R)
+#plt.legend()
+#plt.show()
+
+
+N = 2
+
+omega = 2. * np.pi * 0
+
+Omega_R = 2 * np.pi * 1
+
+J = 2 * np.pi * 5
+
+bandwidth = 20
+
+sampling_rate = 1000
+endtime = 1
+timesteps = int(endtime * sampling_rate)
+t1timesteps = 2
+t2timesteps = 200
+
+gamma1 = 0
+
+pertubation_length = endtime / 1
+
+t1 = np.linspace(0, endtime, t1timesteps)
+t2 = np.linspace(0, 3, t2timesteps)
+
+noise_amplitude = 1.000
+
+perturb_times = np.linspace(0, pertubation_length, t1timesteps)
+random_phase = noise_amplitude * np.random.randn(perturb_times.shape[0])
+
+#S1 = Cubic_Spline(perturb_times[0], perturb_times[-1], noisy_func(noise_amplitude, perturb_times, omega, bandwidth))
+
+Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, 0, N), sigmaz(0, N - 1, N), upup(0, N),
+        sigmap(0, 0, N), sigmam(0, 0, N), downdown(0, N), anan(0, N)]
+
+Commutatorlist = []
+Anticommutatorlist = []
+
+opts = Options(store_states=True, store_final_state=True, nsteps=10**9)
+
+diag = simdiag([H0(omega, Omega_R, J, N)])
+
+print(diag)
+
+print(productstateX(0, N - 1, N))
+
+Temperature = 1
+
+Z = np.sum(np.exp(-diag[0][0]/(2*10**4*Temperature)))   #Omegas in MHz, T in K
+
+#print(diag[0])
+
+#print(diag[0][0])
+
+#print(diag[1][0])
+
+print(Z)
+
+density_matrix = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z * diag[1][0]*diag[1][0].dag()
+
+#print(density_matrix)
+
+for n in range(1, len(diag[1:])):
+    density_matrix += np.exp(-diag[0][0][n]/(2*10**4*Temperature))/Z * diag[1][n]*diag[1][n].dag()
+
+
+
+#print(density_matrix)
+
+state1=Qobj([[0],
+ [0],
+ [0],
+ [0],
+ [0],
+ [7.0711e-01],
+ [0],
+ [-7.0711e-01],
+ [0]])
+
+state1=Qobj(
+[[0],
+ [0],
+ [0],
+ [0],
+ [-1.337e-01],
+ [6.943e-01],
+ [0],
+ [6.9434e-01],
+ [-1.337e-01]])
+
+Temperature=10**(-5)
+
+state = np.exp(-diag[0][0][0]/(2*10**4*Temperature))/Z  * diag[1][0]
+
+#print(density_matrix)
+
+for n in range(1, len(diag[1:])):
+    state += np.exp(-diag[0][0][n]/(2*10**4*Temperature))/Z * diag[1][n]
+
+
+#s2 = Qobj(state.data.toarray().reshape((9,1)),
+#            dims=[[3,3],[1,1]])
+
+#print(s2)
+
+#print(productstateX(0, N - 1, N))
+
+#print(state)
+
+result_t1 = mesolve(H0(omega, Omega_R, J, N), productstateX(0, N - 1, N), t1, [], Exps, options=opts)
+#result_t1 = mesolve(H0(omega, Omega_R, J, N), s2, t1, [], Exps, options=opts)
+
+
+
+
+#print(spin_coherent(N, 2, 2, type='ket'))
+
+#result_t1 = mesolve(H0(omega, Omega_R, J, N), thermal_dm(N,N), t1, [], Exps, options=opts)
+
+result_t1t2 = mesolve(H0(omega, Omega_R, J, N), result_t1.states[- 1], t2, [], Exps, options=opts)
+
+
+plt.rcParams.update({
+  "text.usetex": True,
+})
+
+
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+
+plt.rc('figure', figsize=(11.69/1.7, 8.27))
+
+
+Perturb = MagnetizationZ(N)
+Measure = MagnetizationZ(N)
+
+
+#print("Pertubed=", Perturb*result_t1.states[timesteps - 1])
+
+state=Qobj([[0.00000000e+00],
+ [-2.e-18],
+ [2.e-17],
+ [3.e-16],
+ [1.e-33],
+ [7.e-31],
+ [2.e-16],
+ [-7.e-31],
+ [-2.e-35]])
+
+
+s2 = Qobj(state.data.toarray().reshape((9, 1)),
+            dims=[[3, 3], [1, 1]])
+
+
+result_AB = mesolve(H0(omega, Omega_R, J, N), Perturb * result_t1.states[- 1], t2, [], Exps, options=opts)
+
+dm = 0
+
+#Commutator= (Measure* result_t1t2.states[t - 1] ).tr()
+
+for t in range(0, t2timesteps):
+    if dm == 1:
+        prod_AB = result_t1t2.states[t - 1].tr() * (Measure * result_AB.states[t - 1]).tr()
+
+        prod_BA = result_AB.states[t - 1].tr() * (Measure * result_t1t2.states[t - 1]).tr()
+
+
+        Commutator = prod_AB - prod_BA
+
+        AntiCommutator = prod_AB + prod_BA
+
+        Commutatorlist.append(Commutator)
+        Anticommutatorlist.append(AntiCommutator)
+
+    else:
+        prod_AB = result_t1t2.states[t - 1].dag() * Measure * result_AB.states[t - 1]
+
+        prod_BA = result_AB.states[t - 1].dag() * Measure * result_t1t2.states[t - 1]
+
+        Commutator = prod_AB - prod_BA
+
+        print(Commutator)
+
+        AntiCommutator = prod_AB + prod_BA
+
+        Commutatorlist.append(-1.j*Commutator[0][0][0])
+        Anticommutatorlist.append(AntiCommutator[0][0][0])
+        # print('Commutator:', 1j * Commutator[0][0])
+        # print('AntiCommutator: ', AntiCommutator[0][0])
+
+
+
+#ax[1].errorbar(t2[1:len(t2)], np.real(Commutatorlist[1:len(t2)]), label="Re(Commutator)", color="black")
+#ax[1].plot(t2[1:len(t2)], np.imag(Anticommutatorlist[1:len(t2)]), label="Im(Anticommutator)")
+
+ax[0,1].plot(t2[1:len(t2)], Commutatorlist[1:len(t2)], label=r"Commutator $ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$", color="black")
+ax[0,1].plot(t2[1:len(t2)], Anticommutatorlist[1:len(t2)], label=r"Anti-commutator $ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$", color="#85bb65")
+
+ax[0,1].set_xlabel(r'Time [$1/\Omega$]', fontsize=18)
+#ax[1].set_xlabel('t_measure - t_perturb')
+
+ax[0,1].set_ylabel(r'Expectation Value', fontsize=18)
+ax[0,1].legend( fontsize=16) #loc="lower right",
+#ax[1, 1].set_xlim([-1.5, 1.5])
+ax[0,1].tick_params(axis="both", labelsize=16)
+
+
+#plt.show()
+
+
+
+omegas = np.linspace(-1.5*Omega_R, 1.5*Omega_R, num=1500)
+
+integrals = []
+integrals0 = []
+
+x1 = np.linspace(t2[1], t2[-1])#np.array(x0[0:9])
+
+y0 = np.array(Anticommutatorlist)
+
+y31 = np.array(Commutatorlist)
+
+for o in omegas:
+    integrals.append(2*np.pi*integrate.simps(y31*np.exp(-1j*o*t2*2*np.pi), t2))
+
+for o in omegas:
+    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*t2*2*np.pi), t2))
+
+Temp=25*10**(-6)
+
+#freq = np.fft.fftfreq(t2[1:len(t2)].shape[-1])*Omega_R
+ax[1,1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ Im(FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle))$", color="black")
+#ax[1].plot(omegas, np.imag(integrals), linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$", color="grey")
+ax[1,1].plot(omegas, np.real(integrals0), linestyle='-', marker='o', markersize='0', label=r"$ Re(FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle))$", color="#85bb65")
+
+#ax[1].plot(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*integrals0, linestyle='-', marker='o', markersize='0', label=r"$ FT(\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$", color="purple")
+
+
+ax[1,1].set_xlabel(r'Frequency $\omega$ [$\Omega$]', fontsize=18)
+#ax[1].set_xlabel('t_measure - t_perturb')
+
+#ax[0].set_ylabel(r'Expectation Value', fontsize=18)
+ax[1,1].legend( fontsize=16) #loc="lower right",
+#ax[1].set_xlim([-2.5, 2.5])
+ax[1,1].tick_params(axis="both", labelsize=16)
+ax[1,1].set_ylabel(r'Correlation Spectrum', fontsize=18)
 #plt.xlim(-2 / Omega_R, 2 / Omega_R)
 #plt.legend()
 plt.show()
