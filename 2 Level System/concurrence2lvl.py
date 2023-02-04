@@ -17,7 +17,7 @@ Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, N), s
         upup(0, N), upup(1, N), upup(N - 2, N), upup(N - 1, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-Omega_R = 0 * np.pi  # MHz
+Omega_R = 1 * np.pi / 2 # MHz
 
 #gamma = 0.01 * np.pi  # MHz
 
@@ -25,9 +25,9 @@ J = 1 * np.pi / N  # MHz
 
 bath = "markovian"
 
-endtime = 2
+endtime = 20
 
-timesteps = 200
+timesteps = 5000
 
 pertubation_length = endtime / 1
 
@@ -38,8 +38,8 @@ gamma = 10
 omega = 0
 
 init_state = bellstate(0, 1, N)
-init_state = productstateZ(0, 1, N)
-#init_state = productstateX(0, 1, N)
+#init_state = productstateZ(0, 1, N)
+init_state = productstateX(0, 1, N)
 
 noise1 = noisy_func(gamma, perturb_times, omega, bath)
 noise2 = noisy_func(gamma, perturb_times, omega, bath)
@@ -89,7 +89,7 @@ Pmean = 0
 
 i = 1
 
-while i < 20:  # averages + int(2 * gamma):
+while i < 200:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise1 = noisy_func(gamma, perturb_times, omega, bath)
@@ -141,5 +141,5 @@ plt.show()
 # print((expect2[5]+expect2[8]).mean())
 density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
                        [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
-# print(density_matrix)
+print(density_matrix)
 # result3 = mesolve(H0(omega, J, N), Qobj(states2), t2, [], e_ops=Exps, options=opts)
