@@ -99,7 +99,7 @@ f = psd(y0, 7, 0.1)
 
 f1 = psd(y3, 7, 0.1)
 
-omegas = np.linspace(-1.5, 1.5, num=15)
+omegas = np.linspace(-25, 25, num=25)
 
 integrals = []
 integrals0 = []
@@ -142,20 +142,13 @@ ax[0, 0].set_xlim([-0.001, 0.101])
 ax[0, 0].tick_params(axis="both", labelsize=16)
 
 for o in omegas:
+
     integrals.append(2*np.pi*integrate.simps(y3*np.exp(-1j*o*x0*2*np.pi), x0))
 
-for o in omegas:
     integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
 
+
 print("integrals", integrals)
-
-
-
-
-def lorentzian(frequencies, amplitude, omega_0, gamma):
-    func = lambda omega: amplitude / gamma / np.pi / (2 * ((omega - omega_0) / gamma) ** 2 + 1 / 2)
-    return func(frequencies)
-
 
 ferror = 0
 
@@ -168,8 +161,8 @@ y0samples = []
 y3samples = []
 
 for e in range(0, len(y0e)):
-    ferror += y0e[e] ** 2
-    f1error += y3e[e] ** 2
+    ferror += 0.1*y0e[e] ** 2
+    f1error += 0.1*y3e[e] ** 2
 
 
 for e in range(0, len(y0e)):
@@ -262,7 +255,7 @@ print("ftt: ", np.max(ftt[0]))
 Omega = 13.6 #1
 T =0.1# 1.3
 #om = ftt[0] / 13.6
-om = np.linspace(-1.5,1.5,10000)
+om = np.linspace(-25,25,10000)
 
 #print(om)
 
