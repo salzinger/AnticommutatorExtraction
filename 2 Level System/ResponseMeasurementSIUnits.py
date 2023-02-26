@@ -28,7 +28,7 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 
 timesteps = 100
-endtime = 0.1 * 13.6
+endtime = 0.1# * 13.6
 pertubation_length = endtime / 1
 perturb_times = np.linspace(0, endtime, timesteps)
 init_state = productstateZ(0, 0, N)
@@ -122,12 +122,12 @@ y3e = y3e[0:len(y0)]
 ax[0, 0].errorbar(x0, y0, y0e, marker="o", color='#85bb65',
                   label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="6")
 
-ax[0, 0].plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
+ax[0, 0].plot(perturb_times, np.cos(2 * np.pi * 13.6 * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
 ax[0, 0].errorbar(x0, y3, y3e, marker="o", color='black',
                   label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="6")
 
-ax[0, 0].plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
+ax[0, 0].plot(perturb_times, -np.sin(2 * np.pi * 13.6 * perturb_times) * 0.16, color='black', linestyle='-')
 
 ydiv = []
 
@@ -138,7 +138,7 @@ ax[0, 0].set_xlabel('Time [$1/\Omega_R$]', fontsize=20)
 ax[0, 0].set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=20)
 ax[0, 0].legend(loc="lower center", fontsize=16)
 ax[0, 0].set_ylim([-0.2, 0.2])
-ax[0, 0].set_xlim([-0.005, 1.372])
+ax[0, 0].set_xlim([-0.001, 0.101])
 ax[0, 0].tick_params(axis="both", labelsize=16)
 
 for o in omegas:
@@ -198,7 +198,7 @@ print(np.sqrt(ferror))
 
 
 
-ftt = psd(-np.sin(2 * np.pi *13.6* np.array(x0)) * 0.16, 7, 0.1)
+ftt = psd(-np.sin(2 * np.pi * 13.6 * np.array(x0)) * 0.16, 7, 0.1)
 
 fttcos = psd(np.cos(2 * np.pi * np.array(x0)) * 0.16, 7, 0.1)
 
@@ -259,8 +259,8 @@ ax[0, 1].errorbar(omegas, np.real(integrals0), f1serror, marker="o", color='#85b
 
 #ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
 print("ftt: ", np.max(ftt[0]))
-Omega = 1
-T = 1.3
+Omega = 13.6 #1
+T =0.1# 1.3
 #om = ftt[0] / 13.6
 om = np.linspace(-1.5,1.5,10000)
 
@@ -399,7 +399,7 @@ ax[0, 1].set_xlabel('Frequency $\omega$ [$\Omega$]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].tick_params(axis="both", labelsize=16)
-ax[0, 1].set_xlim([-1.5, 1.5])
+#ax[0, 1].set_xlim([-1.5, 1.5])
 ax[0, 1].tick_params(axis="both", labelsize=16)
 
 #ax[0, 1].set_ylim([-1.5, 1.5])
