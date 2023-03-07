@@ -134,7 +134,7 @@ ydiv = []
 for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
-ax[0, 0].set_xlabel('Time [$1/\Omega_R$]', fontsize=20)
+ax[0, 0].set_xlabel('Time [$\mu$s]', fontsize=20)
 ax[0, 0].set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=20)
 ax[0, 0].legend(loc="lower center", fontsize=16)
 ax[0, 0].set_ylim([-0.2, 0.2])
@@ -290,9 +290,9 @@ Temp = 50*10**(-6)
 #ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
-#used to be 2/6.558/10**4 but!: 2*np.pi*13.6*10^6 MHz * hbar/k_b = 2*np.pi* 1.04 * 10^-4
+#used to be 2/6.558/10**4 but!: 2*np.pi*1 MHz * hbar/k_b = 4.8 * 10^-5 K
 
-prefactor= 2*np.pi*1.04 * 10**(-4)
+prefactor= 4.8 * 10**(-4)
 
 
 #ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
@@ -388,7 +388,7 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 
 '''
 
-ax[0, 1].set_xlabel('Frequency $\omega$ [$\Omega$]', fontsize=20)
+ax[0, 1].set_xlabel('Frequency $\omega$ [MHz]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].tick_params(axis="both", labelsize=16)
