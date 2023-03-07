@@ -292,7 +292,7 @@ Temp = 50*10**(-6)
 
 #used to be 2/6.558/10**4 but!: 2*np.pi*1 MHz * hbar/k_b = 4.8 * 10^-5 K
 
-prefactor= 4.8 * 10**(-4)
+prefactor= 4.8 * 10**(-5)
 
 
 #ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
