@@ -260,9 +260,9 @@ ax[0, 1].errorbar(omegas, np.real(integrals0), f1serror, marker="o", color='#85b
 #ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
 print("ftt: ", np.max(ftt[0]))
 Omega = 1
-T = 1.3
+T = 1.36
 #om = ftt[0] / 13.6
-om = np.linspace(-1.5,1.5,10000)
+om = np.linspace(-1.525,1.525,10000)
 
 #print(om)
 
@@ -297,7 +297,7 @@ Temp = 50*10**(-6)
 #ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
-#used to be 2/6.558/10**4 but!: 2*np.pi*13.6*10^6 MHz * hbar/k_b = 2*np.pi* 1.04 * 10^-4  
+#used to be 2/6.558/10**4 but!: 2*np.pi*13.6*10^6 MHz * hbar/k_b = 2*np.pi* 1.04 * 10^-4
 
 prefactor= 2*np.pi*1.04 * 10**(-4)
 
@@ -399,7 +399,7 @@ ax[0, 1].set_xlabel('Frequency $\omega$ [$\Omega$]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
 ax[0, 1].legend(loc="lower right", fontsize=16)
 ax[0, 1].tick_params(axis="both", labelsize=16)
-ax[0, 1].set_xlim([-1.5, 1.5])
+ax[0, 1].set_xlim([-1.525, 1.525])
 ax[0, 1].tick_params(axis="both", labelsize=16)
 
 #ax[0, 1].set_ylim([-1.5, 1.5])
