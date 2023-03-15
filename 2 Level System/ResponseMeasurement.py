@@ -253,6 +253,9 @@ ax[0, 1].errorbar(omegas, np.imag(integrals), fserror, marker="o", color='black'
 ax[0, 1].errorbar(omegas, np.real(integrals0), f1serror, marker="o", color='#85bb65', linestyle='', markersize="6",
                   label=r'Measured Non-Hermitian: Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
+
+
+
 #ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
 #                  color='purple', linestyle='', markersize="0.5",
 #                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
@@ -268,11 +271,11 @@ om = np.linspace(-1.525,1.525,10000)
 
 ax[0, 1].errorbar(om, 0.16 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1", label="Analytival Hermitian response function")
+                  / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1", label="Analytical Hermitian response function")
 
 ax[0, 1].errorbar(om, 0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1", label="Analytival Non-Hermitian response function")
+                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1", label="Analytical Non-Hermitian response function")
 
 #ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
 #                  markersize="0.05", label="Coth(T=0)")
@@ -352,6 +355,13 @@ ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.
                   / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='', linewidth='0.5',
                   markersize="0.1", label=r" Non-Hermitian $\cdot$ tanh($\frac{\hbar\omega}{2 k_B T}$) for $T=20,200$ $\mu$K")
 
+om=np.linspace(-1.5,1.5,15)
+
+ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror, marker="o", color='purple', linestyle='', markersize="6",
+                  label=r'Measured Non-Hermitian  *tanh(T=20 $\mu$K)')
+
+
+
 
 Temp = 200*10**(-6)
 
@@ -365,6 +375,12 @@ ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='', linewidth='0.5',
                   markersize="0.015")
+
+
+ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror, marker="o", color='blue', linestyle='', markersize="6",
+                  label=r'Measured Non-Hermitian *tanh(T=200 $\mu$K)')
+
+
 
 '''
 Temp = 2*10**(-6)
