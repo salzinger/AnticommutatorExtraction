@@ -96,7 +96,7 @@ init_state = productstateZ(0, 0, N)
 
 #plt.rc('figure', figsize=(11.69, 8.27))
 
-fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27))
+#fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27))
 
 
 with open('incoherent_perturb.txt') as f:
@@ -182,15 +182,17 @@ y0e = y0e[0:len(y0)]
 
 y3e = y3e[0:len(y0)]
 
-ax.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
-                  label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="6")
+ax2 = plt.subplot(222)
 
-ax.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
+ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
+                  label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="3")
 
-ax.errorbar(x0, y3, y3e, marker="o", color='black',
-                  label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="6")
+ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
+ax2.errorbar(x0, y3, y3e, marker="o", color='black',
+                  label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="3")
+
+ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
 
 
 
@@ -199,23 +201,23 @@ ydiv = []
 for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
-#ax.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=32)
-#ax.set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=32)
+#ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=8)
+#ax2.set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=8)
 #ax.legend(loc="lower center", fontsize=32)
-ax.set_ylim([-0.2, 0.2])
-ax.set_xlim([-0.005, 1.372])
-ax.tick_params(axis="both", labelsize=32)
+ax2.set_ylim([-0.2, 0.2])
+ax2.set_xlim([-0.005, 1.372])
+ax2.tick_params(axis="both", labelsize=8)
 
 
 
-plt.savefig("ResponseMeasureTimeDomain.pdf")
+#plt.savefig("ResponseMeasureTimeDomain.pdf")
 
 
-plt.show()
+#plt.show()
 
 #plt.rc('figure', figsize=(11.69, 8.27))
 
-fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27/2))
+#fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27/2))
 
 
 for o in omegas:
@@ -321,10 +323,11 @@ f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 #ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
 #                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-ax.errorbar(omegas, np.imag(integrals), fserror*0, marker="", color='black', linestyle='-', markersize="3",
+ax1=plt.subplot(212)
+ax1.errorbar(omegas, np.imag(integrals), fserror*0, marker="", color='black', linestyle='-', markersize="4",
                   )
 
-ax.errorbar(omegas, np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='-', markersize="3",
+ax1.errorbar(omegas, np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='-', markersize="4",
                   )
 
 om=np.linspace(-1.5,1.5,500)
@@ -338,7 +341,7 @@ Temp = 10*10**(-6)
 prefactor= 2*np.pi*1.04 * 10**(-4)
 
 
-ax.errorbar(omegas, (1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='-', markersize="6",
+ax1.errorbar(omegas, (1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='-', markersize="6",
                   )
 
 
@@ -352,15 +355,15 @@ for o in omegas:
 for o in omegas:
     integralsshort0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
 
-ax.errorbar(omegas, np.imag(integralsshort), fserror[0:9], marker="o", color='black', linestyle='', markersize="3",
-                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \sigma_z(0),\sigma_z(t) ] \rangle)$')
+ax1.errorbar(omegas, np.imag(integralsshort), fserror[0:9], marker="o", color='black', linestyle='', markersize="3",
+                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle)$')
 
 
-ax.errorbar(omegas, np.real(integralsshort0), f1serror[0:9], marker="o", color='#85bb65', linestyle='', markersize="3",
-                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle)$')
+ax1.errorbar(omegas, np.real(integralsshort0), f1serror[0:9], marker="o", color='#85bb65', linestyle='', markersize="3",
+                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
 
 
-ax.errorbar(omegas, (1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), f1serror[0:9], marker="o", color='purple', linestyle='', markersize="3",
+ax1.errorbar(omegas, (1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), f1serror[0:9], marker="o", color='purple', linestyle='', markersize="3",
                   label=r'$S(\omega) \tanh{\frac{\hbar\omega}{k_B T}}$ at $T=10$ $\mu$K')
 
 #ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
@@ -526,13 +529,13 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 #                  label=r'Tanh(T=0)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$))')
 
 '''
-
-ax.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=16)
-ax.set_ylabel(r'Correlation Spectrum', fontsize=16)
-ax.legend(loc="lower right", fontsize=16)
-ax.tick_params(axis="both", labelsize=16)
-ax.set_xlim([-1.525, 1.525])
-ax.tick_params(axis="both", labelsize=16)
+#\vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
+ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=8)
+ax1.set_ylabel(r'Correlation Spectrum', fontsize=8)
+ax1.legend(loc="lower right", fontsize=8, frameon=0) #loc="lower center",
+#ax1.tick_params(axis="both", labelsize=8)
+ax1.set_xlim([-1.525, 1.525])
+ax1.tick_params(axis="both", labelsize=8)
 
 #ax[0, 1].set_ylim([-1.5, 1.5])
 
@@ -540,7 +543,7 @@ ax.tick_params(axis="both", labelsize=16)
 
 
 
-fig.tight_layout()
+#fig.tight_layout()
 plt.savefig("ResponseMeasureFFT.pdf")
 plt.show()
 
