@@ -272,9 +272,9 @@ plt.errorbar(np.linspace(0, 3, len(data)), data, label="Phase drift",
                   linewidth="0.4",
                   color='black')
 plt.ylabel(r'$\Phi_B(t) [\pi]$')
-plt.xlabel(r'Time $[1/\Omega_R]$')
+plt.xlabel(r'Time $[2 \pi /\Omega_R]$')
 
-
+plt.savefig("Phasewalks.pdf")
 plt.show()
 
 

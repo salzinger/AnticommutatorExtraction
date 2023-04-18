@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 
 
-#plt.rcParams.update({
-#  "text.usetex": True,
-#})
+plt.rcParams.update({
+  "text.usetex": True,
+})
 
 N = 2
 
@@ -288,7 +288,10 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             print("lorentz sum:", np.sum(lorentzian(f, 1, omega / (2 * np.pi), 3)))
             '''
 
-            factor = 3
+            #ax2 = plt.subplot(222)
+
+
+            factor = 2
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
@@ -451,7 +454,8 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             ax[0, 0].set_ylabel(r'PSD / P$_{Carrier}$ [1/Hz]', fontsize=16)
             #ax[0, 0].set_xticks(ticks=np.array([-3, -2, -1, 0., 1, 2, 3]))
             #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
-            plt.show()
+
+
             #################### END OF SPECTRA ######################################## 1111111111111111111111111111
 
 
@@ -460,9 +464,7 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
 
 
 
-'''
-
-            fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+            #fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
 
             #################### SINGLE TRAJECTORY ######################################## 222222222222222222222222222
@@ -851,7 +853,11 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             ax[1, 1].legend(loc="upper center", fontsize=12)
 
             fig.tight_layout()
+
             plt.show()
+
+            plt.savefig("Powerspectrum.pdf")
+
             #plt.savefig("bath" + bath + ", Omega_R =  %.2f, sampling =  %.2f,gamma = %.2f.png" % (
             #    Omega_R, sampling_rate, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
@@ -862,7 +868,6 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
 
 
 
-'''
 
 
 
