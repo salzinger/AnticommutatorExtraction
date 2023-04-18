@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 plt.rcParams.update({
   "text.usetex": True,
-
+    "font.family":"sans-serif",
 })
 
 
@@ -143,7 +143,8 @@ for gamma in [3, 10, 30]:
             #                       [expect2[7][timesteps - 1], expect2[8][timesteps - 1]]])
 '''
 ################### MASTER EQUATION ############################################ 444444444444444444
-fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+#fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+fig, ax = plt.subplots(1, 1, figsize=(11.69, 11.69/2))
 
 with open('counts_0.txt') as f:
     linesm0 = f.readlines()
@@ -249,9 +250,9 @@ result_m30 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S], [H2(Omega_R, N), S]]
 
 
 
-ax[1, 1].errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/60$', linestyle='')
+ax.errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/60$', linestyle='')
 
-ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
+ax.plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 
 #ax[1, 1].plot(perturb_times, np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
 #ax[1, 1].plot(perturb_times, -np.ones_like(perturb_times)*0.5, color='grey', linestyle='--')
@@ -269,36 +270,37 @@ ax[1, 1].plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 #ax[1, 1].plot(perturb_times, np.mean(expect1, axis=0)[1] - np.var(expect1, axis=0)[1], color='r',
 #              label="-std ", marker="s", markersize="0.1", linestyle="")
 
-ax[1, 1].errorbar(x0, y3, y3e, marker="^", color='#025669', label='$\gamma = \Omega_R/5$', linestyle='', markersize="5")
-ax[1, 1].plot(perturb_times, np.real(result_m3.expect[1]), color='#025669', linestyle='-')
+ax.errorbar(x0, y3, y3e, marker="^", color='#025669', label='$\gamma = \Omega_R/5$', linestyle='', markersize="5")
+ax.plot(perturb_times, np.real(result_m3.expect[1]), color='#025669', linestyle='-')
 
-ax[1, 1].errorbar(x0, y5, y5e, marker="D", color='#800080', label='$\gamma = \Omega_R/3$', linestyle='', markersize="5")
-ax[1, 1].plot(perturb_times, np.real(result_m5.expect[1]), color='#800080', linestyle='-')
+ax.errorbar(x0, y5, y5e, marker="D", color='#800080', label='$\gamma = \Omega_R/3$', linestyle='', markersize="5")
+ax.plot(perturb_times, np.real(result_m5.expect[1]), color='#800080', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m3.expect[1])+vars[0],
            #           np.real(result_m3.expect[1])-vars[0], alpha=0.2, color='b')
 
-ax[1, 1].errorbar(x0, y15, y15e, marker="v", color='#CC7722', label='$\gamma = \Omega_R$', linestyle='', markersize="5")
-ax[1, 1].plot(perturb_times, np.real(result_m15.expect[1]), color='#CC7722', linestyle='-')
+ax.errorbar(x0, y15, y15e, marker="v", color='#CC7722', label='$\gamma = \Omega_R$', linestyle='', markersize="5")
+ax.plot(perturb_times, np.real(result_m15.expect[1]), color='#CC7722', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m10.expect[1])+vars[1],
 #                      np.real(result_m10.expect[1])-vars[1], alpha=0.2, color='#CC7722')
 
-ax[1, 1].errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="5")
-ax[1, 1].plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle='-')
+ax.errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="5")
+ax.plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle='-')
 #ax[1, 1].fill_between(perturb_times,  np.real(result_m30.expect[1])+vars[2],
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax[1, 1].set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
-ax[1, 1].set_ylabel(r'$\langle S_z\rangle$', fontsize=16)
-ax[1, 1].legend(loc="lower center", fontsize=12)
-ax[1, 1].tick_params(axis="both", labelsize=12)
-ax[1, 1].set_ylim([-0.55, 0.55])
+ax.set_xlabel('Time [$1/\Omega_R$]', fontsize=16)
+ax.set_ylabel(r'$\langle S_z\rangle$', fontsize=16)
+ax.legend(loc="lower center", fontsize=12, frameon=False)
+ax.tick_params(axis="both", labelsize=12)
+ax.set_ylim([-0.55, 0.55])
 
-ax[1, 1].set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
-ax[1, 1].set_xlim([0., 3.05])
+ax.set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
+ax.set_xlim([0., 3])
 
 
 
-fig.tight_layout()
+#fig.tight_layout()
+plt.savefig("markov.pdf")
 plt.show()
 #plt.savefig("gamma =  %.2f.png" % (gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))

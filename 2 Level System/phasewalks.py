@@ -4,17 +4,17 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
-
 plt.rcParams.update({
   "text.usetex": True,
-
+    "font.family":"sans-serif",
 })
 
 
-#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
 
-plt.rc('figure', figsize=(11.69, 8.27))
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+#plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+
+#plt.rc('figure', figsize=(11.69, 8.27))
 
 N = 1
 
@@ -53,9 +53,10 @@ gamma1 = 0  # MHz
 
 
 
-fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
+fig, ax = plt.subplots(1, 1, figsize=(11.69/2, 11.69/2))
+#fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
 
-fig.set_dpi(250.0)
+#fig.set_dpi(250.0)
 
 for gamma in [3, 5, 15, 30]:
 
@@ -113,68 +114,68 @@ for gamma in [3, 5, 15, 30]:
     for k in range(0, int(averages / averages)):
 
         if gamma == 4:
-            ax[0, 1].plot(times, phase_noise_plot[k], color='#85bb65', linewidth=0.1)
+            ax.plot(times, phase_noise_plot[k], color='#85bb65', linewidth=0.1)
             # ax[0, 1].plot(t, phase_noise, color='#85bb65', linewidth=0.1)
         elif gamma == 14:
-            ax[0, 1].plot(times, phase_noise_plot[k], color='#CC7722', linewidth=0.1)
+            ax.plot(times, phase_noise_plot[k], color='#CC7722', linewidth=0.1)
             # ax[0, 1].plot(t, phase_noise, color='#CC7722', linewidth=0.1)
         elif gamma == 31:
-            ax[0, 1].plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
+            ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
             # ax[0, 1].plot(t, phase_noise, color='#800020', linewidth=0.1)
 
     if gamma == 30:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
-        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
+        ax.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
                       linewidth=1.0,
                       label='$\sigma_{\gamma = 2\Omega_R}$', marker="s", markersize="4", markerfacecolor='none', markeredgecolor='#800020')
-        ax[0, 1].plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=1.0)
+        ax.plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=1.0)
 
         #ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-',
         #              linewidth=1.0,
         #              label='$\gamma = \Omega_R/3$ MHz')
 
-        ax[0, 1].plot(t, -np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=5.0)
-        ax[0, 1].fill_between(t, np.sqrt(gamma * t / 15), np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
-        ax[0, 1].fill_between(t, -np.sqrt(gamma * t / 15), -np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
-        ax[0, 1].plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
+        ax.plot(t, -np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=5.0)
+        ax.fill_between(t, np.sqrt(gamma * t / 15), np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
+        ax.fill_between(t, -np.sqrt(gamma * t / 15), -np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
+        ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
         # ,label='$\sqrt{30 MHz  t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
     if gamma == 3:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
 
-        ax[0, 1].plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='',
+        ax.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='',
                       linewidth=1.0,
                       label='$\sigma_{\gamma = \Omega_R/5}$' ,marker="^", markersize="4", markerfacecolor='none', markeredgecolor = '#025669')
-        ax[0, 1].plot(t, np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
+        ax.plot(t, np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
 
         #ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='-',
         #              linewidth=1.0,
         #              label='$\gamma = 10$ MHz')
-        ax[0, 1].plot(t, -np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
+        ax.plot(t, -np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
 
 
-        ax[0, 1].fill_between(t, np.sqrt(3 * t / 15), -np.sqrt(3 * t / 15), color='#025669', alpha=0.2)
+        ax.fill_between(t, np.sqrt(3 * t / 15), -np.sqrt(3 * t / 15), color='#025669', alpha=0.2)
         # , label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
     if gamma == 4:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='green', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
 
-        ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#800080', linestyle='-',
+        ax.plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#800080', linestyle='-',
                       linewidth=1.0,
                       label='$\gamma = \Omega_R/3$ MHz')
-        ax[0, 1].plot(t, -np.sqrt(gamma * t / 15), color='#800080', linestyle='--', linewidth=1.0)
+        ax.plot(t, -np.sqrt(gamma * t / 15), color='#800080', linestyle='--', linewidth=1.0)
         # , label='Expected Standard Deviation = $\sqrt{3 MHz t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#85bb65', linestyle='--', linewidth=1.0)
 
     if gamma == 14:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='orange', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
 
-        ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#CC7722', linestyle='-',
+        ax.plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#CC7722', linestyle='-',
                       linewidth=1.0,
                       label='$\gamma = 10$ MHz')
-        ax[0, 1].plot(t, -np.sqrt(gamma * t / 15), color='#CC7722', linestyle='--', linewidth=1.0)
+        ax.plot(t, -np.sqrt(gamma * t / 15), color='#CC7722', linestyle='--', linewidth=1.0)
         # ,label='$\sqrt{10 MHz t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#CC7722', linestyle='--', linewidth=1.0)
 
@@ -203,12 +204,21 @@ data = np.append(data / 180, data_reversed / 180)
 
 # ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
 ###ax[0, 1].set_xlim([0, 0.1])
-ax[0, 1].set_xlabel(r'Time [$ 1/\Omega_R$]', fontsize=12)
-ax[0, 1].set_ylabel(r'$\Phi_B(t) [\pi]$', fontsize=12)
-ax[0, 1].tick_params(axis="both", labelsize=12)
+ax.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=18)
+ax.set_ylabel(r'$\Phi_B(t)$', fontsize=18)
+ax.tick_params(axis="both", labelsize=16)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax[0, 1].legend(loc="lower left", fontsize=12)
+ax.legend(loc="lower left", fontsize=16, frameon=False)
+ax.set_xlim([0, 3])
+ax.set_ylim([-3, 3])
+
+plt.savefig("phasewalks.pdf")
+plt.show()
+
+
+
+
 
 data = np.loadtxt('10MHz_gamma.txt')
 # print(len(data))
@@ -233,7 +243,7 @@ for d in range(0, len(data)):
 ax[1, 0].plot(np.linspace(0, 4, len(datalarge)), 0.1*np.cos(datalarge+2*np.pi*np.linspace(0, 4, len(datalarge))), color='black', linewidth="2")
 
 
-ax[1, 0].set_xlabel(r'Time [$ 1/\omega_{MW}$]', fontsize=12)
+ax[1, 0].set_xlabel(r'Time [$ 2 \pi /\omega_{MW}$]', fontsize=12)
 ax[1, 0].set_ylabel(r'$E(t) [V/m]$', fontsize=12)
 ax[1, 0].tick_params(axis="both", labelsize=12)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
