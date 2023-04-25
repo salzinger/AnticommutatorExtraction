@@ -135,14 +135,14 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             result2 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                               perturb_times, e_ops=Exps, options=opts)
             concmean = []
-            print(result2.states[10])
+            #print(result2.states[10])
             for t in range(0, timesteps):
                 concmean.append(concurrence(result2.states[t]))
 
             plt.plot(perturb_times, concmean)
             plt.show()
 
-            print(concmean)
+            #print(concmean)
 
             # opts = Options(store_states=True, store_final_state=True, rhs_reuse=True)
             states2 = np.array(result2.states[timesteps - 1])
@@ -152,7 +152,7 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             Pmean = 0
 
             while i < 1:  # averages + int(2 * gamma):
-                print(i)
+                #print(i)
                 i += 1
 
                 S1 = Cubic_Spline(perturb_times[0], perturb_times[-1],
@@ -291,7 +291,7 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             #ax2 = plt.subplot(222)
 
 
-            factor = 2
+            factor = 3
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
@@ -299,15 +299,15 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             samples = int(sample_time * 64 * 10 ** (factor+2))
 
             #print(samples)
-            gamma0 = average_psd(0, omega, samples, sample_time, 1)
-            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 1) #min 40 or 400 for good results
-            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 1)
-            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 1)
-            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 1)
+            #gamma0 = average_psd(0, omega, samples, sample_time, 1)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 400) #min 40 or 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 400)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 400)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 400)
 
-            print("welch sum" , np.sum(gamma0[1]))
+            #print("welch sum" , np.sum(gamma0[1]))
 
-            print("Lorentz sum", np.sum(lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi))/sample_time)
+            #print("Lorentz sum", np.sum(lorentzian(gamma0[0], 1, omega / (2 * np.pi), 2/np.pi))/sample_time)
             '''
             long = sqrt(2) * noisy_func(0, np.linspace(0, sample_time, samples), omega, "markovian")
 
@@ -380,6 +380,12 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             #              linewidth=1,
             #              color='black')
 
+            np.save('gamma3.npy', gamma3)
+            np.save('gamma5.npy', gamma5)
+            np.save('gamma15.npy', gamma15)
+            np.save('gamma30.npy', gamma30)
+
+
 
             ax[0, 0].plot(-gamma3[0],2* gamma3[1], linestyle='',
                           marker='^', markersize='4', label=r"$\gamma=\Omega_R/5$", color='#025669', markerfacecolor='none', markeredgecolor = '#025669')
@@ -446,12 +452,16 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             # ax[0, 1].set_ylabel('Coupling Amplitude', fontsize=16)
             # ax[0, 1].set_xlim([0.099, 0.101])
 
+
+
             ax[0, 0].legend(loc="upper left", fontsize=16)
 
-            ax[0, 1].tick_params(axis="both", labelsize=16)
+            ax[0, 0].tick_params(axis="both", labelsize=16)
 
             ax[0, 0].set_xlabel(r'$\omega$ [$\Omega_R$]', fontsize=26)
             ax[0, 0].set_ylabel(r'PSD / P$_{Carrier}$ [1/Hz]', fontsize=16)
+
+            ax[0, 0].legend(loc="upper left", fontsize=12)
             #ax[0, 0].set_xticks(ticks=np.array([-3, -2, -1, 0., 1, 2, 3]))
             #ax[0, 0].set_xticks(np.linspace(-10, 10, 5))
 
@@ -565,13 +575,13 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
 
             data = np.append(data/180, data_reversed/180)
 
-            ax[0, 0].errorbar(perturb_times, data, label="Phase drift",
+            ax[1, 1].errorbar(perturb_times, data, label="Phase drift",
                               linewidth="0.4",
                               color='#85bb65')
 
             data = np.loadtxt('Forward3MHzcsv.txt')
 
-            ax[0, 0].errorbar(x, phase, phaseerror, label="Phase xy-plane",
+            ax[1, 1].errorbar(x, phase, phaseerror, label="Phase xy-plane",
                           linestyle="",
                           markersize="5", marker="v", color='black')
             #ax[0, 0].errorbar(x, amp, amperror, label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2}$",
@@ -584,12 +594,12 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
 
             #ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
             #              label=r"$Phase$", linewidth="1")
-            ax[0, 0].plot(perturb_times, np.real(2*np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2+0.001)) / (np.pi) + 0.2), color='black',
+            ax[1, 1].plot(perturb_times, np.real(2*np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2+0.001)) / (np.pi) + 0.2), color='black',
                            linewidth="1")
 
-            ax[0, 0].set_xlabel('Time [us]', fontsize=14)
-            ax[0, 0].set_ylabel('Phase [$\pi$]', fontsize=14)
-            ax[0, 0].legend(loc="lower left", fontsize=12)
+            ax[1, 1].set_xlabel('Time [us]', fontsize=14)
+            ax[1, 1].set_ylabel('Phase [$\pi$]', fontsize=14)
+
 
 
             for n in range(0,len(phase)):
@@ -811,6 +821,7 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             t1 = np.linspace(0, endtime, int(timesteps / 10))
 
             Omega_R = 2 * np.pi * 12.3 #MHz
+            omega=0
 
             S = Cubic_Spline(perturb_times[0], perturb_times[-1], func(perturb_times, omega))
 

@@ -57,7 +57,7 @@ def average_psd(gamma,omega,samples,sample_time,averages):
         print(i)
         #    long = np.append(long, noisy_func(gamma, perturb_times, omega, bath)[0:int(len(perturb_times) / 2 - 10)])
         #    long_nn = np.append(long, func(perturb_times, omega)[0:int(len(perturb_times) / 2 - 10)])
-        long = 0.1 * sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
+        long = sqrt(2) * noisy_func(gamma, np.linspace(0, sample_time, samples), omega, "markovian")
 
         f, Pxx_den = signal.welch(
             long, fs,

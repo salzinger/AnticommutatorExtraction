@@ -53,7 +53,7 @@ gamma1 = 0  # MHz
 
 
 
-fig, ax = plt.subplots(1, 1, figsize=(11.69/2, 11.69/2))
+fig, ax = plt.subplots(1, 1, figsize=(11.69, 11.69))
 #fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
 
 #fig.set_dpi(250.0)
@@ -120,14 +120,14 @@ for gamma in [3, 5, 15, 30]:
             ax.plot(times, phase_noise_plot[k], color='#CC7722', linewidth=0.1)
             # ax[0, 1].plot(t, phase_noise, color='#CC7722', linewidth=0.1)
         elif gamma == 31:
-            ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
+            ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Single trajectory $\gamma=2\Omega_R$")
             # ax[0, 1].plot(t, phase_noise, color='#800020', linewidth=0.1)
 
     if gamma == 30:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
         ax.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
                       linewidth=1.0,
-                      label='$\sigma_{\gamma = 2\Omega_R}$', marker="s", markersize="4", markerfacecolor='none', markeredgecolor='#800020')
+                      label='$\gamma = 2\Omega_R$', marker="s", markersize="3", markerfacecolor='none', markeredgecolor='#800020')
         ax.plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=1.0)
 
         #ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-',
@@ -137,7 +137,7 @@ for gamma in [3, 5, 15, 30]:
         ax.plot(t, -np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=5.0)
         ax.fill_between(t, np.sqrt(gamma * t / 15), np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
         ax.fill_between(t, -np.sqrt(gamma * t / 15), -np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
-        ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Example $\gamma=2\Omega_R$")
+        ax.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Single trajectory $\gamma=2\Omega_R$")
         # ,label='$\sqrt{30 MHz  t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
@@ -146,7 +146,7 @@ for gamma in [3, 5, 15, 30]:
 
         ax.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='',
                       linewidth=1.0,
-                      label='$\sigma_{\gamma = \Omega_R/5}$' ,marker="^", markersize="4", markerfacecolor='none', markeredgecolor = '#025669')
+                      label='$\gamma = \Omega_R/5$' ,marker="^", markersize="3", markerfacecolor='none', markeredgecolor = '#025669')
         ax.plot(t, np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
 
         #ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='-',
@@ -204,8 +204,8 @@ data = np.append(data / 180, data_reversed / 180)
 
 # ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
 ###ax[0, 1].set_xlim([0, 0.1])
-ax.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=18)
-ax.set_ylabel(r'$\Phi_B(t)$', fontsize=18)
+ax.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=22)
+ax.set_ylabel(r'$\Phi_B(t)$', fontsize=22)
 ax.tick_params(axis="both", labelsize=16)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
@@ -240,15 +240,19 @@ for d in range(0, len(data)):
         i += 1
     datalarge.append(data[d])
 
+
+
+fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
+
 ax[1, 0].plot(np.linspace(0, 4, len(datalarge)), 0.1*np.cos(datalarge+2*np.pi*np.linspace(0, 4, len(datalarge))), color='black', linewidth="2")
 
 
-ax[1, 0].set_xlabel(r'Time [$ 2 \pi /\omega_{MW}$]', fontsize=12)
-ax[1, 0].set_ylabel(r'$E(t) [V/m]$', fontsize=12)
-ax[1, 0].tick_params(axis="both", labelsize=12)
+ax[1, 0].set_xlabel(r'Time [$ 2 \pi /\omega_{MW}$]', fontsize=18)
+ax[1, 0].set_ylabel(r'$E(t) [V/m]$', fontsize=18)
+ax[1, 0].tick_params(axis="both", labelsize=16)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax[1, 0].legend(loc="lower left", fontsize=12)
+ax[1, 0].legend(loc="lower left", fontsize=16)
 
 
 ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
@@ -284,7 +288,7 @@ plt.errorbar(np.linspace(0, 3, len(data)), data, label="Phase drift",
 plt.ylabel(r'$\Phi_B(t) [\pi]$')
 plt.xlabel(r'Time $[2 \pi /\Omega_R]$')
 
-plt.savefig("Phasewalks.pdf")
+plt.savefig("walks.pdf")
 plt.show()
 
 
