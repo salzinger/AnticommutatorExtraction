@@ -293,8 +293,8 @@ ax.plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
 
 #ax[1, 1].set_ylim([-0.596, 0.596])
-ax.set_xlabel('Time [$2 \pi /\Omega_R$]', fontsize=14)
-ax.set_ylabel(r'Spin $\langle \hat{s}_z\rangle$', fontsize=14)
+ax.set_xlabel('Time [$2 \pi /\Omega_R$]', fontsize=10)
+ax.set_ylabel(r'Spin $\langle \hat{s}_z\rangle$', fontsize=10)
 ax.legend(loc="lower center", fontsize=8, frameon=False)
 ax.tick_params(axis="both", labelsize=8)
 ax.set_ylim([-0.55, 0.55])
@@ -442,7 +442,7 @@ for gamma in [3, 5, 15, 30]:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
         ax1.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
                       linewidth=1.0,
-                      label='$\gamma = 2\Omega_R$', marker="s", markersize="3", markerfacecolor='none', markeredgecolor='#800020')
+                      label='$\gamma = 2\Omega_R \pi$', marker="s", markersize="3", markerfacecolor='none', markeredgecolor='#800020')
         ax1.plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=1.0)
 
         #ax[0, 1].plot(t, -np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='-',
@@ -453,8 +453,8 @@ for gamma in [3, 5, 15, 30]:
         ax1.fill_between(t, np.sqrt(gamma * t / 15), np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
         ax1.fill_between(t, -np.sqrt(gamma * t / 15), -np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
         #ax1.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Single trajectory $\gamma=2\Omega_R$")
-        np.save("singlenoise5.npy", phase_noise_plot[k])
-        noiseplot=np.load("singlenoise5.npy")
+        np.save("singlenoise7.npy", phase_noise_plot[k])
+        noiseplot=np.load("singlenoise1.npy")
         ax1.plot(times, noiseplot, color='#800020', linewidth=0.1,
                  label="Single trajectory $\gamma=2\Omega_R$")
         # ,label='$\sqrt{30 MHz  t}$')
@@ -525,8 +525,8 @@ data = np.append(data / 180, data_reversed / 180)
 
 # ax[0, 1].set_ylim([-1.4 * np.sqrt(30 * T), 1.4 * np.sqrt(30 * T)])
 ###ax[0, 1].set_xlim([0, 0.1])
-#ax1.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=1)
-#ax1.set_ylabel(r'$\Phi_B(t)$', fontsize=16)
+ax1.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=10)
+ax1.set_ylabel(r'$\Phi_B(t)$', fontsize=10)
 ax1.tick_params(axis="both", labelsize=8)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
@@ -626,10 +626,13 @@ ax2.set_ylim(bottom=0)
 
 ax2.tick_params(axis="both", labelsize=8)
 
-ax2.set_xlabel(r'$\omega$ [$\Omega_R$]', fontsize=1)
-ax2.set_ylabel(r'PSD / P$_{\mathrm{Carrier}}$ [1/Hz]', fontsize=14)
+ax2.set_xlabel(r'$\Delta$ [$\Omega_R$]', fontsize=10)
+ax2.set_ylabel(r'PSD / P$_{\mathrm{Carrier}}$ [1/Hz]', fontsize=10)
 
 ax2.legend(loc="upper left", fontsize=8, frameon=0)
+
+
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
 
 
 plt.savefig("newwalks.pdf")
