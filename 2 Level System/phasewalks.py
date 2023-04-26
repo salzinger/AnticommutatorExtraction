@@ -244,7 +244,7 @@ for d in range(0, len(data)):
 
 fig, ax = plt.subplots(2, 2, figsize=(11.69, 8.27))
 
-ax[1, 0].plot(np.linspace(0, 4, len(datalarge)), 0.1*np.cos(datalarge+2*np.pi*np.linspace(0, 4, len(datalarge))), color='black', linewidth="2")
+ax[1, 0].plot(np.linspace(0, 4, len(datalarge)), -0.1*np.cos(datalarge+2*np.pi*np.linspace(0, 4, len(datalarge))), color='black', linewidth="2")
 
 
 ax[1, 0].set_xlabel(r'Time [$ 2 \pi /\omega_{MW}$]', fontsize=18)
@@ -252,7 +252,7 @@ ax[1, 0].set_ylabel(r'$E(t) [V/m]$', fontsize=18)
 ax[1, 0].tick_params(axis="both", labelsize=16)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax[1, 0].legend(loc="lower left", fontsize=16)
+#ax[1, 0].legend(loc="lower left", fontsize=16)
 
 
 ax[0, 1].set_yticks(ticks=np.array([-3, -2, -1,  0., 1, 2, 3]))
