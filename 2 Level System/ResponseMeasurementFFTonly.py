@@ -177,6 +177,38 @@ print("y3", y3)
 print("x0", x0)
 print("omegas", omegas)
 
+from lmfit import Model, Parameters
+x = np.asarray(x0)
+y = np.asarray(y3)
+
+def damped_cosine(t, a, k, d, o):
+    return (a*np.cos(k*t)+o)*np.exp(-d*t)
+
+def damped_sine(t, a, k, d, o):
+    return (a*np.sin(k*t)+o)*np.exp(-d*t)
+
+params = Parameters()
+params.add('a', value=0.9, min=0)
+params.add('k', value=0.42)
+params.add('b', value=0.1)
+
+
+
+dmodel = Model(damped_cosine)
+result = dmodel.fit(y, params, t=x)
+print(result.fit_report())
+
+print(result.params.valuesdict()["a"])
+
+print('-------------------------------')
+print('Parameter    Value       Stderr')
+for name, param in result.params.items():
+    print(f'{name:7s} {param.value:11.5f} {param.stderr:11.5f}')
+
+#result.plot_fit(show_init=True)
+
+#plt.show()
+
 
 y0e = y0e[0:len(y0)]
 
@@ -185,12 +217,15 @@ y3e = y3e[0:len(y0)]
 ax2 = plt.subplot(222)
 
 ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
-                  label=r'Non-Hermitian $\langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$', linestyle='', markersize="3")
+                  label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 
 ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
+ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
+
+
 ax2.errorbar(x0, y3, y3e, marker="o", color='black',
-                  label=r'Hermitian $\langle[ \sigma_z(0),\sigma_z(t)] \rangle$', linestyle='', markersize="3")
+                  label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
 
@@ -201,9 +236,9 @@ ydiv = []
 for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
-#ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=8)
-#ax2.set_ylabel(r'$\langle S_z \rangle - \langle S_z \rangle_0$', fontsize=8)
-#ax.legend(loc="lower center", fontsize=32)
+ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
+ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
+ax2.legend(loc="lower center", fontsize=8, frameon=False)
 ax2.set_ylim([-0.2, 0.2])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
@@ -530,8 +565,8 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 
 '''
 #\vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
-ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=8)
-ax1.set_ylabel(r'Correlation Spectrum', fontsize=8)
+ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
+ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
 ax1.legend(loc="lower right", fontsize=8, frameon=0) #loc="lower center",
 #ax1.tick_params(axis="both", labelsize=8)
 ax1.set_xlim([-1.525, 1.525])
@@ -541,6 +576,8 @@ ax1.tick_params(axis="both", labelsize=8)
 
 
 
+
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
 
 
 #fig.tight_layout()
