@@ -152,11 +152,11 @@ def psd(data, samples, sample_time):
     return F, P
 
 
-x0 = np.array(x0[0:9])
+x0 = np.array(x0)
 
-y0 = np.array(y0[0:9])
+y0 = np.array(y0)
 
-y3 = np.array(y3[0:9])
+y3 = np.array(y3)
 
 f = psd(y0, 7, 0.1)
 
@@ -169,9 +169,9 @@ integrals0 = []
 
 x1 = np.linspace(x0[0], x0[-1]) #np.array(x0[0:9])
 
-y0 = np.array(y0[0:9])
+y0 = np.array(y0)
 
-y31 = np.array(y3[0:9]) #-np.sin(x1*2*np.pi)*0.16
+y31 = np.array(y3) #-np.sin(x1*2*np.pi)*0.16
 
 print("y3", y3)
 print("x0", x0)
@@ -180,30 +180,39 @@ print("omegas", omegas)
 from lmfit import Model, Parameters
 x = np.asarray(x0)
 y = np.asarray(y3)
+y11 = np.asarray(y0)
 
-def damped_cosine(t, a, k, d, o):
-    return (a*np.cos(k*t)+o)*np.exp(-d*t)
+def damped_cosine(t, a, d, p,f):
+    return (a*np.cos(2*np.pi*f*t+p))*np.exp(-d*t)
 
-def damped_sine(t, a, k, d, o):
-    return (a*np.sin(k*t)+o)*np.exp(-d*t)
+def damped_sine(t, a, d, p,f):
+    return (a*np.sin(2*np.pi*f*t+p))*np.exp(-d*t)
 
 params = Parameters()
-params.add('a', value=0.9, min=0)
-params.add('k', value=0.42)
-params.add('b', value=0.1)
+params.add('a', value=-0.16)
+params.add('d', value=0)
+params.add('p', value=0)
+params.add('f', value=1)
 
 
 
-dmodel = Model(damped_cosine)
+
+dmodel = Model(damped_sine)
 result = dmodel.fit(y, params, t=x)
 print(result.fit_report())
 
-print(result.params.valuesdict()["a"])
 
-print('-------------------------------')
-print('Parameter    Value       Stderr')
-for name, param in result.params.items():
-    print(f'{name:7s} {param.value:11.5f} {param.stderr:11.5f}')
+params1 = Parameters()
+params1.add('a', value=0.16)
+params1.add('d', value=0, min=-1,max=0)
+params1.add('p', value=0)
+params1.add('f', value=1)
+
+dmodel1 = Model(damped_cosine)
+result1 = dmodel1.fit(y11, params1, t=x)
+print(result1.fit_report())
+
+
 
 #result.plot_fit(show_init=True)
 
@@ -221,7 +230,15 @@ ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
 
 ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
+
+
+ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
+         p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]), color="black", linestyle='--')
+
+
+ax2.plot(perturb_times, damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
+                                      p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
+                                   , color='#85bb65', linestyle='--')
 
 
 ax2.errorbar(x0, y3, y3e, marker="o", color='black',
@@ -240,7 +257,7 @@ ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
 ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
 ax2.legend(loc="lower center", fontsize=8, frameon=False)
 ax2.set_ylim([-0.2, 0.2])
-ax2.set_xlim([-0.005, 1.372])
+#ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
 
 
@@ -359,6 +376,7 @@ f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 #                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
 ax1=plt.subplot(212)
+
 ax1.errorbar(omegas, np.imag(integrals), fserror*0, marker="", color='black', linestyle='-', markersize="4",
                   )
 
@@ -396,6 +414,12 @@ ax1.errorbar(omegas, np.imag(integralsshort), fserror[0:9], marker="o", color='b
 
 ax1.errorbar(omegas, np.real(integralsshort0), f1serror[0:9], marker="o", color='#85bb65', linestyle='', markersize="3",
                   label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
+
+print("freqs", np.fft.fftfreq(len(y3),d=x0[1]))
+
+print("ffts",  np.real(np.fft.ifft(y0)))
+ax1.errorbar(np.fft.fftfreq(len(y3),d=x0[1]), np.real(np.fft.fft(y0)), f1serror[0:9], marker="o", color='#85bb65', linestyle='', markersize="8",
+                  label=r'$fft$')
 
 
 ax1.errorbar(omegas, (1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), f1serror[0:9], marker="o", color='purple', linestyle='', markersize="3",
@@ -569,7 +593,7 @@ ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
 ax1.legend(loc="lower right", fontsize=8, frameon=0) #loc="lower center",
 #ax1.tick_params(axis="both", labelsize=8)
-ax1.set_xlim([-1.525, 1.525])
+#ax1.set_xlim([-1.525, 1.525])
 ax1.tick_params(axis="both", labelsize=8)
 
 #ax[0, 1].set_ylim([-1.5, 1.5])
