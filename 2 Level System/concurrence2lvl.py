@@ -89,7 +89,7 @@ Pmean = 0
 
 i = 1
 
-while i < 200:  # averages + int(2 * gamma):
+while i < 20:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise1 = noisy_func(gamma, perturb_times, omega, bath)

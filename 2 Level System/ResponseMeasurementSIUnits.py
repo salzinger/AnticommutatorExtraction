@@ -237,13 +237,16 @@ f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 #ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
 #                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-ax[0, 1].errorbar(omegas, np.imag(integrals), fserror, marker="o", color='black', linestyle='', markersize="6",
+hermfactor=0.06
+nonhermfactor=0.143
+
+ax[0, 1].errorbar(omegas, hermfactor*np.imag(integrals), 0*fserror, marker="o", color='black', linestyle='', markersize="6",
                   label=r'Measured Hermitian: Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
 #ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
 #                  alpha=0.5)
 
-ax[0, 1].errorbar(omegas, np.real(integrals0), f1serror, marker="o", color='#85bb65', linestyle='', markersize="6",
+ax[0, 1].errorbar(omegas, nonhermfactor*np.real(integrals0), 0*f1serror, marker="o", color='#85bb65', linestyle='', markersize="6",
                   label=r'Measured Non-Hermitian: Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
 #ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
@@ -259,11 +262,11 @@ om = np.linspace(-25,25,10000)
 
 #print(om)
 
-ax[0, 1].errorbar(om, 0.16 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+ax[0, 1].errorbar(om, hermfactor*0.16 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1", label="Analytival Hermitian response function")
 
-ax[0, 1].errorbar(om, 0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+ax[0, 1].errorbar(om, nonhermfactor*0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1", label="Analytival Non-Hermitian response function")
 
@@ -337,16 +340,16 @@ ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color
 
 
 
-Temp = 20*10**(-6)
+Temp = 200*10**(-6)
 
 
-ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+ax[0, 1].errorbar(om,  nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='', linewidth='0.5',
-                  markersize="0.1", label=r" Non-Hermitian $\cdot$ tanh($\frac{\hbar\omega}{2 k_B T}$) for $T=20,200$ $\mu$K")
+                  markersize="0.1", label=r" Non-Hermitian $\cdot$ tanh($\frac{\hbar\omega}{2 k_B T}$) for $T=200,600$ $\mu$K")
 
 
-Temp = 200*10**(-6)
+Temp = 600*10**(-6)
 
 #ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='purple', linestyle='',
 #                  markersize="1")#, label="Coth(T)")
@@ -354,7 +357,7 @@ Temp = 200*10**(-6)
 #ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1), marker="o", color='purple', linestyle='',
     #              markersize="0.02")#, label="Tanh($T=10^{-4}$K)")
 
-ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+ax[0, 1].errorbar(om,  nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='', linewidth='0.5',
                   markersize="0.015")
@@ -390,7 +393,7 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 
 ax[0, 1].set_xlabel('Frequency $\omega$ [MHz]', fontsize=20)
 ax[0, 1].set_ylabel(r'Correlation Spectrum', fontsize=20)
-ax[0, 1].legend(loc="lower right", fontsize=16)
+ax[0, 1].legend(loc="lower right", fontsize=6)
 ax[0, 1].tick_params(axis="both", labelsize=16)
 #ax[0, 1].set_xlim([-1.5, 1.5])
 ax[0, 1].tick_params(axis="both", labelsize=16)

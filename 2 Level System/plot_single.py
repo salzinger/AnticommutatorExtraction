@@ -33,7 +33,7 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 figure = plt.plot()
 c = Bloch(figure)
-c.make_sphere()
+#c.make_sphere()
 
 for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
     print("Omega_R: ", Omega_R)
@@ -281,8 +281,14 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
 
             # ax[0, 0].plot(perturb_times, (-np.arccos(expect_single[2] / np.sqrt((expect_single[2] ** 2) + expect_single[0] ** 2))) / (2*np.pi), color='red',
             #              label=r"$Phase$", linewidth="1")
+
+            '''NOT HERE ANYMORE
             stored_result = qload("Omega_R =  159.59")
             stored_result1 = qload("Omega_R =  147.03")
+            
+            '''
+
+
             '''
             ax[0, 0].plot(perturb_times, np.real(
                 2 * np.arcsin(stored_result.expect[2] / np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2 + 0.001)) / (
@@ -294,6 +300,8 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
                     np.pi) + 0.2), color='grey', linestyle="",
                           linewidth="1")
             '''
+
+            '''NOT HERE ANYMORE
             ax[0, 0].plot(perturb_times, np.real(
                 2 * np.arcsin(expect_single[2] / np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + 0.001)) / (
                     np.pi) + 0.2), color='black', linestyle="--",
@@ -303,7 +311,7 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
                 2 * np.arcsin(stored_result1.expect[2] / np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2 + 0.001)) / (
                     np.pi) + 0.2), np.real(2 * np.arcsin(stored_result.expect[2] / np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2 + 0.001)) / (
                     np.pi) + 0.2), color='grey', alpha=0.2)
-
+            '''
 
 
             ax[0, 0].set_xlabel('Time [$\mu$s]', fontsize=14)
@@ -313,10 +321,12 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
 
             ax[1, 0].plot(perturb_times, np.real(expect_single[1]), color='#85bb65',linestyle="--")
 
+            '''NOT HERE ANYMORE
             ax[1, 0].plot(perturb_times, np.real(stored_result.expect[1]), color='#85bb65', linestyle="")
             ax[1, 0].plot(perturb_times, np.real(stored_result1.expect[1]), color='#85bb65', linestyle="")
             ax[1, 0].fill_between(perturb_times, np.real(stored_result.expect[1]),
                                   np.real(np.real(stored_result1.expect[1])), alpha=0.2, color='#85bb65')
+            '''
 
             #ax[1, 0].plot(perturb_times, np.real(expect_single[0]), color='blue', label=r"$x$", linewidth="1")
             #ax[1, 0].plot(perturb_times, np.real(expect_single[2]), color='grey', linewidth="1")
@@ -339,13 +349,14 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             #ax[1, 0].plot(perturb_times, np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2 + expect_single[1] ** 2), color="black",
             #              linestyle="--")
 
+            '''NOT HERE ANYMORE
             ax[1, 0].plot(perturb_times, np.real(np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2)), color="grey",
                           linestyle="")
             ax[1, 0].plot(perturb_times, np.real(np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2)), color="grey",
                           linestyle="")
             ax[1, 0].fill_between(perturb_times, np.real(np.sqrt(stored_result.expect[2] ** 2 + stored_result.expect[0] ** 2)),
                                   np.real(np.sqrt(stored_result1.expect[2] ** 2 + stored_result1.expect[0] ** 2)), alpha = 0.2, color="grey")
-
+            '''
             ax[1, 0].plot(perturb_times, np.real(np.sqrt(expect_single[2] ** 2 + expect_single[0] ** 2)), color="black",
                           linestyle="--")
             # ax[1, 0].plot(perturb_times, concmean, label="overlap-bell-basis")
@@ -361,6 +372,6 @@ for Omega_R in np.linspace(2*np.pi*23.4, 2*np.pi*25.4, 3):
             plt.savefig("Omega_R =  %.2f.png" % (
                 Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
-c.render()
+#c.render()
 plt.show()
 
