@@ -162,7 +162,7 @@ f = psd(y0, 7, 0.1)
 
 f1 = psd(y3, 7, 0.1)
 
-omegas = np.linspace(-1.5, 1.5, num=500)
+omegas = np.linspace(-2.1, 2.1, num=501)
 
 integrals = []
 integrals0 = []
@@ -183,14 +183,14 @@ y = np.asarray(y3)
 y11 = np.asarray(y0)
 
 def damped_cosine(t, a, d, p,f):
-    return (a*np.cos(2*np.pi*f*t+p))*np.exp(-d*t)
+    return (a*np.cos(2*np.pi*(f*t+p)))*np.exp(-d*t)
 
 def damped_sine(t, a, d, p,f):
-    return (a*np.sin(2*np.pi*f*t+p))*np.exp(-d*t)
+    return (a*np.sin(2*np.pi*(f*t+p)))*np.exp(-d*t)
 
 params = Parameters()
 params.add('a', value=-0.16)
-params.add('d', value=0)
+params.add('d', value=0.1)
 params.add('p', value=0)
 params.add('f', value=1)
 
@@ -198,18 +198,18 @@ params.add('f', value=1)
 
 
 dmodel = Model(damped_sine)
-result = dmodel.fit(y, params, t=x)
+result = dmodel.fit(y, params, weights=np.ones_like(y3)/y3e[0], t=x)
 print(result.fit_report())
 
 
 params1 = Parameters()
 params1.add('a', value=0.16)
-params1.add('d', value=0, min=-1,max=0)
+params1.add('d', value=0.1)
 params1.add('p', value=0)
 params1.add('f', value=1)
 
 dmodel1 = Model(damped_cosine)
-result1 = dmodel1.fit(y11, params1, t=x)
+result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3)/y3e[0], t=x)
 print(result1.fit_report())
 
 
@@ -272,11 +272,17 @@ ax2.tick_params(axis="both", labelsize=8)
 #fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27/2))
 
 
-for o in omegas:
-    integrals.append(2*np.pi*integrate.simps(y3*np.exp(-1j*o*x0*2*np.pi), x0))
+
+
+startpoint = 0
+endpoint = 6
+
 
 for o in omegas:
-    integrals0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
+    integrals.append(2*np.pi*integrate.simps(y3[startpoint:endpoint]*np.exp(-1j*o*x0[startpoint:endpoint]*2*np.pi), x0[startpoint:endpoint]))
+
+for o in omegas:
+    integrals0.append(2*np.pi*integrate.simps(y0[startpoint:endpoint]*np.exp(-1j*o*x0[startpoint:endpoint]*2*np.pi), x0[startpoint:endpoint]))
 
 print("integrals", integrals)
 
@@ -377,18 +383,18 @@ f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 
 ax1=plt.subplot(212)
 
-hermfactor=0.06  # Delta*t_perturb
-nonhermfactor=0.143 # 0.5*(Omega_rp*t_perturb)^2
+hermfactor=1#/0.06/2/np.pi  # Delta*t_perturb
+nonhermfactor=1#/0.33 # 0.5*(Omega_rp*t_perturb)^2
 
-ax1.errorbar(omegas, hermfactor*np.imag(integrals), fserror*0, marker="", color='black', linestyle='-', markersize="4",
+ax1.errorbar(omegas, hermfactor*np.imag(integrals), fserror*0, marker="", color='black', linestyle='--', markersize="4",
                   )
 
-ax1.errorbar(omegas, nonhermfactor*np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='-', markersize="4",
-                  )
+#ax1.errorbar(omegas, nonhermfactor*np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='--', markersize="4",
+#                  )
 
-om=np.linspace(-1.5,1.5,500)
+om=np.linspace(-1.5,1.5,501)
 
-Temp = 500*10**(-6)
+Temp = 5*10**(-6)
 #ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -397,15 +403,22 @@ Temp = 500*10**(-6)
 prefactor= 6.527 * 10**(-4)
 
 
-ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='-', markersize="6",
-                  )
-Temp=400*10**(-6)
-ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='blue', linestyle='-', markersize="1",
-             )#label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=400$ $\mu$K')
+#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='--', markersize="6",
+#                  )
 
-Temp=600*10**(-6)
-ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='red', linestyle='-', markersize="1",
-             )# label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=600$ $\mu$K')
+ax1.errorbar(omegas, hermfactor/(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.imag(integrals), marker="", color='purple', linestyle='dotted', markersize="6",
+                  label="coth * $\chi^{\prime \prime}$")
+
+#ax1.errorbar(om, 1/(1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="", color='purple', linestyle='--', markersize="6",
+#                  label="coth")
+
+#Temp=400*10**(-6)
+#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='blue', linestyle='-', markersize="1",
+            # )#label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=400$ $\mu$K')
+
+#Temp=600*10**(-6)
+#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='red', linestyle='-', markersize="1",
+ #            )# label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=600$ $\mu$K')
 
 
 
@@ -419,8 +432,8 @@ for o in omegas:
 for o in omegas:
     integralsshort0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
 
-ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:len(integralsshort)], marker="o", color='black', linestyle='', markersize="3",
-                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle)$')
+#ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:len(integralsshort)], marker="o", color='black', linestyle='', markersize="3",
+#                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle)$')
 
 
 #ax1.errorbar(omegas, hermfactor*np.imag(integralsshort)/nonhermfactor/np.real(integralsshort0)/100, marker="", color='purple', linestyle='-', markersize="6",
@@ -430,18 +443,26 @@ ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:le
 #                  )
 
 
-ax1.errorbar(omegas, nonhermfactor*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='#85bb65', linestyle='', markersize="3",
-                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
+#ax1.errorbar(omegas, nonhermfactor*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='#85bb65', linestyle='', markersize="3",
+#                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
 
 print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
 print("ffts",  np.real(np.fft.ifft(y0)))
-#ax1.errorbar(np.fft.fftfreq(len(y3),d=x0[1]), np.real(np.fft.fft(y0)), f1serror[0:9], marker="o", color='#85bb65', linestyle='', markersize="8",
-#                  label=r'$fft$')
 
-Temp=500*10**(-6)
-ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='purple', linestyle='', markersize="3",
-                  label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=500$ $\mu$K')
+
+ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]), np.real(np.fft.fft(y0[startpoint:endpoint]))*nonhermfactor, nonhermfactor*f1serror[startpoint:endpoint], marker="o", color='#85bb65', linestyle='', markersize="2",
+                             label=r'$S(\omega)$ dft')
+
+ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]), np.imag(np.fft.fft(y3[startpoint:endpoint]))*hermfactor, hermfactor*f1serror[startpoint:endpoint], marker="d", color='black', linestyle='', markersize="2",
+                             label=r'$\chi^{\prime \prime}(\omega)$ dft')
+
+print(len(y3[startpoint:endpoint]))
+print(x0[1])
+
+Temp=5*10**(-6)
+#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='purple', linestyle='', markersize="3",
+#                  label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=5$ $\mu$K')
 
 
 #ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
@@ -493,7 +514,7 @@ ax[0, 1].axvline(x=0., color="purple", ymin=0.049, ymax=0.951, linewidth='2')
 #                  markersize="1", label="Coth(T)")
 
 
-Temp = 50*10**(-6)
+Temp = 5*10**(-6)
 #ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -612,7 +633,7 @@ ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
 ax1.legend(loc="lower right", fontsize=8, frameon=0) #loc="lower center",
 #ax1.tick_params(axis="both", labelsize=8)
-ax1.set_xlim([-1.51, 1.51])
+ax1.set_xlim([-2.1, 2.1])
 ax1.tick_params(axis="both", labelsize=8)
 #ax1.set_ylim([-0.1, 0.1])
 
