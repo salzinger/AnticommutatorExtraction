@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 from scipy import integrate
 
 plt.rcParams.update({
-  "text.usetex": True,
-    "font.family":"sans-serif",
+    "text.usetex": True,
+    "font.family": "sans-serif",
 })
+
 
 def configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True):
     if usetex:
@@ -66,18 +67,19 @@ def configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True):
 
     plt.rcParams.update(tex_fonts)
 
-#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-#plt.rc('font',**{'family':'sans-serif','sans-serif':['Latin Modern Sans']})
+
+# rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+# plt.rc('font',**{'family':'sans-serif','sans-serif':['Latin Modern Sans']})
 
 
-#configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True)
+# configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True)
 
-#plt.rc('figure', figsize=(8.27, 11.69))
+# plt.rc('figure', figsize=(8.27, 11.69))
 
 N = 1
 
 omega = 0  # MHz
-Omega_R = 2 * np.pi * 13.6 # MHz
+Omega_R = 2 * np.pi * 13.6  # MHz
 
 J = 0 * 10 ** 0  # MHz
 
@@ -94,9 +96,9 @@ init_state = productstateZ(0, 0, N)
 
 ################### MASTER EQUATION ############################################ 444444444444444444
 
-#plt.rc('figure', figsize=(11.69, 8.27))
+# plt.rc('figure', figsize=(11.69, 8.27))
 
-#fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27))
+# fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27))
 
 
 with open('incoherent_perturb.txt') as f:
@@ -167,56 +169,54 @@ omegas = np.linspace(-2.1, 2.1, num=501)
 integrals = []
 integrals0 = []
 
-x1 = np.linspace(x0[0], x0[-1]) #np.array(x0[0:9])
+x1 = np.linspace(x0[0], x0[-1])  # np.array(x0[0:9])
 
 y0 = np.array(y0)
 
-y31 = np.array(y3) #-np.sin(x1*2*np.pi)*0.16
+y31 = np.array(y3)  # -np.sin(x1*2*np.pi)*0.16
 
 print("y3", y3)
 print("x0", x0)
 print("omegas", omegas)
 
 from lmfit import Model, Parameters
+
 x = np.asarray(x0)
 y = np.asarray(y3)
 y11 = np.asarray(y0)
 
-def damped_cosine(t, a, d, p,f):
-    return (a*np.cos(2*np.pi*(f*t+p)))*np.exp(-d*t)
 
-def damped_sine(t, a, d, p,f):
-    return (a*np.sin(2*np.pi*(f*t+p)))*np.exp(-d*t)
+def damped_cosine(t, a, d, p, f):
+    return (a * np.cos(2 * np.pi * (f * t + p))) * np.exp(-d * t)
+
+
+def damped_sine(t, a, d, p, f):
+    return (a * np.sin(2 * np.pi * (f * t + p))) * np.exp(-d * t)
+
 
 params = Parameters()
-params.add('a', value=-0.16)
-params.add('d', value=0.1)
+params.add('a', value=-0.1)
+params.add('d', value=0.01, min=0)
 params.add('p', value=0)
 params.add('f', value=1)
 
-
-
-
 dmodel = Model(damped_sine)
-result = dmodel.fit(y, params, weights=np.ones_like(y3)/y3e[0], t=x)
+result = dmodel.fit(y, params, weights=np.ones_like(y3) / y3e[0], t=x)
 print(result.fit_report())
 
-
 params1 = Parameters()
-params1.add('a', value=0.16)
-params1.add('d', value=0.1)
+params1.add('a', value=0.1)
+params1.add('d', value=0.01, min=0)
 params1.add('p', value=0)
 params1.add('f', value=1)
 
 dmodel1 = Model(damped_cosine)
-result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3)/y3e[0], t=x)
+result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3) / y3e[0], t=x)
 print(result1.fit_report())
 
+# result.plot_fit(show_init=True)
 
-
-#result.plot_fit(show_init=True)
-
-#plt.show()
+# plt.show()
 
 
 y0e = y0e[0:len(y0)]
@@ -226,27 +226,23 @@ y3e = y3e[0:len(y0)]
 ax2 = plt.subplot(222)
 
 ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
-                  label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
+             label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 
 ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-
-
 ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
-         p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]), color="black", linestyle='--')
+                                    p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
+         color="black", linestyle='--')
 
-
-ax2.plot(perturb_times, damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
-                                      p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
-                                   , color='#85bb65', linestyle='--')
-
+ax2.plot(perturb_times,
+         damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
+                       p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
+         , color='#85bb65', linestyle='--')
 
 ax2.errorbar(x0, y3, y3e, marker="o", color='black',
-                  label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
+             label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
-
-
 
 ydiv = []
 
@@ -260,33 +256,30 @@ ax2.set_ylim([-0.2, 0.2])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
 
+# plt.savefig("ResponseMeasureTimeDomain.pdf")
 
 
-#plt.savefig("ResponseMeasureTimeDomain.pdf")
+# plt.show()
 
+# plt.rc('figure', figsize=(11.69, 8.27))
 
-#plt.show()
-
-#plt.rc('figure', figsize=(11.69, 8.27))
-
-#fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27/2))
-
-
+# fig, ax = plt.subplots(1, 1, figsize=(8.27, 8.27/2))
 
 
 startpoint = 0
 endpoint = 6
 
+for o in omegas:
+    integrals.append(
+        2 * np.pi * integrate.simps(y3[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
+                                    x0[startpoint:endpoint]))
 
 for o in omegas:
-    integrals.append(2*np.pi*integrate.simps(y3[startpoint:endpoint]*np.exp(-1j*o*x0[startpoint:endpoint]*2*np.pi), x0[startpoint:endpoint]))
-
-for o in omegas:
-    integrals0.append(2*np.pi*integrate.simps(y0[startpoint:endpoint]*np.exp(-1j*o*x0[startpoint:endpoint]*2*np.pi), x0[startpoint:endpoint]))
+    integrals0.append(
+        2 * np.pi * integrate.simps(y0[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
+                                    x0[startpoint:endpoint]))
 
 print("integrals", integrals)
-
-
 
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
@@ -308,14 +301,11 @@ for e in range(0, len(y0e)):
     ferror += y0e[e] ** 2
     f1error += y3e[e] ** 2
 
-
 for e in range(0, len(y0e)):
     y0samples.append(np.random.normal(y0[e], y0e[e], Nsamples))
     y3samples.append(np.random.normal(y3[e], y3e[e], Nsamples))
 
-
 samplederrory0 = []
-
 
 for n in range(0, Nsamples):
     y0reshuffled = []
@@ -324,18 +314,16 @@ for n in range(0, Nsamples):
     ftty0samples = np.real(np.fft.fft(y0reshuffled, n=int(1.5 * len(y0))))
     samplederrory0.append(ftty0samples)
 
-
 print(np.sqrt(np.var(samplederrory0, axis=1)))
 
 print(np.sqrt(np.var(samplederrory0, axis=0)))
 
 print(np.sqrt(ferror))
 
-#print(samplederrory0)
+# print(samplederrory0)
 
 
-
-ftt = psd(-np.sin(2 * np.pi *13.6* np.array(x0)) * 0.16, 7, 0.1)
+ftt = psd(-np.sin(2 * np.pi * 13.6 * np.array(x0)) * 0.16, 7, 0.1)
 
 fttcos = psd(np.cos(2 * np.pi * np.array(x0)) * 0.16, 7, 0.1)
 
@@ -353,10 +341,10 @@ ft = np.fft.fft(y0, n=int(1.5 * len(y0)))
 
 freq = np.fft.fftfreq(ft.size, x0[1])
 
-freqsamples=np.fft.fftfreq(ftty0samples.size, x0[1])
+freqsamples = np.fft.fftfreq(ftty0samples.size, x0[1])
 
-#print(len(ftty0))
-#print(len(freq))
+# print(len(ftty0))
+# print(len(freq))
 
 
 fserror = np.ones(len(omegas)) * np.sqrt(ferror)
@@ -367,123 +355,146 @@ ferror = np.ones(len(ftty0)) * np.sqrt(ferror)
 
 f1error = np.ones(len(ftty3)) * np.sqrt(f1error)
 
-
 # ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3", label=r"$ NonHermitian  Re FT \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle $")
 
 # ax[0, 1].errorbar(freq, np.imag(ftty3), f1error, marker="s", color='black', linestyle='', markersize="3", label=r"$ Hermitian  Im FT \langle \[ \sigma_z(0),\sigma_z(t) \] \rangle $")
 
-#ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
+# ax[0, 1].errorbar(freq, np.real(ftty0), ferror, marker="o", color='#85bb65', linestyle='', markersize="3",
 #                  label=r'Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-#ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65', linestyle='', markersize="3",
+# ax[0, 1].errorbar(freqsamples, np.real(ftty0samples), marker="o", color='#85bb65', linestyle='', markersize="3",
 #                  label=r'SAMPLED Non-Hermitian Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)')
 
-#ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
+# ax[0, 1].errorbar(freq, np.imag(ftty3), ferror, marker="o", color='black', linestyle='', markersize="3",
 #                  label=r'Hermitian Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-ax1=plt.subplot(212)
+ax1 = plt.subplot(212)
 
-hermfactor=1#/0.06/2/np.pi  # Delta*t_perturb
-nonhermfactor=1#/0.33 # 0.5*(Omega_rp*t_perturb)^2
+hermfactor = 1  # /0.06/2/np.pi  # Delta*t_perturb
+nonhermfactor = 1  # /0.33 # 0.5*(Omega_rp*t_perturb)^2
 
-ax1.errorbar(omegas, hermfactor*np.imag(integrals), fserror*0, marker="", color='black', linestyle='--', markersize="4",
-                  )
+ax1.errorbar(omegas, hermfactor * np.imag(integrals), fserror * 0, marker="", color='black', linestyle='--',
+             markersize="4",
+             )
 
-#ax1.errorbar(omegas, nonhermfactor*np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='--', markersize="4",
+# ax1.errorbar(omegas, nonhermfactor*np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='--', markersize="4",
 #                  )
 
-om=np.linspace(-1.5,1.5,501)
+om = np.linspace(-1.5, 1.5, 501)
 
-Temp = 5*10**(-6)
-#ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
+Temp = 5 * 10 ** (-6)
+# ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
-#used to be 2/6.558/10**4 but!: 2*np.pi*13.6 MHz * hbar/k_b = 6.527 * 10^-4
+# used to be 2/6.558/10**4 but!: 2*np.pi*13.6 MHz * hbar/k_b = 6.527 * 10^-4
 
-prefactor= 6.527 * 10**(-4)
+prefactor = 6.527 * 10 ** (-4)
 
-
-#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='--', markersize="6",
+# ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='--', markersize="6",
 #                  )
 
-ax1.errorbar(omegas, hermfactor/(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.imag(integrals), marker="", color='purple', linestyle='dotted', markersize="6",
-                  label="coth * $\chi^{\prime \prime}$")
+ax1.errorbar(omegas, hermfactor / (1 - 2 / (np.exp(prefactor * omegas / Temp) + 1)) * np.imag(integrals), marker="",
+             color='purple', linestyle='dotted', markersize="6",
+             label="coth * $\chi^{\prime \prime}$")
 
-#ax1.errorbar(om, 1/(1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="", color='purple', linestyle='--', markersize="6",
+# ax1.errorbar(om, 1/(1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="", color='purple', linestyle='--', markersize="6",
 #                  label="coth")
 
-#Temp=400*10**(-6)
-#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='blue', linestyle='-', markersize="1",
-            # )#label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=400$ $\mu$K')
+# Temp=400*10**(-6)
+# ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='blue', linestyle='-', markersize="1",
+# )#label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=400$ $\mu$K')
 
-#Temp=600*10**(-6)
-#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='red', linestyle='-', markersize="1",
- #            )# label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=600$ $\mu$K')
+# Temp=600*10**(-6)
+# ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integrals0), marker="", color='red', linestyle='-', markersize="1",
+#            )# label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=600$ $\mu$K')
 
 
+omegas = np.linspace(-1.5, 1.5, 7)
 
-omegas=np.linspace(-1.5, 1.5, 7)
-
-integralsshort=[]
-integralsshort0=[]
+integralsshort = []
+integralsshort0 = []
 for o in omegas:
-    integralsshort.append(2*np.pi*integrate.simps(y3*np.exp(-1j*o*x0*2*np.pi), x0))
+    integralsshort.append(2 * np.pi * integrate.simps(y3 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
 
 for o in omegas:
-    integralsshort0.append(2*np.pi*integrate.simps(y0*np.exp(-1j*o*x0*2*np.pi), x0))
+    integralsshort0.append(2 * np.pi * integrate.simps(y0 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
 
-#ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:len(integralsshort)], marker="o", color='black', linestyle='', markersize="3",
+# ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:len(integralsshort)], marker="o", color='black', linestyle='', markersize="3",
 #                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle)$')
 
 
-#ax1.errorbar(omegas, hermfactor*np.imag(integralsshort)/nonhermfactor/np.real(integralsshort0)/100, marker="", color='purple', linestyle='-', markersize="6",
+# ax1.errorbar(omegas, hermfactor*np.imag(integralsshort)/nonhermfactor/np.real(integralsshort0)/100, marker="", color='purple', linestyle='-', markersize="6",
 #                  )
 
-#ax1.errorbar(omegas, (1 - 2/(np.exp(prefactor*omegas/Temp) + 1))/10, marker="", color='purple', linestyle='-', markersize="6",
+# ax1.errorbar(omegas, (1 - 2/(np.exp(prefactor*omegas/Temp) + 1))/10, marker="", color='purple', linestyle='-', markersize="6",
 #                  )
 
 
-#ax1.errorbar(omegas, nonhermfactor*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='#85bb65', linestyle='', markersize="3",
+# ax1.errorbar(omegas, nonhermfactor*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='#85bb65', linestyle='', markersize="3",
 #                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
 
 print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
-print("ffts",  np.real(np.fft.ifft(y0)))
+print("ffts", np.real(np.fft.ifft(y0)))
 
+ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
+             np.real(np.fft.fft(y0[startpoint:endpoint])) * nonhermfactor,
+             nonhermfactor * f1serror[startpoint:endpoint], marker="o", color='#85bb65', linestyle='', markersize="2",
+             label=r'$S(\omega)$ dft')
 
-ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]), np.real(np.fft.fft(y0[startpoint:endpoint]))*nonhermfactor, nonhermfactor*f1serror[startpoint:endpoint], marker="o", color='#85bb65', linestyle='', markersize="2",
-                             label=r'$S(\omega)$ dft')
+ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
+             np.imag(np.fft.fft(y3[startpoint:endpoint])) * hermfactor, hermfactor * f1serror[startpoint:endpoint],
+             marker="d", color='black', linestyle='', markersize="2",
+             label=r'$\chi^{\prime \prime}(\omega)$ dft')
 
-ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]), np.imag(np.fft.fft(y3[startpoint:endpoint]))*hermfactor, hermfactor*f1serror[startpoint:endpoint], marker="d", color='black', linestyle='', markersize="2",
-                             label=r'$\chi^{\prime \prime}(\omega)$ dft')
+x1 = 2
+
+x2 = -2
+
+d = 0.26
+
+ax1.errorbar(om,
+             -d ** 2 / (2 * np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2)) - (2 * om ** 2) / (
+                         np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2))
+             - (d ** 2 * np.cos(2 * om * x1)) / (2 * np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2)) + (
+                         d * om * np.sin(2 * om * x1)) / (np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2))
+             - (-d ** 2 / (2 * np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2)) - (2 * om ** 2) / (
+                         np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2))
+                - (d ** 2 * np.cos(2 * om * x2)) / (2 * np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2)) + (
+                            d * om * np.sin(2 * om * x2)) / (np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2))), marker="d",
+             color='black', linestyle='', markersize="2",
+             label=r'$S(\omega)$ analytic')
+
+'''
+-(0.204607 d e^(0 - (1.36 d)/o))/((d + 0)^2 + (2 o + 0)^2) + (0.912438 o e^(0 - (1.36 d)/o))/((d + 0)^2 + (2 o + 0)^2) + o/((d + 0)^2 + (2 o + 0)^2) + 0
+'''
 
 print(len(y3[startpoint:endpoint]))
 print(x0[1])
 
-Temp=5*10**(-6)
-#ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='purple', linestyle='', markersize="3",
+print(y3[startpoint:endpoint])
+
+Temp = 5 * 10 ** (-6)
+# ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='purple', linestyle='', markersize="3",
 #                  label=r'$S(\omega) \tanh{\frac{\hbar\omega}{2 k_B T}}$ at $T=5$ $\mu$K')
 
 
-#ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
+# ax[0, 1].fill_between(omegas, np.imag(integrals)+ferror[0],np.imag(integrals)-ferror[0], color='grey',
 #                  alpha=0.5)
 
 
-
-
-
-#ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
+# ax[0, 1].errorbar(freq, (np.heaviside(freq, 1) - np.heaviside(-freq, 1)) * np.imag(ftty3), ferror, marker="o",
 #                  color='purple', linestyle='', markersize="0.5",
 #                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-#ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
+# ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
 print("ftt: ", np.max(ftt[0]))
 Omega = 1
 T = 1.36
-#om = ftt[0] / 13.6
-om = np.linspace(-1.525,1.525,10000)
+# om = ftt[0] / 13.6
+om = np.linspace(-1.525, 1.525, 10000)
 
-#print(om)
+# print(om)
 
 '''
 
@@ -495,7 +506,7 @@ ax[0, 1].errorbar(om, 0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1", label="Analytical Non-Hermitian response function")
 '''
-#ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
+# ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
 #                  markersize="0.05", label="Coth(T=0)")
 
 
@@ -507,30 +518,28 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", 
 ax[0, 1].axvline(x=0., color="purple", ymin=0.049, ymax=0.951, linewidth='2')
 '''
 
+# Temp = 10**(-6)
 
-#Temp = 10**(-6)
-
-#ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='grey', linestyle='-',
+# ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='grey', linestyle='-',
 #                  markersize="1", label="Coth(T)")
 
 
-Temp = 5*10**(-6)
-#ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
+Temp = 5 * 10 ** (-6)
+# ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
-#used to be 2/6.558/10**4 but!: 2*np.pi*13.6*10^6 MHz * hbar/k_b = 2*np.pi* 1.04 * 10^-4
+# used to be 2/6.558/10**4 but!: 2*np.pi*13.6*10^6 MHz * hbar/k_b = 2*np.pi* 1.04 * 10^-4
 
-prefactor= 2*np.pi*1.04 * 10**(-4)
+prefactor = 2 * np.pi * 1.04 * 10 ** (-4)
 
+# ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
 
-#ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
-
-#Temp = 1.5*10**(-5)
-#ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle=':', markersize="0", linewidth='1.5',
+# Temp = 1.5*10**(-5)
+# ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle=':', markersize="0", linewidth='1.5',
 #                  label=r"$T=15 \mu $K"
 #                  )
 
-#ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
+# ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.05", linewidth='0')
 
 '''
 Temp = 50*10**(-6)
@@ -542,30 +551,29 @@ Temp = 50*10**(-6)
 ax[0, 1].errorbar(om, (1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="o", color='purple', linestyle='', markersize="0.1", linewidth='0', label=r"tanh($\frac{h\omega}{k_B T}$) for $T=0,30,40 \mu $K")
 '''
 
-#ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.527) + 1), marker="o", color='purple', linestyle='',
+# ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.527) + 1), marker="o", color='purple', linestyle='',
 #                  markersize="0.1", label=r"Tanh($\frac{h\Omega_R}{k_B T}$) for $T=0,1,5,10 \mu $K")
 
-#ax[0, 1].errorbar(om,  (1 - 2/(np.exp(2*om/Temp/10**4) + 1))*(0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+# ax[0, 1].errorbar(om,  (1 - 2/(np.exp(2*om/Temp/10**4) + 1))*(0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
 #    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
 #                  / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='',
 #                  markersize="0.1")#, label=r"Tanh($T=5*10^{-6}$K)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
 
-#Temp = 5*10**(-6)
+# Temp = 5*10**(-6)
 
-#ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='grey', linestyle='-',
+# ax[0, 1].errorbar(omegas, 1 - 2/(np.exp(2*omegas/Temp/10**4) + 1), marker="o", color='grey', linestyle='-',
 #                  markersize="1", label="Coth(T)")
 
-#ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1), marker="o", color='purple', linestyle='',
+# ax[0, 1].errorbar(om, 1 - 2/(np.exp(2*om/Temp/10**4/6.558) + 1), marker="o", color='purple', linestyle='',
 #                  markersize="0.03")#, label="Tanh($T=40\mu $K)")
 
-#ax[0, 1].errorbar(om,  (1 - 2/(np.exp(2*om/Temp/10**4) + 1))*(0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+# ax[0, 1].errorbar(om,  (1 - 2/(np.exp(2*om/Temp/10**4) + 1))*(0.15 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
 #    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
 #                  / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='',
 #                  markersize="0.02")#, label=r"Tanh($T=5*10^{-5}$K)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$)")
 
 
-
-Temp = 20*10**(-6)
+Temp = 20 * 10 ** (-6)
 
 '''
 ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
@@ -599,7 +607,6 @@ ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integr
                   label=r'Measured Non-Hermitian *tanh(T=200 $\mu$K)')
 '''
 
-
 '''
 Temp = 2*10**(-6)
 
@@ -609,9 +616,6 @@ ax[0, 1].errorbar(om,  (1 - 2/(np.exp(prefactor*om/Temp) + 1))*(0.16 * (om * np.
                   / ((om) ** 2 - Omega ** 2)), marker="o", color='purple', linestyle='', linewidth='0.5',
                   markersize="0.01")
 '''
-
-
-
 
 '''
 om = om[int(len(om) / 2):len(om)]
@@ -628,31 +632,21 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 #                  label=r'Tanh(T=0)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$))')
 
 '''
-#\vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
+# \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
 ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
-ax1.legend(loc="lower right", fontsize=8, frameon=0) #loc="lower center",
-#ax1.tick_params(axis="both", labelsize=8)
+ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
+# ax1.tick_params(axis="both", labelsize=8)
 ax1.set_xlim([-2.1, 2.1])
 ax1.tick_params(axis="both", labelsize=8)
-#ax1.set_ylim([-0.1, 0.1])
-
-
+# ax1.set_ylim([-0.1, 0.1])
 
 
 plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
 
-
-#fig.tight_layout()
+# fig.tight_layout()
 plt.savefig("ResponseMeasureFFT.pdf")
 plt.show()
-
-
-
-
-
-
-
 
 '''
 
