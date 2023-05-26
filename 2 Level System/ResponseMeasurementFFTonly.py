@@ -435,24 +435,46 @@ for o in omegas:
 
 print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
+y3=np.concatenate((y3, np.zeros(500)))
+y0=np.concatenate((y0, np.zeros(500)))
+
+startpoint = 0
+endpoint = 6
+
+#y3.append(np.zeros(50))
+
+ynew=signal.resample(y3, 100)
+
 print("ffts", np.real(np.fft.ifft(y0)))
 
 ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
-             np.real(np.fft.fft(y0[startpoint:endpoint])) * nonhermfactor,
-             nonhermfactor * f1serror[startpoint:endpoint], marker="o", color='#85bb65', linestyle='', markersize="2",
+             np.real(np.fft.fft(y0[startpoint:endpoint], norm="backward")) * nonhermfactor, fserror[startpoint:endpoint],
+            marker="o", color='#85bb65', linestyle='', markersize="2",
              label=r'$S(\omega)$ dft')
 
 ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
-             np.imag(np.fft.fft(y3[startpoint:endpoint])) * hermfactor, hermfactor * f1serror[startpoint:endpoint],
+             np.imag(np.fft.fft(y3[startpoint:endpoint], norm="backward")) * hermfactor,fserror[startpoint:endpoint],
              marker="d", color='black', linestyle='', markersize="2",
              label=r'$\chi^{\prime \prime}(\omega)$ dft')
 
+
+
+
+times=np.linspace(0,8,100)
+
+'''
+ax1.errorbar(np.fft.fftfreq(len(times), d=times[1]),
+             np.real(np.fft.fft(np.cos(2*np.pi*times)*np.exp(-0.26*times))) * nonhermfactor/2/np.pi,
+             marker="", color='green', linestyle='-', markersize="2",
+             label=r'$S(\omega)$ from fit')
+'''
 x1 = 2
 
 x2 = -2
 
 d = 0.26
 
+'''
 ax1.errorbar(om,
              -d ** 2 / (2 * np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2)) - (2 * om ** 2) / (
                          np.exp(d * x1) * (d ** 3 + 4 * d * om ** 2))
@@ -461,12 +483,10 @@ ax1.errorbar(om,
              - (-d ** 2 / (2 * np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2)) - (2 * om ** 2) / (
                          np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2))
                 - (d ** 2 * np.cos(2 * om * x2)) / (2 * np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2)) + (
-                            d * om * np.sin(2 * om * x2)) / (np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2))), marker="d",
-             color='black', linestyle='', markersize="2",
+                            d * om * np.sin(2 * om * x2)) / (np.exp(d * x2) * (d ** 3 + 4 * d * om ** 2))), marker="",
+             color='black', linestyle='-', markersize="2",
              label=r'$S(\omega)$ analytic')
 
-'''
--(0.204607 d e^(0 - (1.36 d)/o))/((d + 0)^2 + (2 o + 0)^2) + (0.912438 o e^(0 - (1.36 d)/o))/((d + 0)^2 + (2 o + 0)^2) + o/((d + 0)^2 + (2 o + 0)^2) + 0
 '''
 
 print(len(y3[startpoint:endpoint]))
