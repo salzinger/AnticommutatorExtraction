@@ -267,7 +267,7 @@ ax2.tick_params(axis="both", labelsize=8)
 
 
 startpoint = 0
-endpoint = 6
+endpoint = 9
 
 for o in omegas:
     integrals.append(
@@ -413,6 +413,7 @@ omegas = np.linspace(-1.5, 1.5, 7)
 
 integralsshort = []
 integralsshort0 = []
+
 for o in omegas:
     integralsshort.append(2 * np.pi * integrate.simps(y3 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
 
@@ -435,32 +436,36 @@ for o in omegas:
 
 print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
-y3=np.concatenate((y3, np.zeros(500)))
-y0=np.concatenate((y0, np.zeros(500)))
+padding = 100
 
-startpoint = 0
-endpoint = 6
+y3 = y3[startpoint:endpoint]
+y0 = y0[startpoint:endpoint]
+y3 = np.pad(y3, pad_width=(0, padding), constant_values=(0, 0))
+y0 = np.pad(y0, pad_width=(0, padding), constant_values=(0, 0))
 
-#y3.append(np.zeros(50))
 
-ynew=signal.resample(y3, 100)
+
+print(y3)
+
+# y3.append(np.zeros(50))
+
+#ynew = signal.resample(y3, 100)
 
 print("ffts", np.real(np.fft.ifft(y0)))
 
-ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
-             np.real(np.fft.fft(y0[startpoint:endpoint], norm="backward")) * nonhermfactor, fserror[startpoint:endpoint],
-            marker="o", color='#85bb65', linestyle='', markersize="2",
+ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1]),
+             np.real(np.fft.fft(y0, norm="backward")) * nonhermfactor,
+             fserror[0:len(y0)],
+             marker="d", color='#85bb65', linestyle='', markersize="2",
              label=r'$S(\omega)$ dft')
 
-ax1.errorbar(np.fft.fftfreq(len(y3[startpoint:endpoint]), d=x0[1]),
-             np.imag(np.fft.fft(y3[startpoint:endpoint], norm="backward")) * hermfactor,fserror[startpoint:endpoint],
+ax1.errorbar(np.fft.fftfreq(len(y3), d=x0[1]),
+             np.imag(np.fft.fft(y3, norm="backward")) * hermfactor,
+             fserror[0:len(y0)],
              marker="d", color='black', linestyle='', markersize="2",
              label=r'$\chi^{\prime \prime}(\omega)$ dft')
 
-
-
-
-times=np.linspace(0,8,100)
+times = np.linspace(0, 8, 100)
 
 '''
 ax1.errorbar(np.fft.fftfreq(len(times), d=times[1]),
