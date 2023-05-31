@@ -164,7 +164,7 @@ f = psd(y0, 7, 0.1)
 
 f1 = psd(y3, 7, 0.1)
 
-omegas = np.linspace(-2.1, 2.1, num=501)
+omegas = np.linspace(-2.1, 2.1, num=5001)
 
 integrals = []
 integrals0 = []
@@ -225,24 +225,24 @@ y3e = y3e[0:len(y0)]
 
 ax2 = plt.subplot(222)
 
-ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65',
-             label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
+ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize="3")
+             #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 
-ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
+#ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
 ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
                                     p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
-         color="black", linestyle='--')
+         color="black", linestyle='-')
 
 ax2.plot(perturb_times,
          damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
                        p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
-         , color='#85bb65', linestyle='--')
+         , color='#85bb65', linestyle='-')
 
-ax2.errorbar(x0, y3, y3e, marker="o", color='black',
-             label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
+ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3")
+             #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
-ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
+#ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
 
 ydiv = []
 
@@ -373,14 +373,14 @@ ax1 = plt.subplot(212)
 hermfactor = 1  # /0.06/2/np.pi  # Delta*t_perturb
 nonhermfactor = 1  # /0.33 # 0.5*(Omega_rp*t_perturb)^2
 
-ax1.errorbar(omegas, hermfactor * np.imag(integrals), fserror * 0, marker="", color='black', linestyle='--',
+ax1.errorbar(omegas, hermfactor * np.imag(integrals), fserror * 0, marker="", color='black', linestyle='',
              markersize="4",
              )
 
 # ax1.errorbar(omegas, nonhermfactor*np.real(integrals0), f1serror*0, marker="", color='#85bb65', linestyle='--', markersize="4",
 #                  )
 
-om = np.linspace(-1.5, 1.5, 501)
+om = np.linspace(-1.5, 1.5, 5001)
 
 Temp = 5 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
@@ -393,10 +393,11 @@ prefactor = 6.527 * 10 ** (-4)
 # ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*om/Temp) + 1))*np.real(integrals0), f1serror*0, marker="", color='purple', linestyle='--', markersize="6",
 #                  )
 
+'''
 ax1.errorbar(omegas, hermfactor / (1 - 2 / (np.exp(prefactor * omegas / Temp) + 1)) * np.imag(integrals), marker="",
              color='purple', linestyle='dotted', markersize="6",
              label="coth * $\chi^{\prime \prime}$")
-
+'''
 # ax1.errorbar(om, 1/(1 - 2/(np.exp(prefactor*om/Temp) + 1)), marker="", color='purple', linestyle='--', markersize="6",
 #                  label="coth")
 
@@ -436,34 +437,142 @@ for o in omegas:
 
 print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
-padding = 100
+
+
+padding = 0
 
 y3 = y3[startpoint:endpoint]
 y0 = y0[startpoint:endpoint]
-y3 = np.pad(y3, pad_width=(0, padding), constant_values=(0, 0))
-y0 = np.pad(y0, pad_width=(0, padding), constant_values=(0, 0))
-
-
+y3 = np.pad(y3, pad_width=(padding, padding * 0), constant_values=(0, 0))
+y0 = np.pad(y0, pad_width=(padding, padding * 0), constant_values=(0, 0))
 
 print(y3)
 
 # y3.append(np.zeros(50))
 
-#ynew = signal.resample(y3, 100)
+# ynew = signal.resample(y3, 100)
 
 print("ffts", np.real(np.fft.ifft(y0)))
 
 ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1]),
              np.real(np.fft.fft(y0, norm="backward")) * nonhermfactor,
-             fserror[0:len(y0)],
-             marker="d", color='#85bb65', linestyle='', markersize="2",
-             label=r'$S(\omega)$ dft')
+             marker="d", color='#85bb65', linestyle='', markersize="2")
 
 ax1.errorbar(np.fft.fftfreq(len(y3), d=x0[1]),
              np.imag(np.fft.fft(y3, norm="backward")) * hermfactor,
-             fserror[0:len(y0)],
-             marker="d", color='black', linestyle='', markersize="2",
+             marker="d", color='black', linestyle='', markersize="2")
+
+
+padding = 1000
+
+y3 = y3[startpoint:endpoint]
+y0 = y0[startpoint:endpoint]
+y3 = np.pad(y3, pad_width=(padding, padding*0), constant_values=(0, 0))
+y0 = np.pad(y0, pad_width=(padding, padding*0), constant_values=(0, 0))
+
+print(y3)
+
+# y3.append(np.zeros(50))
+
+# ynew = signal.resample(y3, 100)
+
+print("ffts", np.real(np.fft.ifft(y0)))
+
+ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)],
+             np.real(np.fft.fft(y0, norm="backward"))[0:int(len(y0) / 2)] * nonhermfactor,
+             marker="", color='#85bb65', linestyle='-', markersize="2",
+             label=r'$S(\omega)$ dft')
+
+ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+             np.real(np.fft.fft(y0, norm="backward"))[int(len(y0) / 2) + 1:int(len(y0))] * nonhermfactor,
+             marker="", color='#85bb65', linestyle='-', markersize="2")
+
+ax1.errorbar(np.fft.fftfreq(len(y3), d=x0[1])[0:int(len(y0) / 2)],
+             np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]) * hermfactor,
+             marker="", color='black', linestyle='-', markersize="2",
              label=r'$\chi^{\prime \prime}(\omega)$ dft')
+
+ax1.errorbar(np.fft.fftfreq(len(y3), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+             np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) * hermfactor,
+             marker="", color='black', linestyle='-', markersize="2")
+
+ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)],
+             hermfactor / (
+                         1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)] / Temp) + 1))
+             * np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]), marker="",
+             color='purple', linestyle='--', markersize="6")
+
+ax1.errorbar(np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+             hermfactor / (1 - 2 / (np.exp(
+                 prefactor * np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))] / Temp) + 1))
+             * np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]), marker="",
+             color='purple', linestyle='--', markersize="6",
+             label=r"coth$( \frac{\hbar \omega}{2 k_B T})\chi^{\prime \prime}  ,  T=5 \mu$K")
+
+ax1.fill_between(np.fft.fftfreq(len(y3), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+                 (hermfactor / (1 - 2 / (np.exp(
+                     prefactor * np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))] / Temp) + 1))
+                   * np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) - fserror[
+                                                                                                   0:int(len(y0) / 2)]),
+                 (hermfactor / (1 - 2 / (np.exp(
+                     prefactor * np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))] / Temp) + 1))
+                   * np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) + fserror[
+                                                                                                   0:int(len(y0) / 2)]),
+                 color="purple", alpha=0.2)
+
+
+ax1.fill_between(np.fft.fftfreq(len(y3), d=x0[1])[0:int(len(y0) / 2)],
+                 (hermfactor / (1 - 2 / (
+                             np.exp(prefactor * np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)] / Temp) + 1))
+                   * np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]) - fserror[0:int(len(y0) / 2)]),
+                 (hermfactor / (1 - 2 / (
+                         np.exp(prefactor * np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)] / Temp) + 1))
+                   * np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]) + fserror[0:int(len(y0) / 2)]),
+                 color="purple", alpha=0.2)
+
+
+ax1.fill_between(np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)],
+                 (np.real(np.fft.fft(y0, norm="backward")[0:int(len(y0) / 2)]) - fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 (np.real(np.fft.fft(y0, norm="backward")[0:int(len(y0) / 2)]) + fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 color="#85bb65", alpha=0.2)
+
+ax1.fill_between(np.fft.fftfreq(len(y3), d=x0[1])[0:int(len(y0) / 2)],
+                 (np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]) - fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 (np.imag(np.fft.fft(y3, norm="backward")[0:int(len(y0) / 2)]) + fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 color="grey", alpha=0.2)
+
+ax1.fill_between(np.fft.fftfreq(len(y0), d=x0[1])[0:int(len(y0) / 2)],
+                 (np.real(np.fft.fft(y0, norm="backward")[0:int(len(y0) / 2)]) - fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 (np.real(np.fft.fft(y0, norm="backward")[0:int(len(y0) / 2)]) + fserror[
+                                                                                  0:int(len(y0) / 2)]) * hermfactor,
+                 color="#85bb65", alpha=0.2)
+
+ax1.fill_between(np.fft.fftfreq(len(y3), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+                 (np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) - fserror[
+                                                                                                 int(len(
+                                                                                                     y0) / 2) + 1:int(
+                                                                                                     len(y0))]) * hermfactor,
+                 (np.imag(np.fft.fft(y3, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) + fserror[
+                                                                                                 int(len(
+                                                                                                     y0) / 2) + 1:int(
+                                                                                                     len(y0))]) * hermfactor,
+                 color="grey", alpha=0.2)
+
+ax1.fill_between(np.fft.fftfreq(len(y0), d=x0[1])[int(len(y0) / 2) + 1:int(len(y0))],
+                 (np.real(np.fft.fft(y0, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) - fserror[
+                                                                                                 int(len(
+                                                                                                     y0) / 2) + 1:int(
+                                                                                                     len(y0))]) * hermfactor,
+                 (np.real(np.fft.fft(y0, norm="backward")[int(len(y0) / 2) + 1:int(len(y0))]) + fserror[
+                                                                                                 int(len(
+                                                                                                     y0) / 2) + 1:int(
+                                                                                                     len(y0))]) * hermfactor,
+                 color="#85bb65", alpha=0.2)
 
 times = np.linspace(0, 8, 100)
 
