@@ -327,7 +327,7 @@ for o in omegas:
         2 * np.pi * integrate.simps(ynhf0[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
                                     x0[startpoint:endpoint]))
 
-print("integrals", integrals)
+#t("integrals", integrals)
 
 
 def lorentzian(frequencies, amplitude, omega_0, gamma):
@@ -429,7 +429,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 5 * 10 ** (-6)
+Temp = 100 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -482,7 +482,7 @@ for o in omegas:
 # ax1.errorbar(omegas, nonhermfactor*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='#85bb65', linestyle='', markersize="3",
 #                  label=r'$S(\omega)=\mathcal{R}(\mathcal{F}\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle)$')
 
-print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
+#print("freqs", np.fft.fftfreq(len(y3), d=x0[1]))
 
 
 
@@ -493,13 +493,13 @@ ynhf0 = ynhf0[startpoint:endpoint]
 yhf3 = np.pad(yhf3, pad_width=(padding, padding * 0), constant_values=(0, 0))
 ynhf0 = np.pad(ynhf0, pad_width=(padding, padding * 0), constant_values=(0, 0))
 
-print(yhf3)
+#print(yhf3)
 
 # y3.append(np.zeros(50))
 
 # ynew = signal.resample(y3, 100)
 
-print("ffts", np.real(np.fft.ifft(y0)))
+#t("ffts", np.real(np.fft.ifft(y0)))
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
              np.real(np.fft.fft(ynhf0, norm="backward")),
@@ -509,21 +509,71 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
              np.imag(np.fft.fft(yhf3, norm="backward")),
              marker="o", color='black', linestyle='', markersize="6")
 
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
+             np.imag(np.fft.fft(yhf3, norm="backward"))/np.real(np.fft.fft(ynhf0, norm="backward")),
+             marker="o", color='blue', linestyle='', markersize="6", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
+
+
+
 
 padding = 1000
 
 yhf3 = yhf3[startpoint:endpoint]
 ynhf0 = ynhf0[startpoint:endpoint]
-yhf3 = np.pad(yhf3, pad_width=(padding*0, padding), constant_values=(0, 0))
-ynhf0 = np.pad(ynhf0, pad_width=(padding*0, padding), constant_values=(0, 0))
+yhf3 = np.pad(yhf3, pad_width=(padding*0, padding*1), constant_values=(0, 0))
+ynhf0 = np.pad(ynhf0, pad_width=(padding*0, padding*1), constant_values=(0, 0))
 
-print(y3)
+#print(y3)
 
 # y3.append(np.zeros(50))
 
 # ynew = signal.resample(y3, 100)
 
-print("ffts", np.real(np.fft.ifft(y0)))
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
+             (
+                         1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1)),
+             marker="",
+             color='blue', linestyle='--', markersize="6")
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
+             (1 - 2 / (np.exp(
+                 prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
+             color='blue', linestyle='--', markersize="6",
+             label=r"$tanh( \frac{\hbar \omega}{2 k_B T}) ,  T=%.0f \mu$K"% (Temp*10**6))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
+             np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)]*(
+                         1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1)),
+             marker="",
+             color='green', linestyle='--', markersize="6")
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
+             np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]*(1 - 2 / (np.exp(
+                 prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
+             color='green', linestyle='--', markersize="6",
+             label=r"$tanh( \frac{\hbar \omega}{2 k_B T})S(\omega) ,  T=%.0f \mu$K"% (Temp*10**6))
+
+ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
+                 ((1 - 2 / (np.exp(
+                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] - fserror[
+                                                                                                   0:int(len(ynhf0) / 2)]),
+                 ((1 - 2 / (np.exp(
+                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] + fserror[
+                                                                                                   0:int(len(ynhf0) / 2)]),
+                 color="blue", alpha=0.2)
+
+
+ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
+                 ((1 - 2 / (
+                             np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)] - fserror[0:int(len(ynhf0) / 2)]),
+                 ((1 - 2 / (
+                         np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)] + fserror[0:int(len(ynhf0) / 2)]),
+                 color="blue", alpha=0.2)
+
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)],
@@ -547,14 +597,14 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              1 / (
                          1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1))
              * np.imag(np.fft.fft(yhf3, norm="backward")[0:int(len(ynhf0) / 2)]), marker="",
-             color='purple', linestyle='--', markersize="6")
+             color='grey', linestyle='--', markersize="6")
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              1 / (1 - 2 / (np.exp(
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1))
              * np.imag(np.fft.fft(yhf3, norm="backward")[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]), marker="",
-             color='purple', linestyle='--', markersize="6",
-             label=r"coth$( \frac{\hbar \omega}{2 k_B T})\chi^{\prime \prime}  ,  T=5 \mu$K")
+             color='grey', linestyle='--', markersize="6",
+             label=r"coth$( \frac{\hbar \omega}{2 k_B T})\chi^{\prime \prime} ,  T=%.0f \mu$K"% (Temp*10**6))
 
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
                  (1 / (1 - 2 / (np.exp(
@@ -621,6 +671,23 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int
                                                                                                      len(ynhf0))]),
                  color="#85bb65", alpha=0.2)
 
+# \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
+ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
+ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
+ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
+# ax1.tick_params(axis="both", labelsize=8)
+ax1.set_xlim([-2.1, 2.1])
+ax1.tick_params(axis="both", labelsize=8)
+# ax1.set_ylim([-0.1, 0.1])
+
+
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
+
+# fig.tight_layout()
+plt.savefig("ResponseMeasureFFT.pdf")
+plt.show()
+
+
 times = np.linspace(0, 8, 100)
 
 '''
@@ -650,10 +717,10 @@ ax1.errorbar(om,
 
 '''
 
-print(len(y3[startpoint:endpoint]))
-print(x0[1])
+#print(len(y3[startpoint:endpoint]))
+#print(x0[1])
 
-print(y3[startpoint:endpoint])
+#print(y3[startpoint:endpoint])
 
 Temp = 5 * 10 ** (-6)
 # ax1.errorbar(omegas, nonhermfactor*(1 - 2/(np.exp(prefactor*omegas/Temp) + 1))*np.real(integralsshort0), nonhermfactor*f1serror[0:len(integralsshort)], marker="o", color='purple', linestyle='', markersize="3",
@@ -669,7 +736,7 @@ Temp = 5 * 10 ** (-6)
 #                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
 # ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
-print("ftt: ", np.max(ftt[0]))
+#print("ftt: ", np.max(ftt[0]))
 Omega = 1
 T = 1.36
 # om = ftt[0] / 13.6
@@ -813,21 +880,7 @@ ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)) * (0.16 * (om
 #                  label=r'Tanh(T=0)*Re(FT($ \langle \{ \sigma_z(0),\sigma_z(t) \} \rangle$))')
 
 '''
-# \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
-ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
-ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
-ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
-# ax1.tick_params(axis="both", labelsize=8)
-ax1.set_xlim([-2.1, 2.1])
-ax1.tick_params(axis="both", labelsize=8)
-# ax1.set_ylim([-0.1, 0.1])
 
-
-plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
-
-# fig.tight_layout()
-plt.savefig("ResponseMeasureFFT.pdf")
-plt.show()
 
 '''
 
