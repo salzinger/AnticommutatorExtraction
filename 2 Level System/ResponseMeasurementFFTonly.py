@@ -429,7 +429,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 100 * 10 ** (-6)
+Temp = 10 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
