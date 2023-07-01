@@ -527,17 +527,100 @@ ynhf0 = np.pad(ynhf0, pad_width=(padding*0, padding*1), constant_values=(0, 0))
 
 # ynew = signal.resample(y3, 100)
 
+
+
+
+
+def tanh(t, Temp):
+    return 1 - 2 / (np.exp(prefactor * t / Temp) + 1)
+
+
+params = Parameters()
+params.add('Temp', value=10**(-3))
+
+dmodel = Model(tanh)
+result = dmodel.fit(np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]/np.real(np.fft.fft(ynhf0, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]
+                    , params, weights=np.ones_like(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)])/ np.sqrt(2) / fserror[0],
+                    t=np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)])
+print(result.fit_report())
+
 print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
 
 print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
 
-ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)],
-             np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]/np.real(np.fft.fft(ynhf0, norm="backward"))[149:int(len(ynhf0) / 2 - 323)],
-             marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
-
 print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
 
 print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
+
+
+#print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
+
+print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[166:int(len(ynhf0) / 2 - 333)])
+
+print("max hf", np.max(np.imag(np.fft.fft(yhf3, norm="backward"))))
+
+print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[176:int(len(ynhf0) / 2 - 323)])
+
+print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
+
+print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
+
+def tanh(t, Temp):
+    return 1 - 2 / (np.exp(prefactor * t / Temp) + 1)
+
+
+params = Parameters()
+params.add('Temp', value=10**(-3))
+
+dmodel = Model(tanh)
+result = dmodel.fit(np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356]
+                    , params, weights=np.ones_like(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)])/ np.sqrt(2) / fserror[0],
+                    t=np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356])
+print(result.fit_report())
+
+
+
+params = Parameters()
+params.add('Temp', value=10**(-3))
+
+dmodel = Model(tanh)
+result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+                    np.imag(np.fft.fft(yhf3, norm="backward"))[145:int(len(ynhf0) / 2 - 323)]) )/
+                    np.concatenate((np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+                    np.real(np.fft.fft(ynhf0, norm="backward"))[145:int(len(ynhf0) / 2 - 323)]) ),
+                     params, weights=np.ones_like(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+                    np.imag(np.fft.fft(yhf3, norm="backward"))[145:int(len(ynhf0) / 2 - 323)]) ))/ np.sqrt(2)/ fserror[0],
+                    t=np.concatenate((np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+                    np.fft.fftfreq(len(ynhf0), d=x0[1])[145:int(len(ynhf0) / 2 - 323)])))
+print(result.fit_report())
+
+
+params = Parameters()
+params.add('Temp', value=10**(-3))
+
+dmodel = Model(tanh)
+result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) )/
+                    np.concatenate((np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    np.real(np.fft.fft(ynhf0, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) ),
+                     params, weights=np.ones_like(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) ))/ np.sqrt(2)/fserror[0],
+                    t=np.concatenate((np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)])))
+print(result.fit_report())
+
+print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 346])
+
+print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 346])
+
+print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 346])
+
+print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 346])
+
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)],
+             np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]/np.real(np.fft.fft(ynhf0, norm="backward"))[149:int(len(ynhf0) / 2 - 323)],
+             marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
              np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
