@@ -5,6 +5,9 @@ from Driving import *
 import matplotlib.pyplot as plt
 from scipy import integrate
 
+from lmfit import Model, Parameters
+
+
 plt.rcParams.update({
     "text.usetex": False,
     "font.family": "sans-serif",
@@ -193,8 +196,6 @@ y31 = np.array(y3)  # -np.sin(x1*2*np.pi)*0.16
 print("y3", y3)
 print("x0", x0)
 print("omegas", omegas)
-
-from lmfit import Model, Parameters
 
 x = np.asarray(x0)
 y = np.asarray(y3)
@@ -544,6 +545,8 @@ result = dmodel.fit(np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0
                     t=np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)])
 print(result.fit_report())
 
+
+
 print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
 
 print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
@@ -608,6 +611,10 @@ result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[i
                     t=np.concatenate((np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
                     np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)])))
 print(result.fit_report())
+
+print("residual vector: ",result.residual)
+
+print("fserrlr: ", np.sqrt(2) * fserror[0])
 
 print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 346])
 
