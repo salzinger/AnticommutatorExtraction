@@ -509,9 +509,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
              np.imag(np.fft.fft(yhf3, norm="backward")),
              marker="o", color='black', linestyle='', markersize="6")
 
-ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
-             np.imag(np.fft.fft(yhf3, norm="backward"))/np.real(np.fft.fft(ynhf0, norm="backward")),
-             marker="o", color='blue', linestyle='', markersize="6", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
+
 
 
 
@@ -528,6 +526,22 @@ ynhf0 = np.pad(ynhf0, pad_width=(padding*0, padding*1), constant_values=(0, 0))
 # y3.append(np.zeros(50))
 
 # ynew = signal.resample(y3, 100)
+
+print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
+
+print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)],
+             np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]/np.real(np.fft.fft(ynhf0, norm="backward"))[149:int(len(ynhf0) / 2 - 323)],
+             marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
+
+print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
+
+print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
+
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+             np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+             marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              (
