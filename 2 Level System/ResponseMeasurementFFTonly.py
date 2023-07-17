@@ -430,7 +430,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 10 * 10 ** (-6)
+Temp = 99 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -635,12 +635,12 @@ print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 
 print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
 
 
-ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)],
-             np.imag(np.fft.fft(yhf3, norm="backward"))[149:int(len(ynhf0) / 2 - 323)]/np.real(np.fft.fft(ynhf0, norm="backward"))[149:int(len(ynhf0) / 2 - 323)],
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
+             np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]/np.real(np.fft.fft(ynhf0, norm="backward"))[168:int(len(ynhf0) / 2 - 325)],
              marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
 
-ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
-             np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 324:int(len(ynhf0)/2) + 356],
+ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
+             np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
              marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
