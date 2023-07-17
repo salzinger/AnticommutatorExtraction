@@ -602,27 +602,37 @@ params = Parameters()
 params.add('Temp', value=10**(-3))
 
 dmodel = Model(tanh)
-result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
                     np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) )/
-                    np.concatenate((np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    np.concatenate((np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
                     np.real(np.fft.fft(ynhf0, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) ),
-                     params, weights=np.ones_like(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                     params, weights=np.ones_like(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
                     np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]) ))/ np.sqrt(2)/fserror[0],
-                    t=np.concatenate((np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 347:int(len(ynhf0)/2) + 356],
+                    t=np.concatenate((np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
                     np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)])))
 print(result.fit_report())
 
-print("residual vector: ",result.residual)
+print("residual vector: ", result.residual)
 
-print("fserrlr: ", np.sqrt(2) * fserror[0])
+print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[166:int(len(ynhf0) / 2 - 333)])
 
-print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 346])
+print("max hf", np.max(np.imag(np.fft.fft(yhf3, norm="backward"))))
 
-print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 346])
+print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[176:int(len(ynhf0) / 2 - 323)])
 
-print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 346])
+print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
 
-print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 346])
+print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
+
+print("fserrlr: ",  fserror[0])
+
+print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 345])
+
+print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
+
+print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 345])
+
+print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
 
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[149:int(len(ynhf0) / 2 - 323)],

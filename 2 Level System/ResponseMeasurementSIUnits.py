@@ -5,6 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 from scipy import integrate
 
+'''
 plt.rcParams.update({
   "text.usetex": True,
 })
@@ -12,7 +13,7 @@ plt.rcParams.update({
 
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
-
+'''
 plt.rc('figure', figsize=(11.69, 8.27))
 
 N = 1
