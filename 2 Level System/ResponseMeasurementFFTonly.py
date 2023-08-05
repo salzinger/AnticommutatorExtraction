@@ -641,7 +641,7 @@ print("Temp no error: ", prefactor/2/np.arctanh(0.9975))
 print("One std error: ", prefactor/2/np.arctanh(0.9975-0.08245))
 
 
-print("Monte Carlo error: ", prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn()))
+print("Monte Carlo error: ", np.nanstd(prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(1000))))
 
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
