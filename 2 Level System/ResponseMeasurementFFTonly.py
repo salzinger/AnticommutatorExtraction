@@ -634,6 +634,15 @@ print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 
 
 print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
 
+print("arctan(0.9975): ", np.arctanh(0.9975))
+
+print("Temp no error: ", prefactor/2/np.arctanh(0.9975))
+
+print("One std error: ", prefactor/2/np.arctanh(0.9975-0.08245))
+
+
+print("Monte Carlo error: ", prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn()))
+
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
              np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]/np.real(np.fft.fft(ynhf0, norm="backward"))[168:int(len(ynhf0) / 2 - 325)],
