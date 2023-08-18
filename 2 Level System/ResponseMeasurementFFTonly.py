@@ -9,7 +9,7 @@ from lmfit import Model, Parameters
 
 
 plt.rcParams.update({
-    "text.usetex": False,
+    "text.usetex": 1,
     "font.family": "sans-serif",
 })
 
@@ -272,7 +272,11 @@ ax2.legend(loc="lower center", fontsize=8, frameon=False)
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
 
+
+
+'''  Supplementary Figure Susceptibility
 ax = plt.subplot(221)
+
 
 ax.errorbar(x0, ynhf0, ynhf0e, marker="o", color='#85bb65', linestyle='', markersize="3")
              #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
@@ -304,6 +308,9 @@ ax.legend(loc="lower center", fontsize=8, frameon=False)
 ax.set_ylim([-0.6, 0.6])
 ax.set_xlim([-0.005, 1.372])
 ax.tick_params(axis="both", labelsize=8)
+
+
+'''
 
 # plt.savefig("ResponseMeasureTimeDomain.pdf")
 
@@ -643,7 +650,7 @@ print("One std error: ", prefactor/2/np.arctanh(0.9975-0.08245))
 
 print("Monte Carlo error consistent!: ", np.nanstd(prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(1000))))
 
-
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
              np.imag(np.fft.fft(yhf3, norm="backward"))[168:int(len(ynhf0) / 2 - 325)]/np.real(np.fft.fft(ynhf0, norm="backward"))[168:int(len(ynhf0) / 2 - 325)],
              marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
@@ -651,6 +658,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
              np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338]/np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 327:int(len(ynhf0)/2) + 338],
              marker="o", color='blue', linestyle='', markersize="2", label="$\chi^{\prime \prime}(\omega) / S(\omega)$")
+
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              (
@@ -663,7 +671,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
              color='blue', linestyle='--', markersize="6",
              label=r"$tanh( \frac{\hbar \omega}{2 k_B T}) ,  T=%.0f \mu$K"% (Temp*10**6))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
-
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)]*(
                          1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1)),
@@ -673,8 +681,8 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]*(1 - 2 / (np.exp(
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
-             color='green', linestyle='--', markersize="6",
-             label=r"$tanh( \frac{\hbar \omega}{2 k_B T})S(\omega) ,  T=%.0f \mu$K"% (Temp*10**6))
+             color='grey', linestyle='--', markersize="6",
+             label=r"$\tanh( \frac{\hbar \omega}{2 k_B T})S(\omega) ,  T=%.0f \mu$K"% (Temp*10**6))
 
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
                  ((1 - 2 / (np.exp(
@@ -715,12 +723,13 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              np.imag(np.fft.fft(yhf3, norm="backward")[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]),
              marker="", color='black', linestyle='-', markersize="2")
-
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              1 / (
                          1 - 2 / (np.exp(prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1))
              * np.imag(np.fft.fft(yhf3, norm="backward")[0:int(len(ynhf0) / 2)]), marker="",
              color='grey', linestyle='--', markersize="6")
+
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              1 / (1 - 2 / (np.exp(
@@ -750,6 +759,7 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                    * np.imag(np.fft.fft(yhf3, norm="backward")[0:int(len(ynhf0) / 2)]) + fserror[0:int(len(ynhf0) / 2)]),
                  color="purple", alpha=0.2)
 
+'''
 
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                  (np.real(np.fft.fft(ynhf0, norm="backward")[0:int(len(ynhf0) / 2)]) - fserror[
