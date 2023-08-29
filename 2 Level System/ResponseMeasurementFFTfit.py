@@ -202,19 +202,18 @@ y = np.asarray(y3)
 y11 = np.asarray(y0)
 
 
-def damped_cosine(t, a, d, p, f):
-    return (a * np.cos(2 * np.pi * (f * t + p))) * np.exp(-d * t)
+def damped_cosine(t, a, p):
+    return (a * np.cos(2 * np.pi * (t + p)))
 
 
-def damped_sine(t, a, d, p, f):
-    return (a * np.sin(2 * np.pi * (f * t + p))) * np.exp(-d * t)
-
+def damped_sine(t, a, p):
+    return (-a * np.sin(2 * np.pi * (t + p)))
 
 params = Parameters()
-params.add('a', value=-0.1)
-params.add('d', value=0.01, min=0)
+params.add('a', value=0.1)
+#params.add('d', value=0.01, min=0)
 params.add('p', value=0)
-params.add('f', value=1)
+#params.add('f', value=1)
 
 dmodel = Model(damped_sine)
 result = dmodel.fit(y, params, weights=np.ones_like(y3) / y3e[0], t=x)
@@ -222,9 +221,9 @@ print(result.fit_report())
 
 params1 = Parameters()
 params1.add('a', value=0.1)
-params1.add('d', value=0.01, min=0)
+#params1.add('d', value=0.01, min=0)
 params1.add('p', value=0)
-params1.add('f', value=1)
+#params1.add('f', value=1)
 
 dmodel1 = Model(damped_cosine)
 result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3) / y3e[0], t=x)
@@ -247,13 +246,13 @@ ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize=
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
-                                    p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
+ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"],
+                                    p=result.params.valuesdict()["p"]),
          color="black", linestyle='-')
 
 ax2.plot(perturb_times,
-         damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
-                       p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
+         damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
+                       p=result.params.valuesdict()["p"])
          , color='#85bb65', linestyle='-')
 
 ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
@@ -285,13 +284,13 @@ ax.errorbar(x0, ynhf0, ynhf0e, marker="o", color='#85bb65', linestyle='', marker
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax.plot(perturb_times, nonhermfactor*damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
-                                    p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
+ax.plot(perturb_times, nonhermfactor*damped_sine(perturb_times, a=result.params.valuesdict()["a"],
+                                    p=result.params.valuesdict()["p"]),
          color="black", linestyle='-')
 
 ax.plot(perturb_times,
-         hermfactor*damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
-                       p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
+         hermfactor*damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
+                       p=result.params.valuesdict()["p"])
          , color='#85bb65', linestyle='-')
 
 ax.errorbar(x0, yhf3, yhf3e, marker="o", color='black', linestyle='', markersize="3")
@@ -556,13 +555,13 @@ print(result.fit_report())
 
 
 
-print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
+print("freq of begin", np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
 
-print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
+print("freq of end", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
 
-print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
+print("freq of begin", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
 
-print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
+print("freq of end", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
 
 
 #print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
