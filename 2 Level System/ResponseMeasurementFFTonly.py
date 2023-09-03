@@ -742,7 +742,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
              color='blue', linestyle='--', markersize="6", alpha=0.6,
              #label=r"$S(\omega) \tanh( \frac{\hbar \omega}{2 k_B T})$ at $T=%.0f \mu$K"% (Temp*10**6))
-            label=r"$S(\omega) \tanh( \frac{\hbar \omega}{2 k_B T})$ at $k_B T= 0.15 \hbar \Omega_R $")
+            label=r"$S(\omega) \tanh( \frac{\hbar \omega}{2 k_B T})$ for $k_B T= 0.15 \hbar \Omega_R $")
 
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)]*(1 - 2 / (np.exp(
@@ -859,7 +859,7 @@ ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
 # ax1.tick_params(axis="both", labelsize=8)
 ax1.set_xlim([-1.7, 1.7])
 ax1.tick_params(axis="both", labelsize=8)
-# ax1.set_ylim([-0.1, 0.1])
+ax1.set_ylim([-2.6, 2.6])
 
 
 plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
