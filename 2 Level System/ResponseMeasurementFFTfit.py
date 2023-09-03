@@ -202,17 +202,17 @@ y = np.asarray(y3)
 y11 = np.asarray(y0)
 
 
-def damped_cosine(t, a, p):
-    return (a * np.cos(2 * np.pi * (t + p)))
+def damped_cosine(t, a):
+    return (a * np.cos(2 * np.pi * (t)))
 
 
-def damped_sine(t, a, p):
-    return (-a * np.sin(2 * np.pi * (t + p)))
+def damped_sine(t, a):
+    return (-a * np.sin(2 * np.pi * (t)))
 
 params = Parameters()
 params.add('a', value=0.1)
 #params.add('d', value=0.01, min=0)
-params.add('p', value=0)
+#params.add('p', value=0)
 #params.add('f', value=1)
 
 dmodel = Model(damped_sine)
@@ -222,7 +222,7 @@ print(result.fit_report())
 params1 = Parameters()
 params1.add('a', value=0.1)
 #params1.add('d', value=0.01, min=0)
-params1.add('p', value=0)
+#params1.add('p', value=0)
 #params1.add('f', value=1)
 
 dmodel1 = Model(damped_cosine)
@@ -246,17 +246,13 @@ ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize=
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax2.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"],
-                                    p=result.params.valuesdict()["p"]),
-         color="black", linestyle='-')
-
 ax2.plot(perturb_times,
          damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
-                       p=result.params.valuesdict()["p"])
+          )
          , color='#85bb65', linestyle='-')
 
-ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
-             label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
+#ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
+#             label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
              #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 #ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
@@ -268,7 +264,7 @@ for n in range(0, len(y0)):
 
 ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
 ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
-ax2.legend(loc="lower center", fontsize=8, frameon=False)
+ax2.legend(loc="lower left", fontsize=8, frameon=False)
 ax2.set_ylim([-0.25, 0.25])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
@@ -279,21 +275,18 @@ ax2.tick_params(axis="both", labelsize=8)
 ax = plt.subplot(221)
 
 
-ax.errorbar(x0, ynhf0, ynhf0e, marker="o", color='#85bb65', linestyle='', markersize="3")
+#ax.errorbar(x0, ynhf0, ynhf0e, marker="o", color='#85bb65', linestyle='', markersize="3")
              #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax.plot(perturb_times, nonhermfactor*damped_sine(perturb_times, a=result.params.valuesdict()["a"],
-                                    p=result.params.valuesdict()["p"]),
+ax.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"],
+                                 ),
          color="black", linestyle='-')
 
-ax.plot(perturb_times,
-         hermfactor*damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
-                       p=result.params.valuesdict()["p"])
-         , color='#85bb65', linestyle='-')
 
-ax.errorbar(x0, yhf3, yhf3e, marker="o", color='black', linestyle='', markersize="3")
+ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
+            label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
              #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 #ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
@@ -304,9 +297,9 @@ for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
 ax.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
-ax.set_ylabel(r'$\chi_{\hat{s}_z, \hat{P}_{\downarrow}}$', fontsize=18)
+ax.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
 ax.legend(loc="lower center", fontsize=8, frameon=False)
-ax.set_ylim([-0.6, 0.6])
+ax.set_ylim([-0.25, 0.25])
 ax.set_xlim([-0.005, 1.372])
 ax.tick_params(axis="both", labelsize=8)
 
@@ -438,7 +431,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 99 * 10 ** (-6)
+Temp = 170 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -510,6 +503,7 @@ ynhf0 = np.pad(ynhf0, pad_width=(padding, padding * 0), constant_values=(0, 0))
 
 #t("ffts", np.real(np.fft.ifft(y0)))
 
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
              np.real(np.fft.fft(ynhf0, norm="backward")),
              marker="o", color='#85bb65', linestyle='', markersize="6")
@@ -517,7 +511,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1]),
              np.imag(np.fft.fft(yhf3, norm="backward")),
              marker="o", color='black', linestyle='', markersize="6")
-
+'''
 
 
 
@@ -628,9 +622,9 @@ print("max hf", np.max(np.imag(np.fft.fft(yhf3, norm="backward"))))
 
 print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[176:int(len(ynhf0) / 2 - 323)])
 
-print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
+print("freq of maximum hf", np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
 
-print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
+print("freq of maximum nhf", np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
 
 print("fserrlr: ",  fserror[0])
 
@@ -638,9 +632,9 @@ print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[int(len(ynhf0) / 
 
 print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
 
-print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 345])
+print("freq of maximum hf", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 330:int(len(ynhf0)/2) + 345])
 
-print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
+print("freq of maximum nhf", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 320:int(len(ynhf0)/2) + 335])
 
 print("arctan(0.9975): ", np.arctanh(0.9975))
 
@@ -674,7 +668,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len
              label=r"$tanh( \frac{\hbar \omega}{2 k_B T}) ,  T=%.0f \mu$K"% (Temp*10**6))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 '''
 
-
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)],
              marker="", color='#85bb65', linestyle='-', markersize="2",
@@ -692,7 +686,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              np.imag(np.fft.fft(yhf3, norm="backward")[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]),
              marker="", color='black', linestyle='-', markersize="2")
-
+'''
 
 '''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
@@ -702,7 +696,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              color='green', linestyle='--', markersize="6")
              
 '''
-
+'''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
              np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]*(1 - 2 / (np.exp(
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1)), marker="",
@@ -716,13 +710,11 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
 
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
                  ((1 - 2 / (np.exp(
-                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1))
-                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] - fserror[
-                                                                                                   0:int(len(ynhf0) / 2)]),
+                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / (Temp -120 *10**(-6))) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]),
                  ((1 - 2 / (np.exp(
-                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / Temp) + 1))
-                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] + fserror[
-                                                                                                   0:int(len(ynhf0) / 2)]),
+                     prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))] / (Temp +120 *10**(-6))) + 1))
+                   * np.real(np.fft.fft(ynhf0, norm="backward"))[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]),
                  color="blue", alpha=0.2)
 
 
@@ -735,7 +727,7 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                    * np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)] + fserror[0:int(len(ynhf0) / 2)]),
                  color="blue", alpha=0.2)
 
-
+'''
 '''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              1 / (
@@ -773,7 +765,7 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                  color="purple", alpha=0.2)
 
 '''
-
+'''
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                  (np.real(np.fft.fft(ynhf0, norm="backward")[0:int(len(ynhf0) / 2)]) - fserror[
                                                                                   0:int(len(ynhf0) / 2)]),
@@ -816,13 +808,47 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int
                                                                                                      ynhf0) / 2) + 1:int(
                                                                                                      len(ynhf0))]),
                  color="#85bb65", alpha=0.25)
+'''
+
+# ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
+#print("ftt: ", np.max(ftt[0]))
+Omega = 1
+T = 1.36
+# om = ftt[0] / 13.6
+om = np.linspace(-1.525, 1.525, 10000)
+
+# print(om)
+
+ax1.errorbar(om, 0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2), marker="", color='black', linestyle='-', markersize="1",
+                   label="Analytical Hermitian response function")
+
+ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
+                   label="Analytical Non-Hermitian response function")
+
+
+print("Hermfactored", 0.1663*hermfactor)
+
+print("NoNHermfactored", 0.1407*nonhermfactor)
+
+ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2)
+*(1 - 2 / (np.exp(
+                 prefactor * om / Temp) + 1))
+             , marker="", color='grey', linestyle='--', markersize="1",
+                   label="tanh")
+
 
 # \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
 ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
-ax1.set_ylabel(r'Correlation Spectrum', fontsize=14)
+ax1.set_ylabel(r'Spectrum', fontsize=14)
 ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
 # ax1.tick_params(axis="both", labelsize=8)
-ax1.set_xlim([-2.1, 2.1])
+ax1.set_xlim([-1.4, 1.4])
 ax1.tick_params(axis="both", labelsize=8)
 # ax1.set_ylim([-0.1, 0.1])
 
@@ -881,25 +907,7 @@ Temp = 5 * 10 ** (-6)
 #                  color='purple', linestyle='', markersize="0.5",
 #                  label=r'Coth(T=0) * Im(FT($ \langle [ \sigma_z(0),\sigma_z(t) ] \rangle$)')
 
-# ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
-#print("ftt: ", np.max(ftt[0]))
-Omega = 1
-T = 1.36
-# om = ftt[0] / 13.6
-om = np.linspace(-1.525, 1.525, 10000)
 
-# print(om)
-
-'''
-
-ax[0, 1].errorbar(om, 0.16 * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
-    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="o", color='black', linestyle='', markersize="1", label="Analytical Hermitian response function")
-
-ax[0, 1].errorbar(om, 0.16 * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
-    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="o", color='#85bb65', linestyle='', markersize="1", label="Analytical Non-Hermitian response function")
-'''
 # ax[0, 1].errorbar(om, (np.heaviside(om, 1) - np.heaviside(-om, 1)), marker="o", color='grey', linestyle='',
 #                  markersize="0.05", label="Coth(T=0)")
 

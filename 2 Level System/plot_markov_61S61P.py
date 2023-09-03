@@ -454,7 +454,7 @@ for gamma in [3, 5, 15, 30]:
         ax1.fill_between(t, -np.sqrt(gamma * t / 15), -np.sqrt(3 * t / 15), color='#800020', alpha=0.2)
         #ax1.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Single trajectory $\gamma=2\Omega_R$")
         np.save("singlenoise8.npy", phase_noise_plot[k])
-        noiseplot=np.load("singlenoise7.npy")
+        noiseplot=np.load("singlenoise8.npy")
         ax1.plot(times, noiseplot, color='#800020', linewidth=0.1,
                  label="Single trajectory $\gamma=2\Omega_R$")
         # ,label='$\sqrt{30 MHz  t}$')
