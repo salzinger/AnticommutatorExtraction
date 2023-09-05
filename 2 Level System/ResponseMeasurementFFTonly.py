@@ -241,8 +241,8 @@ y3e = y3e[0:len(y0)]
 
 ax2 = plt.subplot(222)
 
-ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize="3",
-             label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
+ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize="3")#,
+             #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
              #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
@@ -254,7 +254,7 @@ ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize=
 ax2.plot(perturb_times,
          damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
                        p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
-         , color='#85bb65', linestyle='-')
+         , color='#85bb65', linestyle='-', label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
 
 #ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
  #            label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
@@ -269,7 +269,7 @@ for n in range(0, len(y0)):
 
 ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
 ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
-ax2.legend(loc="lower left", fontsize=8, frameon=False)
+ax2.legend(loc="lower center", fontsize=8, frameon=False)
 ax2.set_ylim([-0.25, 0.25])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
@@ -322,11 +322,11 @@ ax = plt.subplot(221)
 
 ax.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
                                     p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
-         color="black", linestyle='-')
+         color="black", linestyle='-', label=r'$\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
 
 
-ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
-            label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
+ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3")#,
+            #label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
              #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 #ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
@@ -589,13 +589,13 @@ print(result.fit_report())
 
 
 
-print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
+print("freq of begin", np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
 
-print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
+print("freq of end", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2 - 323)])
 
-print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
+print("freq of begin", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 324])
 
-print("freq of end",np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
+print("freq of end", np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0)/2) + 356])
 
 
 #print("freq of begin",np.fft.fftfreq(len(ynhf0), d=x0[1])[149])
@@ -606,9 +606,9 @@ print("max hf", np.max(np.imag(np.fft.fft(yhf3, norm="backward"))))
 
 print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[176:int(len(ynhf0) / 2 - 323)])
 
-print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
+print("freq of maximum hf", np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
 
-print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
+print("freq of maximum nhf", np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
 
 def tanh(t, Temp):
     return 1 - 2 / (np.exp(prefactor * t / Temp) + 1)

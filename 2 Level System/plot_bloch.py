@@ -28,7 +28,7 @@ perturb_times = np.linspace(0, pertubation_length, timesteps)
 Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), sigmaz(N - 1, N), upup(0, N),
         sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
-opts = Options(store_states=True, store_final_state=True, nsteps=1000, num_cpus=8)
+opts = Options(store_states=True, store_final_state=True, nsteps=1000)#, num_cpus=8)
 figure = plt.plot()
 c = Bloch(figure)
 c.make_sphere()
