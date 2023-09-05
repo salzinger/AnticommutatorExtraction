@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 plt.rcParams.update({
-  "text.usetex": True,
+  "text.usetex": 0,
     "font.family":"sans-serif",
 })
 

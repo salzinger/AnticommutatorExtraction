@@ -5,7 +5,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 plt.rcParams.update({
-  "text.usetex": True,
+  "text.usetex": 0,
 
 })
 
@@ -662,7 +662,7 @@ print(Flist)
 plt.show()
 
 plt.rcParams.update({
-  "text.usetex": True,
+  "text.usetex": 0,
     "font.family":"sans-serif",
 })
 
@@ -683,7 +683,7 @@ ax.errorbar(perturb_times, data,
 #ax[0].set_ylim([-0.6, 0.75])
 ax.set_xlim([0, 6.051])
 
-plt.savefig("phasewalk.pdf")
+#plt.savefig("phasewalk.pdf")
 plt.show()
 
 fig, ax = plt.subplots(1, 1, figsize=(11.69, 8.27/2))
@@ -732,7 +732,7 @@ ax.set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
 #ax.set_xlabel(r'Time [$2 \pi /\Omega_R$]', fontsize=18)
 ax.set_ylabel(r'Spin $\langle \hat{s}_i \rangle$', fontsize=18)
 ax.legend(loc="lower center", fontsize=14)
-
+ax.set_xlabel(r'Time [$2 \pi /\Omega_R$]', fontsize=18)
 
 plt.savefig("thereandback.pdf")
 
