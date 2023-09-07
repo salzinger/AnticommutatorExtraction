@@ -431,7 +431,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 170 * 10 ** (-6)
+Temp = 50 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -822,12 +822,12 @@ om = np.linspace(-1.525, 1.525, 10000)
 ax1.errorbar(om, 0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="", color='black', linestyle='-', markersize="1",
-                   label="Analytical Hermitian response function")
+                   label=r"$\hbar\chi^{\prime\prime}$")
 
 ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
-                   label="Analytical Non-Hermitian response function")
+                   label=r"$S(\omega)$")
 
 
 print("Hermfactored", 0.1663*hermfactor)
@@ -839,8 +839,40 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
                   / ((om) ** 2 - Omega ** 2)
 *(1 - 2 / (np.exp(
                  prefactor * om / Temp) + 1))
-             , marker="", color='grey', linestyle='--', markersize="1",
-                   label="tanh")
+             , marker="", color='blue', linestyle='--', markersize="1",
+                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.1 \hbar \Omega_R$")
+
+
+ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2)
+*(1 - 2 / (np.exp(
+                 prefactor * om / Temp) + 1)),
+                 (0.1407+0.013) * nonhermfactor * (
+            om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+/ ((om) ** 2 - Omega ** 2)
+*(1 - 2 / (np.exp(
+    prefactor * om / Temp) + 1)),
+                 color="blue", alpha=0.2)
+
+ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2),
+                 (0.1407+0.013) * nonhermfactor * (
+            om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+        2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+/ ((om) ** 2 - Omega ** 2),
+                 color="#85bb65", alpha=0.2)
+
+ax1.fill_between(om, (0.1663+0.01)*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2),
+                 (0.1663-0.01) * hermfactor * (
+                             Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+                         2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                 / ((om) ** 2 - Omega ** 2),
+                 color="grey", alpha=0.5)
 
 
 # \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}

@@ -254,7 +254,7 @@ ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize=
 ax2.plot(perturb_times,
          damped_cosine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
                        p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"])
-         , color='#85bb65', linestyle='-', label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
+         , color='#85bb65', linestyle='--', label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
 
 #ax2.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
  #            label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
@@ -322,7 +322,7 @@ ax = plt.subplot(221)
 
 ax.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
                                     p=result.params.valuesdict()["p"], f=result.params.valuesdict()["f"]),
-         color="black", linestyle='-', label=r'$\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
+         color="black", linestyle='--', label=r'$\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
 
 
 ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3")#,
@@ -747,7 +747,7 @@ ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
              np.real(np.fft.fft(ynhf0, norm="backward"))[0:int(len(ynhf0) / 2)]*(1 - 2 / (np.exp(
                  prefactor * np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)] / Temp) + 1)), marker="",
-             color='blue', linestyle='--', markersize="6",alpha=0.6)
+             color='blue', linestyle='--', markersize="6", alpha=0.6)
 
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
                  ((1 - 2 / (np.exp(
@@ -822,14 +822,14 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                  (np.imag(np.fft.fft(yhf3, norm="backward")[0:int(len(ynhf0) / 2)]) + fserror[
                                                                                   0:int(len(ynhf0) / 2)]),
                  color="grey", alpha=0.3)
-
+'''
 ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[0:int(len(ynhf0) / 2)],
                  (np.real(np.fft.fft(ynhf0, norm="backward")[0:int(len(ynhf0) / 2)]) - fserror[
                                                                                   0:int(len(ynhf0) / 2)]),
                  (np.real(np.fft.fft(ynhf0, norm="backward")[0:int(len(ynhf0) / 2)]) + fserror[
                                                                                   0:int(len(ynhf0) / 2)]),
                  color="#85bb65", alpha=0.25)
-
+'''
 ax1.fill_between(np.fft.fftfreq(len(yhf3), d=x0[1])[int(len(ynhf0) / 2) + 1:int(len(ynhf0))],
                  (np.imag(np.fft.fft(yhf3, norm="backward")[int(len(ynhf0) / 2) + 1:int(len(ynhf0))]) - fserror[
                                                                                                  int(len(
