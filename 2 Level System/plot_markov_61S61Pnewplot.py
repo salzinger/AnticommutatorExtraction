@@ -9,7 +9,6 @@ plt.rcParams.update({
     "font.family": "sans-serif",
 })
 
-# ax = plt.subplot(212)
 
 ax = plt.subplot(222)
 
@@ -271,7 +270,7 @@ ax.plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
 # ax.errorbar(x0, y3, y3e, marker="^", color='#025669', label='$\gamma = \Omega_R/5$', linestyle='', markersize="2")
 # ax.plot(perturb_times, np.real(result_m3.expect[1]), color='#025669', linestyle='-')
 
-ax.errorbar(x0, y5, y5e, marker="D", color='#025669', label='$\gamma = \Omega_R/3$', linestyle='', markersize="2")
+ax.errorbar(x0, y5, y5e, marker="^", color='#025669', label='$\gamma = \Omega_R/3$', linestyle='', markersize="2")
 ax.plot(perturb_times, np.real(result_m5.expect[1]), color='#025669', linestyle='-')
 # ax[1, 1].fill_between(perturb_times,  np.real(result_m3.expect[1])+vars[0],
 #           np.real(result_m3.expect[1])-vars[0], alpha=0.2, color='b')
@@ -281,19 +280,21 @@ ax.plot(perturb_times, np.real(result_m15.expect[1]), color='#CC7722', linestyle
 # ax[1, 1].fill_between(perturb_times,  np.real(result_m10.expect[1])+vars[1],
 #                      np.real(result_m10.expect[1])-vars[1], alpha=0.2, color='#CC7722')
 
-ax.errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="2")
+ax.errorbar(x0, y30, y30e, marker="o", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="2")
 ax.plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle='-')
 # ax[1, 1].fill_between(perturb_times,  np.real(result_m30.expect[1])+vars[2],
 #                      np.real(result_m30.expect[1])-vars[2], alpha=0.2, color="#800020")
-
+ax.plot(x0, np.ones_like(x0) * 0.5, color='grey', linestyle='--')
+ax.plot(x0, -np.ones_like(x0) * 0.5, color='grey', linestyle='--')
+ax.plot(x0, -np.ones_like(x0) * 0.0, color='grey', linestyle='--')
 # ax[1, 1].set_ylim([-0.596, 0.596])
 ax.set_xlabel('Time [$2 \pi /\Omega_R$]', fontsize=14)
 ax.set_ylabel(r'Spin $\langle \hat{s}_z\rangle$', fontsize=14)
-ax.legend(loc="lower center", fontsize=8, frameon=False)
-ax.tick_params(axis="both", labelsize=8)
-ax.set_ylim([-0.55, 0.55])
+ax.legend(loc=(.55, 0), fontsize=10, frameon=False)
+ax.tick_params(axis="both", labelsize=10)
+ax.set_ylim([-0.75, 0.75])
 
-ax.set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
+ax.set_yticks(ticks=np.array([-0.5, 0., 0.5]))
 ax.set_xlim([0., 2])
 
 # fig.tight_layout()
@@ -421,7 +422,7 @@ for gamma in [3, 5, 15, 30]:
         # ax[0, 1].plot(t, np.mean(phase_noise, axis=0), color='red', linestyle='', linewidth=1.0, marker="o", markersize="0.01")
         ax1.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#800020', linestyle='',
                  linewidth=1.0,
-                 label='$\gamma = 2\Omega_R \pi$', marker="s", markersize="3", markerfacecolor='none',
+                 label='$\gamma = 2\Omega_R$', marker="o", markersize="3", markerfacecolor='none',
                  markeredgecolor='#800020')
         ax1.plot(t, np.sqrt(gamma * t / 15), color='#800020', linestyle='', linewidth=1.0)
 
@@ -435,8 +436,8 @@ for gamma in [3, 5, 15, 30]:
         # ax1.plot(times, phase_noise_plot[k], color='#800020', linewidth=0.1, label="Single trajectory $\gamma=2\Omega_R$")
         np.save("singlenoise2.npy", phase_noise_plot[k])
         noiseplot = np.load("singlenoise1.npy")
-        ax1.plot(times, noiseplot, color='#800020', linewidth=0.1,
-                 label="Single trajectory $\gamma=2\Omega_R$")
+        ax1.plot(times, noiseplot, color='#800020', linewidth=0.4,
+                 label="Single trajectory $\gamma=2\Omega_R \pi$")
         # ,label='$\sqrt{30 MHz  t}$')
         # ax[0, 1].plot(t, -np.sqrt(gamma * t), color='#800020', linestyle='--', linewidth=1.0)
 
@@ -445,7 +446,7 @@ for gamma in [3, 5, 15, 30]:
 
         ax1.plot(t, np.sqrt(np.var(phase_noise, axis=0)), color='#025669', linestyle='',
                  linewidth=1.0,
-                 label='$\gamma = \Omega_R/5$', marker="^", markersize="3", markerfacecolor='none',
+                 label='$\gamma = \Omega_R/3$', marker="^", markersize="3", markerfacecolor='none',
                  markeredgecolor='#025669')
         ax1.plot(t, np.sqrt(gamma * t / 15), color='#025669', linestyle='', linewidth=1.0)
 
@@ -501,17 +502,17 @@ data = np.append(data / 180, data_reversed / 180)
 ###ax[0, 1].set_xlim([0, 0.1])
 ax1.set_xlabel(r'Time [$ 2 \pi /\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'$\Phi_B(t)$', fontsize=14)
-ax1.tick_params(axis="both", labelsize=8)
+ax1.tick_params(axis="both", labelsize=10)
 # ax[0, 1].set_xlabel('Time [a.u.]', fontsize=16)
 # ax[0, 1].set_ylabel('Apmlitude [a.u.]', fontsize=16)
-ax1.legend(loc="lower left", fontsize=8, frameon=False)
+ax1.legend( loc=(0, 0), fontsize=10, frameon=False)
 ax1.set_xlim([0, 2])
 ax1.set_ylim([-3, 3])
 
-plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.4, hspace=0.4)
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.34, hspace=0.34)
 
-plt.savefig("newwalks.pdf")
-plt.show()
+#plt.savefig("newwalks.pdf")
+#plt.show()
 
 import numpy as np
 
@@ -579,7 +580,7 @@ for Omega_R in np.linspace(2 * np.pi * 1, 2 * np.pi * 1, 1, endpoint=1):
     fs = timesteps / endtime
     # print(len(perturb_times))
 
-    fig, ax = plt.subplots(2, 2, figsize=(10, 10))
+    #fig, ax = plt.subplots(2, 2, figsize=(10, 10))
 
     for rise_time in np.linspace(700, 1000, 1, endpoint=1):
 
@@ -920,7 +921,7 @@ for Omega_R in np.linspace(2 * np.pi * 1, 2 * np.pi * 1, 1, endpoint=1):
             # print("z: ", z)
 
             # print("amps : ", amp)
-
+            '''
             print("total : ", np.mean(total))
 
             print("sqrt(var) /len (total) : ", sqrt(np.var(total)) / len(total))
@@ -1199,7 +1200,7 @@ print(Flist)
 
 # c.render()
 plt.show()
-
+'''
 plt.rcParams.update({
     "text.usetex": True,
     "font.family": "sans-serif",
@@ -1225,8 +1226,9 @@ ax.set_xlim([0, 6.051])
 # plt.savefig("phasewalk.pdf")
 plt.show()
 '''
+ax4 = plt.subplot(212)
 
-fig, ax4 = plt.subplots(1, 1, figsize=(11.69, 8.27 / 2))
+#fig, ax4 = plt.subplots(1, 1, figsize=(11.69, 8.27 / 2))
 
 # ax[0].errorbar(tmw, total , np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
 #                   color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$", markersize="4", marker="s", linestyle="")
@@ -1240,19 +1242,19 @@ print("phaseerror: ", phaseerror)
 ax4.errorbar(tmw, -np.array(amp * np.sin(phase)), np.sqrt((np.array(amperror) * np.sin(np.array(phase))) ** 2
                                                          + (np.array(amp) * np.cos(np.array(phase)) * np.array(
     phaseerror)) ** 2),
-            color='black', label=r"$\langle \hat{s}_x \rangle$", markersize="4", marker="s", linestyle="")
+            color='black', label=r"$\langle \hat{s}_x \rangle$", markersize="2", marker="o", linestyle="")
 
 ax4.errorbar(tmw, -np.array(amp * np.cos(phase)), np.sqrt((np.array(amperror) * np.cos(np.array(phase))) ** 2 + (
             np.array(amp) * np.sin(np.array(phase)) * np.array(phaseerror)) ** 2),
-            color='#800080', label=r"$\langle \hat{s}_y \rangle$", markersize="4", marker="o", linestyle="")
+            color='blue', alpha=0.4, label=r"$\langle \hat{s}_y \rangle$", markersize="2", marker="o", linestyle="")
 
-ax4.errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \hat{s}_z \rangle$", markersize="5", marker="o",
+ax4.errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \hat{s}_z \rangle$", markersize="2", marker="o",
             linestyle="")
 
 
 
 ax4.plot(perturb_times, -np.real(expect_single[0]), color='black', linestyle="-")
-ax4.plot(perturb_times, -np.real(expect_single[2]), color='#800080', linestyle="-")
+ax4.plot(perturb_times, -np.real(expect_single[2]), color='blue', alpha=0.6, linestyle="-")
 ax4.plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-")
 
 # ax[0].errorbar(tmw, total, np.sqrt(np.array(amperror) ** 2 + np.array(zerror) ** 2),
@@ -1260,7 +1262,7 @@ ax4.plot(perturb_times, np.real(expect_single[1]), color='#85bb65', linestyle="-
 #                  #label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$",
 #                  label=r"Total",
 #                  markersize="4", marker="s", linestyle="")
-ax4.tick_params(axis="both", labelsize=16)
+#ax4.tick_params(axis="both", labelsize=8)
 
 ax4.plot(perturb_times, np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
 ax4.plot(perturb_times, -np.ones_like(perturb_times) * 0.5, color='grey', linestyle='--')
@@ -1268,32 +1270,32 @@ ax4.plot(perturb_times, -np.ones_like(perturb_times) * 0.0, color='grey', linest
 
 ax4.set_ylim([-0.75, 0.75])
 ax4.set_xlim([0, 6.051])
-ax4.set_yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
+ax4.set_yticks(ticks=np.array([-0.5, 0., 0.5]))
 
 # ax.set_ylim([-0.68, 0.68])
 # ax.set_xlabel(r'Time [$2 \pi /\Omega_R$]', fontsize=18)
-ax4.set_ylabel(r'Spin $\langle \hat{s}_i \rangle$', fontsize=18)
-ax4.legend(loc="lower center", fontsize=14)
-ax4.set_xlabel(r'Time [$2 \pi /\Omega_R$]', fontsize=18)
+ax4.set_ylabel(r'Spin $\langle \hat{s}_i \rangle$', fontsize=14)
+ax4.legend(loc=(.4, 0), fontsize=10, frameon=False)
+ax4.set_xlabel(r'Time [$2 \pi /\Omega_R$]', fontsize=14)
 
 plt.savefig("thereandback.pdf")
 
 plt.show()
 
-fig, ax = plt.subplots(1, 1, figsize=(11.69, 8.27 / 4))
-ax.tick_params(axis="both", labelsize=16)
+#fig, ax = plt.subplots(1, 1, figsize=(11.69, 8.27 / 4))
+ax4.tick_params(axis="both", labelsize=10)
 
-ax.errorbar(tmw, F2,
+#ax.errorbar(tmw, F2,
             # label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$",
-            linestyle="dotted", markersize="3", marker="o",
-            color='black')
+#            linestyle="dotted", markersize="3", marker="o",
+#            color='black')
 
 # ax[2].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=18)
 # ax[2].set_ylabel('Fidelity', fontsize=18)
-ax.set_xlim([0, 6.051])
+#ax.set_xlim([0, 6.051])
 # ax[2].legend(loc="lower left", fontsize=12)
-plt.savefig("Fidelity.pdf")
+#plt.savefig("Fidelity.pdf")
 
-plt.show()
+#plt.show()
 
 
