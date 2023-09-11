@@ -855,7 +855,7 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int
 # \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
 ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'Spectrum', fontsize=14)
-ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
+ax1.legend(loc=(.53, 0), fontsize=8, frameon=0)  # loc="lower center",
 # ax1.tick_params(axis="both", labelsize=8)
 ax1.set_xlim([-1.7, 1.7])
 ax1.tick_params(axis="both", labelsize=8)

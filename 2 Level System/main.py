@@ -300,10 +300,10 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
 
             #print(samples)
             #gamma0 = average_psd(0, omega, samples, sample_time, 1)
-            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 400) #min 40 or 400 for good results
-            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 400)
-            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 400)
-            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 400)
+            gamma3 = average_psd(3 * 10**(factor-3), omega, samples, sample_time, 1) #min 400 for good results
+            gamma5 = average_psd(5 * 10**(factor-3), omega, samples, sample_time, 1)
+            gamma15 = average_psd(15 * 10**(factor-3), omega, samples, sample_time, 1)
+            gamma30 = average_psd(30 * 10**(factor-3), omega, samples, sample_time, 1)
 
             #print("welch sum" , np.sum(gamma0[1]))
 
