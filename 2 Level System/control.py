@@ -7,7 +7,6 @@ from scipy import integrate
 
 from lmfit import Model, Parameters
 
-
 plt.rcParams.update({
     "text.usetex": 1,
     "font.family": "sans-serif",
@@ -84,9 +83,8 @@ N = 1
 omega = 0  # MHz
 Omega_R = 2 * np.pi * 13.6  # MHz
 
-hermfactor = 1/0.06/2/np.pi  # 1/0.06/2/np.pi  # Delta*t_perturb
-nonhermfactor = 0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
-
+hermfactor = 1 / 0.06 / 2 / np.pi  # 1/0.06/2/np.pi  # Delta*t_perturb
+nonhermfactor = 0.75 / 0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
 
 J = 0 * 10 ** 0  # MHz
 
@@ -141,7 +139,7 @@ y30e = []
 2.007774167644925
 '''
 
-for element in range(1, 22-5):
+for element in range(1, 22 - 5):
     x0.append(float(linesm0[element][0:5]))
 
     y0.append((float(linesm0[element][8:18])))
@@ -159,52 +157,78 @@ def damped_cosine(t, a):
 
 
 def damped_sine(t, a, d, p, f):
-    return (a * np.sin(2 * np.pi * (f*t+p)) * np.exp(-d*t))
+    return (a * np.sin(2 * np.pi * (f * t + p)) * np.exp(-d * t))
+
+
+def lin_fit(t, a):
+    return (a * t - 0.5)
+
 
 params = Parameters()
 params.add('a', value=0.5, vary=0)
-params.add('d', value=0.01, min=0)
+params.add('d', value=40, vary=0, min=0)
 params.add('p', value=-0.25, vary=0)
-params.add('f', value=17.7, vary=1)
+params.add('f', value=3, vary=1)
 
 dmodel = Model(damped_sine)
-result = dmodel.fit(y3, params, weights=np.ones_like(y3) / y3e[0], t=x0)
+result = dmodel.fit(y3[0:7], params, weights=np.ones_like(y3[0:7]) / y3e[0:7], t=x0[0:7])
 print(result.fit_report())
 
+paramslin = Parameters()
+paramslin.add('a', value=30, vary=1)
+
+dmodellin = Model(lin_fit)
+resultlin = dmodellin.fit(y3[0:7], paramslin, weights=np.ones_like(y3[0:7]) / y3e[0:7], t=x0[0:7])
+print(resultlin.fit_report())
+
 params1 = Parameters()
-params1.add('a', value=0.5,vary=0)
+params1.add('a', value=0.5, vary=0)
 params1.add('d', value=0.01, min=0)
 params1.add('p', value=-0.25, vary=0)
 params1.add('f', value=17.7, vary=1)
 
 dmodel1 = Model(damped_sine)
-result1 = dmodel1.fit(y0, params1, weights=np.ones_like(y0) / y0e[0], t=x0)
+result1 = dmodel1.fit(y0, params1, weights=np.ones_like(y0) / y0e, t=x0)
 print(result1.fit_report())
 
-perturb_times=np.linspace(x0[0],x0[-1],100)
+perturb_times = np.linspace(x0[0], x0[-1], 100)
 
-plt.plot(perturb_times,
-         damped_sine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"], p=result1.params.valuesdict()["p"],
-f=result1.params.valuesdict()["f"])
-         , color='black', linestyle='-')
+fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
-plt.plot(perturb_times,
-         damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"], p=result.params.valuesdict()["p"],
-f=result.params.valuesdict()["f"])
-         , color='#85bb65', linestyle='-')
+ax.plot(perturb_times,
+        damped_sine(perturb_times, a=result1.params.valuesdict()["a"], d=result1.params.valuesdict()["d"],
+                    p=result1.params.valuesdict()["p"],
+                    f=result1.params.valuesdict()["f"])
+        , color='black', linestyle='-')
 
-plt.errorbar(x0,y0,y0e,marker="o", color='black', linestyle='', markersize="3")
+ax.plot(perturb_times,
+        damped_sine(perturb_times, a=result.params.valuesdict()["a"], d=result.params.valuesdict()["d"],
+                    p=result.params.valuesdict()["p"],
+                    f=result.params.valuesdict()["f"])
+        , color='#85bb65', linestyle='-')
 
+ax.plot(perturb_times,
+        lin_fit(perturb_times, a=resultlin.params.valuesdict()["a"])
+        , color='#85bb65', linestyle=':')
 
-plt.errorbar(x0,y3,y3e,marker="o", color='#85bb65', linestyle='', markersize="3")
+ax.errorbar(x0, y0, y0e, marker="o", color='black', linestyle='', markersize="3")
 
-plt.plot(x0,np.ones_like(x0)*0.5,linestyle="--",color="grey")
+ax.errorbar(x0, y3, y3e, marker="o", color='#85bb65', linestyle='', markersize="3")
 
-plt.plot(x0,np.ones_like(x0)*0.,linestyle="--",color="grey")
+ax.plot(x0, np.ones_like(x0) * 0.5, linestyle="--", color="grey")
 
-plt.plot(x0,-np.ones_like(x0)*0.5,linestyle="--",color="grey")
+ax.plot(x0, np.ones_like(x0) * 0., linestyle="--", color="grey")
 
-#plt.xlim([0,0.071])
-plt.ylim([-0.6,0.6])
+ax.plot(x0, -np.ones_like(x0) * 0.5, linestyle="--", color="grey")
+
+ax.set_xlim([0, 0.0755])
+ax.set_ylim([-0.6, 0.6])
+ax.tick_params(axis="both", labelsize=18)
+ax.set_xticks(ticks=np.array([0., 0.03, 0.06]))
+ax.set_yticks(ticks=np.array([-0.5, 0., 0.5]))
+ax.set_ylabel(r"$\langle\hat{s}_z\rangle$", fontsize="24")
+ax.set_xlabel(r"Time [$\mu$s]", fontsize="24")
+
+plt.savefig("SuppFig.pdf")  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
 plt.show()
