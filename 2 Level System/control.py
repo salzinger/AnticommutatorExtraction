@@ -211,9 +211,9 @@ ax.plot(perturb_times,
         lin_fit(perturb_times, a=resultlin.params.valuesdict()["a"])
         , color='#85bb65', linestyle=':')
 
-ax.errorbar(x0, y0, y0e, marker="o", color='black', linestyle='', markersize="3")
+ax.errorbar(x0, y0, y0e, marker="o", color='black', linestyle='', markersize="6")
 
-ax.errorbar(x0, y3, y3e, marker="o", color='#85bb65', linestyle='', markersize="3")
+ax.errorbar(x0, y3, y3e, marker="o", color='#85bb65', linestyle='', markersize="6")
 
 ax.plot(x0, np.ones_like(x0) * 0.5, linestyle="--", color="grey")
 

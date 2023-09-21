@@ -8,14 +8,42 @@ sigma_y = np.array([[0, -1.j], [1.j, 0]])
 sigma_z = np.array([[1, 0], [0, -1]])
 
 
-def evo_state(t, g_0=0, e_0=1, d=0, Omega=np.pi):
+def evo_state(t, g_0=0, e_0=1, d=0, Omega = np.pi):
+
     Omega_eff = np.sqrt(Omega ** 2 + d ** 2)
 
     out_state = np.array([[np.exp(1.j * d * t / 2) * (
-                g_0 * np.cos(Omega_eff / 2 * t) - 1.j / Omega_eff * (d * g_0 + Omega * e_0) * np.sin(
-            Omega_eff / 2 * t))],
-                         [np.exp(1.j * d * t / 2) * (e_0 * np.cos(Omega_eff / 2 * t) + 1.j / Omega_eff * (
-                                     d * e_0 - Omega * g_0) * np.sin(Omega_eff / 2 * t))]])
+
+            g_0 * np.cos(Omega_eff / 2 * t) - 1.j * (d * g_0 + Omega * e_0) / Omega_eff * np.sin(Omega_eff / 2 * t))],
+
+                          [np.exp(1.j * d * t / 2) * (
+            e_0 * np.cos(Omega_eff / 2 * t) + 1.j * (d * e_0 - Omega * g_0) / Omega_eff * np.sin(Omega_eff / 2 * t))]])
+
+    return out_state
+
+def evo_state(t, g_0=0, e_0=1, d=0, Omega = np.pi):
+
+    Omega_eff = np.sqrt(Omega ** 2 + d ** 2)
+
+    out_state = np.array([[np.exp(1.j * d * t / 2) * (
+
+            g_0 * np.cos(Omega_eff / 2 * t) - 1.j * (d * g_0 + Omega * e_0) / Omega_eff * np.sin(Omega_eff / 2 * t))],
+
+                          [np.exp(1.j * d * t / 2) * (
+            e_0 * np.cos(Omega_eff / 2 * t) + 1.j * (d * e_0 - Omega * g_0) / Omega_eff * np.sin(Omega_eff / 2 * t))]])
+
+    return out_state
+
+def evo_state_wiki(t, g_0=0, e_0=1, d=0, Omega = np.pi):
+
+    Omega_eff = np.sqrt(Omega ** 2 + d ** 2)
+
+    out_state = np.array([[np.exp(-1.j * d * t / 2) * g_0 * (
+
+            np.cos(Omega_eff / 2 * t) + 1.j * d / Omega_eff * np.sin(Omega_eff / 2 * t))],
+
+                          [np.exp(1.j * d * t / 2) * e_0 * (
+             1.j * Omega / Omega_eff * np.sin(Omega_eff / 2 * t))]])
 
     return out_state
 
@@ -43,7 +71,29 @@ print("From y onwards")
 
 state = evo_state(0.04, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*10, Omega=0.0)
 
-#print(state)
+
+state_exact = evo_state(0.03, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*0.01, Omega=0.0)
+
+
+state_wiki = evo_state_wiki(0.03, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*0.01, Omega=0.0)
+
+#print(state_exact)
+
+x_ex = exp(state_exact, sigma_x)
+y_ex = exp(state_exact, sigma_y)
+z_ex = exp(state_exact, sigma_z)
+
+print("x_ex:", x_ex)
+print("y_ex:", y_ex)
+print("z_ex:", z_ex)
+
+x_wiki = exp(state_wiki, sigma_x)
+y_wiki = exp(state_wiki, sigma_y)
+z_wiki = exp(state_wiki, sigma_z)
+
+print("x_wiki:", x_wiki)
+print("y_wiki:", y_wiki)
+print("z_wiki:", z_wiki)
 
 #print(np.vdot(evo_state(1), np.dot(sigma_z, evo_state(1))))
 
@@ -59,7 +109,10 @@ print("x:", x2)
 print("y:", y2)
 print("z:", z2)
 
+print("normed?: ", np.sqrt(x2**2+y2**2+z2**2))
+
 state1 = evo_state(1/2, state[0][0], state[1][0], d=0, Omega=np.pi)
+
 
 #print(state1)
 
@@ -84,21 +137,22 @@ c.vector_color = ["grey", 'black', '#85bb65']
 c.point_color = ['grey']
 c.point_size = [1]
 
-c.point_marker=['o']
-vec1 = [-np.real(x2)+0.051, 0, 0]
-vec2 = [-np.real(x2), np.real(y2), np.real(z2)]
-vec3 = [-np.real(x3)/1.5, np.real(y3)/1.5, np.real(z3)]
+c.point_marker = ['o']
+#vec1 = [-np.real(x2)+0.051, 0, 0]
+vec1 = [x_ex, y_ex, z_ex]
+vec2 = [-x2, y2, z2]
+vec3 = [-x3/1.5, y3/1.5, z3]
 th = np.linspace(0, 2*np.pi, 200)
 
-xz = -np.ones(200)*np.real(x3)
-yz = np.sin(th)*np.real(z3)
-zz = np.cos(th)*np.real(z3)
+xz = -np.ones(200)*x3
+yz = np.sin(th)*z3
+zz = np.cos(th)*z3
 c.add_points([xz, yz, zz], 'm')
 
 
-xz = -np.ones(200)*np.real(x3)/1.5
-yz = np.sin(th)*np.real(z3)
-zz = np.cos(th)*np.real(z3)
+xz = -np.ones(200)*x3/1.5
+yz = np.sin(th)*z3
+zz = np.cos(th)*z3
 c.add_points([xz, yz, zz], 'm')
 
 c.add_vectors(vec1)
@@ -184,14 +238,14 @@ c.point_color = ['black']
 c.point_size = [1]
 
 c.point_marker=['o']
-vec1 = [-np.real(x2)+0.092, 0, 0]
-vec2 = [-np.real(x2)+0.03, np.real(y2)+0.01, np.real(z2)]
+vec1 = [-x2+0.092, 0, 0]
+vec2 = [-x2+0.03, y2+0.01, z2]
 #vec3 = [-np.real(x3)/1.5, np.real(y3)/1.5, np.real(z3)]
 th = np.linspace(0, 2*np.pi, 200)
 
-xz = -np.ones(200)*np.real(x3)
-yz = np.sin(th)*np.real(z3)
-zz = np.cos(th)*np.real(z3)
+xz = -np.ones(200)*x3
+yz = np.sin(th)*z3
+zz = np.cos(th)*z3
 c.add_points([xz, yz, zz], 'm')
 
 c.add_vectors(vec1)
@@ -231,9 +285,9 @@ vec3 = [-np.real(x3)/1.5, np.real(y3)/1.5, np.real(z3)]
 th = np.linspace(0, 2*np.pi, 200)
 
 
-xz = -np.ones(200)*np.real(x3)/1.5
-yz = np.sin(th)*np.real(z3)
-zz = np.cos(th)*np.real(z3)
+xz = -np.ones(200)*x3/1.5
+yz = np.sin(th)*z3
+zz = np.cos(th)*z3
 c.add_points([xz, yz, zz], 'm')
 
 c.add_vectors(vec1)
@@ -255,6 +309,6 @@ c.clear()
 #plt.xlabel("$\Omega t [\pi]$")
 
 
-plt.savefig("BlochNonHerm.pdf")  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
+plt.savefig("BlochNonHerm.pdf")
 
 plt.show()

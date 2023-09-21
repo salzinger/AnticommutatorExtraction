@@ -85,7 +85,7 @@ omega = 0  # MHz
 Omega_R = 2 * np.pi * 13.6  # MHz
 
 hermfactor = 1/0.06/2/np.pi  # 1/0.06/2/np.pi  # Delta*t_perturb
-nonhermfactor = 0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
+nonhermfactor = 1 / (15.16*0.03*0.75) # 0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
 
 
 J = 0 * 10 ** 0  # MHz
