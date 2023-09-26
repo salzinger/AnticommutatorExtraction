@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/bloch.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/bloch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/control.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/control.py" afterDir="false" />
     </list>
@@ -44,7 +43,7 @@
       <recent name="C:\Users\zenoo\PycharmProjects\AnticommutatorExtraction\2 Level System" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bloch">
+  <component name="RunManager" selected="Python.control">
     <configuration name="ResponseMeasurementFFTfit" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AnticommutatorExtraction" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -152,8 +151,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.bloch" />
         <item itemvalue="Python.control" />
+        <item itemvalue="Python.bloch" />
         <item itemvalue="Python.ResponseMeasurementFFTonly" />
         <item itemvalue="Python.ResponseMeasurementFFTfit" />
         <item itemvalue="Python.plot_markov_61S61Pnewplot" />
@@ -302,7 +301,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695035752849</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="calculating control sequence">
+      <created>1695297033658</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1695297033658</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -327,6 +333,7 @@
     <MESSAGE value="replot" />
     <MESSAGE value="added control sequence" />
     <MESSAGE value="plotting control sequence" />
-    <option name="LAST_COMMIT_MESSAGE" value="plotting control sequence" />
+    <MESSAGE value="calculating control sequence" />
+    <option name="LAST_COMMIT_MESSAGE" value="calculating control sequence" />
   </component>
 </project>

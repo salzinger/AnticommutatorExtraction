@@ -72,7 +72,7 @@ print("From y onwards")
 state = evo_state(0.04, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*10, Omega=0.0)
 
 
-state_exact = evo_state(0.03, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*0.01, Omega=0.0)
+state_exact = evo_state(0.03, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*4, Omega=0.0)
 
 
 state_wiki = evo_state_wiki(0.03, evo_state(1/2)[0][0], evo_state(1/2)[1][0], d=np.pi*0.01, Omega=0.0)

@@ -226,8 +226,12 @@ ax.set_ylim([-0.6, 0.6])
 ax.tick_params(axis="both", labelsize=18)
 ax.set_xticks(ticks=np.array([0., 0.03, 0.06]))
 ax.set_yticks(ticks=np.array([-0.5, 0., 0.5]))
-ax.set_ylabel(r"$\langle\hat{s}_z\rangle$", fontsize="24")
+ax.set_ylabel(r"$0.5(N_a - N_\downarrow)/(N_a + N_\downarrow) $", fontsize="24")
 ax.set_xlabel(r"Time [$\mu$s]", fontsize="24")
+
+plt.subplots_adjust(left=0.15, bottom=0.15, right=None, top=None, wspace=None, hspace=None)
+
+
 
 plt.savefig("SuppFig.pdf")  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
