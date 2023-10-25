@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="plotting control sequence">
+    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -315,7 +314,14 @@
       <option name="project" value="LOCAL" />
       <updated>1695731114750</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="normalisation">
+      <created>1698236975699</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1698236975699</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -341,6 +347,7 @@
     <MESSAGE value="added control sequence" />
     <MESSAGE value="calculating control sequence" />
     <MESSAGE value="plotting control sequence" />
-    <option name="LAST_COMMIT_MESSAGE" value="plotting control sequence" />
+    <MESSAGE value="normalisation" />
+    <option name="LAST_COMMIT_MESSAGE" value="normalisation" />
   </component>
 </project>
