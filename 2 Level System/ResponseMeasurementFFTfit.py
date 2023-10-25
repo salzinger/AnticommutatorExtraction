@@ -84,8 +84,8 @@ N = 1
 omega = 0  # MHz
 Omega_R = 2 * np.pi * 13.6  # MHz
 
-hermfactor = 1/0.06/2/np.pi  # 1/0.06/2/np.pi  # Delta*t_perturb
-nonhermfactor = 0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
+hermfactor = 2 / (0.03 * 2 * 2 * np.pi)  # 1/0.06/2/np.pi  # Delta*t_perturb
+nonhermfactor = 1 / ( 0.03 * (0.25/0.03) * (1/2+0.125) )#0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
 
 
 J = 0 * 10 ** 0  # MHz
@@ -829,10 +829,13 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
                   / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
                    label=r"$S(\omega)$")
 
+print("Hermfactor: ",hermfactor)
 
-print("Hermfactored", 0.1663*hermfactor)
+print("NoNHermfactor: ",nonhermfactor)
 
-print("NoNHermfactored", 0.1407*nonhermfactor)
+print("0.1663 Hermfactored", 0.1663*hermfactor)
+
+print("0.1407 NoNHermfactored", 0.1407*nonhermfactor)
 
 ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
