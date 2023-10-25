@@ -151,9 +151,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.ResponseMeasurementFFTfit" />
-        <item itemvalue="Python.ResponseMeasurementFFTonly" />
         <item itemvalue="Python.control" />
         <item itemvalue="Python.bloch" />
+        <item itemvalue="Python.ResponseMeasurementFFTonly" />
         <item itemvalue="Python.plot_markov_61S61Pnewplot" />
       </list>
     </recent_temporary>
@@ -321,7 +321,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698236975699</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="normalisation">
+      <created>1698243825470</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1698243825470</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

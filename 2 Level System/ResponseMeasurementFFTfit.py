@@ -85,7 +85,7 @@ omega = 0  # MHz
 Omega_R = 2 * np.pi * 13.6  # MHz
 
 hermfactor = 2 / (0.03 * 2 * 2 * np.pi)  # 1/0.06/2/np.pi  # Delta*t_perturb
-nonhermfactor = 1 / ( 0.03 * 7.6 * (1/2+0.125) )#0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
+nonhermfactor = 1 / ( 0.03 * 7.58 * (1/2+0.125) )#0.75/0.25  # 0.75 goes from trace normalised s_z to non-normalised s_z. non-normalised s_z gives 1/0.25 as factor for response function
 
 
 J = 0 * 10 ** 0  # MHz
@@ -812,9 +812,9 @@ ax1.fill_between(np.fft.fftfreq(len(ynhf0), d=x0[1])[int(len(ynhf0) / 2) + 1:int
 
 
 
-print("Hermfactor: ",hermfactor)
+print("Hermfactor: ", hermfactor)
 
-print("NoNHermfactor: ",nonhermfactor)
+print("NoNHermfactor: ", nonhermfactor)
 
 print("0.1663 Hermfactored", 0.1663*hermfactor)
 
@@ -822,11 +822,11 @@ print("0.1407 NoNHermfactored", 0.1407*nonhermfactor)
 
 print("ratio: ", 0.1663*hermfactor/(0.1407*nonhermfactor))
 
-Temp = 142*10**(-6)
+Temp = 6.5*10**(-6)
 
-hermfactor=hermfactor/np.sqrt(2 * np.pi)
+hermfactor= hermfactor/np.sqrt(2 * np.pi)
 
-nonhermfactor=nonhermfactor/np.sqrt(2 * np.pi)
+nonhermfactor= nonhermfactor/np.sqrt(2 * np.pi)
 
 
 # ax[0, 1].axvline(x=0., color="grey", ymin=0.05, ymax=0.95)
@@ -850,6 +850,13 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
                   / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
                    label=r"$S(\omega)$")
 
+print("MaxRatio: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2))
+      /np.max(0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2)))
+
 
 
 
@@ -860,7 +867,7 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
 *np.tanh(prefactor * om / Temp)#(1 - 2 / (np.exp(
                  #prefactor * om / Temp) + 1))
              , marker="", color='blue', linestyle='--', markersize="1",
-                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.22 \hbar \Omega_R$")
+                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.01 \hbar \Omega_R$")
 
 
 ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
@@ -893,6 +900,7 @@ ax1.fill_between(om, (0.1663+0.01)*hermfactor * (Omega * np.sin(2 * np.pi * om *
                  color="grey", alpha=0.5)
 
 
+
 # \vert \Psi_0 \rangle = \frac{\vert\uparrow\rangle + \vert\downarrow\rangle}{\sqrt{2}}
 ax1.set_xlabel('Frequency $\omega$ [$\Omega_R$]', fontsize=14)
 ax1.set_ylabel(r'Spectrum', fontsize=14)
@@ -901,7 +909,6 @@ ax1.legend(loc="lower right", fontsize=8, frameon=0)  # loc="lower center",
 ax1.set_xlim([-1.4, 1.4])
 ax1.tick_params(axis="both", labelsize=8)
 ax1.set_ylim([-2.2, 2.2])
-
 
 plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
 
