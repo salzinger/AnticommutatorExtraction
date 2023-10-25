@@ -4,6 +4,7 @@
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTonly.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -328,7 +329,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698243825470</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="normalisation">
+      <created>1698245673851</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1698245673851</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

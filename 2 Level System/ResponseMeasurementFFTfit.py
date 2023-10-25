@@ -431,7 +431,7 @@ ax1 = plt.subplot(212)
 
 om = np.linspace(-1.5, 1.5, 5001)
 
-Temp = 50 * 10 ** (-6)
+Temp = 71 * 10 ** (-6)
 # ax[0, 1].errorbar(omegas, (1 - 2/(np.exp(2*omegas/Temp/10**4/6.558) + 1))*np.real(integrals0), marker="o", color='#85bb65', linestyle='--', markersize="0", linewidth='1.5',
 #                  label=r"$T=10 \mu $K")
 
@@ -822,7 +822,7 @@ print("0.1407 NoNHermfactored", 0.1407*nonhermfactor)
 
 print("ratio: ", 0.1663*hermfactor/(0.1407*nonhermfactor))
 
-Temp = 6.5*10**(-6)
+Temp = 71*10**(-6)
 
 hermfactor= hermfactor/np.sqrt(2 * np.pi)
 
@@ -867,7 +867,7 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
 *np.tanh(prefactor * om / Temp)#(1 - 2 / (np.exp(
                  #prefactor * om / Temp) + 1))
              , marker="", color='blue', linestyle='--', markersize="1",
-                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.01 \hbar \Omega_R$")
+                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.11 \hbar \Omega_R$")
 
 
 ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
