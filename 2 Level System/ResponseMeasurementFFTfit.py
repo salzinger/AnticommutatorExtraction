@@ -240,14 +240,15 @@ y3e = y3e[0:len(y0)]
 
 ax2 = plt.subplot(222)
 
-ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize="3",
-             label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
+#ax2.errorbar(x0, y0, y0e, marker="o", color='#85bb65', linestyle='', markersize="3",
+ #            label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
              #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
-
+ax2.errorbar(x0, nonhermfactor*y0, ynhf0e, marker="o", color='#85bb65', linestyle='', markersize="3",
+             label=r'$\chi_BA(t) nonherm$')
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
 ax2.plot(perturb_times,
-         damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
+         nonhermfactor*damped_cosine(perturb_times, a=result1.params.valuesdict()["a"],
           )
          , color='#85bb65', linestyle='-')
 
@@ -263,9 +264,10 @@ for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
 ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
-ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
+#ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
+ax2.set_ylabel(r'$\chi_{\hat{\sigma}_z,\hat{P_\downarrow}}(t)$', fontsize=14)
 ax2.legend(loc="lower left", fontsize=8, frameon=False)
-ax2.set_ylim([-0.25, 0.25])
+#ax2.set_ylim([-0.25, 0.25])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
 
@@ -280,15 +282,17 @@ ax = plt.subplot(221)
 
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
-ax.plot(perturb_times, damped_sine(perturb_times, a=result.params.valuesdict()["a"],
+ax.plot(perturb_times, hermfactor*damped_sine(perturb_times, a=result.params.valuesdict()["a"],
                                  ),
          color="black", linestyle='-')
 
 
-ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
-            label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
+#ax.errorbar(x0, y3, y3e, marker="o", color='black', linestyle='', markersize="3",
+ #           label=r'$\langle [\hat{s}_z(0),\hat{s}_z(t) ] \rangle$')
              #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
+ax.errorbar(x0, hermfactor*y3, yhf3e, marker="o", color='black', linestyle='', markersize="3",
+            label=r'$\chi_BA(t) herm$')
 #ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
 
 ydiv = []
@@ -297,9 +301,11 @@ for n in range(0, len(y0)):
     ydiv.append(y0[n] / y3[n])
 
 ax.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
-ax.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
+#ax.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
+ax.set_ylabel(r'$\chi_{\hat{\sigma}_z,\hat{P_\downarrow}}(t)$', fontsize=14)
 ax.legend(loc="lower center", fontsize=8, frameon=False)
-ax.set_ylim([-0.25, 0.25])
+#ax.set_ylim([-0.25, 0.25])
+ax.set_ylim([-1.2, 1.2])
 ax.set_xlim([-0.005, 1.372])
 ax.tick_params(axis="both", labelsize=8)
 
@@ -839,16 +845,17 @@ om = np.linspace(-1.525, 1.525, 10000)
 # print(om)
 
 
+ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
+                   label=r"Fluctuation power spectrum $S(\omega)$")
 
 ax1.errorbar(om, 0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2), marker="", color='black', linestyle='-', markersize="1",
-                   label=r"$\hbar\chi^{\prime\prime}$")
+                   label=r"Dissipative susceptibility $\hbar\chi^{\prime\prime}(\omega)$")
 
-ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
-    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
-                  / ((om) ** 2 - Omega ** 2), marker="", color='#85bb65', linestyle='-', markersize="1",
-                   label=r"$S(\omega)$")
+
 
 print("MaxRatio: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
@@ -869,7 +876,7 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
              , marker="", color='blue', linestyle='--', markersize="1",
                    label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.11 \hbar \Omega_R$")
 
-
+'''
 ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)
@@ -880,6 +887,8 @@ ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om *
 / ((om) ** 2 - Omega ** 2)
 *np.tanh(prefactor * om / Temp),
                  color="blue", alpha=0.2)
+                 
+                 '''
 
 ax1.fill_between(om, (0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
@@ -897,7 +906,7 @@ ax1.fill_between(om, (0.1663+0.01)*hermfactor * (Omega * np.sin(2 * np.pi * om *
                              Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
                          2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                  / ((om) ** 2 - Omega ** 2),
-                 color="grey", alpha=0.5)
+                 color="grey", alpha=0.8)
 
 
 
