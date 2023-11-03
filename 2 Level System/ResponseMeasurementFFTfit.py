@@ -244,7 +244,7 @@ ax2 = plt.subplot(222)
  #            label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$')
              #label=r'$\langle \{ \hat{s}_z(0),\hat{s}_z(t) \} \rangle$', linestyle='', markersize="3")
 ax2.errorbar(x0, nonhermfactor*y0, ynhf0e, marker="o", color='#85bb65', linestyle='', markersize="3",
-             label=r'$\chi_BA(t) nonherm$')
+             label=r'$ \frac{\langle \hat{\sigma}_z(t) \rangle_{nh} - \langle \hat{\sigma}_z(t) \rangle_0 }{p_{nh}}$')
 #ax2.plot(perturb_times, np.cos(2 * np.pi * perturb_times) * 0.16, color='#85bb65', linestyle='-')
 
 ax2.plot(perturb_times,
@@ -265,8 +265,8 @@ for n in range(0, len(y0)):
 
 ax2.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
 #ax2.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
-ax2.set_ylabel(r'$\chi_{\hat{\sigma}_z,\hat{P_\downarrow}}(t)$', fontsize=14)
-ax2.legend(loc="lower left", fontsize=8, frameon=False)
+ax2.set_ylabel(r'$\phi_{\hat{\sigma}_z,\hat{P_\downarrow}}(0,t)$', fontsize=14)
+ax2.legend(loc="upper center", fontsize=8, frameon=False)
 #ax2.set_ylim([-0.25, 0.25])
 ax2.set_xlim([-0.005, 1.372])
 ax2.tick_params(axis="both", labelsize=8)
@@ -292,7 +292,7 @@ ax.plot(perturb_times, hermfactor*damped_sine(perturb_times, a=result.params.val
              #label=r'$\langle[ \hat{s}_z(0),\hat{s}_z(t)] \rangle$', linestyle='', markersize="3")
 
 ax.errorbar(x0, hermfactor*y3, yhf3e, marker="o", color='black', linestyle='', markersize="3",
-            label=r'$\chi_BA(t) herm$')
+            label=r'$ \frac{ \langle \hat{\sigma}_z(t) \rangle_h - \langle \hat{\sigma}_z(t) \rangle_0 }{p_{h}}$')
 #ax2.plot(perturb_times, -np.sin(2 * np.pi * perturb_times) * 0.16, color='black', linestyle='-')
 
 ydiv = []
@@ -302,7 +302,7 @@ for n in range(0, len(y0)):
 
 ax.set_xlabel('Time [$2\pi/\Omega_R$]', fontsize=14)
 #ax.set_ylabel(r'$\langle \hat{s}_z \rangle - \langle \hat{s}_z \rangle_0$', fontsize=14)
-ax.set_ylabel(r'$\chi_{\hat{\sigma}_z,\hat{P_\downarrow}}(t)$', fontsize=14)
+ax.set_ylabel(r'$\phi_{\hat{\sigma}_z,\hat{P_\downarrow}}(0,t)$', fontsize=14)
 ax.legend(loc="lower center", fontsize=8, frameon=False)
 #ax.set_ylim([-0.25, 0.25])
 ax.set_ylim([-1.2, 1.2])
@@ -572,9 +572,9 @@ print("max hf", np.max(np.imag(np.fft.fft(yhf3, norm="backward"))))
 
 print("maximum nhf", np.real(np.fft.fft(ynhf0, norm="backward"))[176:int(len(ynhf0) / 2 - 323)])
 
-print("freq of maximum hf",np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
+print("freq of maximum hf", np.fft.fftfreq(len(ynhf0), d=x0[1])[166:int(len(ynhf0) / 2 - 333)])
 
-print("freq of maximum nhf",np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
+print("freq of maximum nhf", np.fft.fftfreq(len(ynhf0), d=x0[1])[176:int(len(ynhf0) / 2 - 323)])
 
 def tanh(t, Temp):
     return 1 - 2 / (np.exp(prefactor * t / Temp) + 1)
@@ -919,7 +919,7 @@ ax1.set_xlim([-1.4, 1.4])
 ax1.tick_params(axis="both", labelsize=8)
 ax1.set_ylim([-2.2, 2.2])
 
-plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
+plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.32, hspace=0.3)
 
 # fig.tight_layout()
 plt.savefig("ResponseMeasureFFT.pdf")
