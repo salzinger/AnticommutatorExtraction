@@ -637,3 +637,48 @@ plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hs
 
 plt.savefig("newwalks.pdf")
 plt.show()
+
+
+
+
+
+
+
+
+timesteps = 100
+endtime = 3
+pertubation_length = endtime / 1
+perturb_times = np.linspace(0, endtime, timesteps)
+init_state = productstateZ(0, 0, N)
+
+plt.errorbar(x0, y0, y0e, marker="o", color='black', label='$\gamma = \Omega_R/60$', linestyle='',markersize="4")
+
+plt.plot(perturb_times, np.real(m0[1]), color='black', linestyle='-')
+
+plt.errorbar(x0, y3, y3e, marker="^", color='#025669', label='$\gamma = \Omega_R/5$', linestyle='', markersize="4")
+plt.plot(perturb_times, np.real(result_m3.expect[1]), color='#025669', linestyle='-')
+
+plt.errorbar(x0, y5, y5e, marker="D", color='#800080', label='$\gamma = \Omega_R/3$', linestyle='', markersize="4")
+plt.plot(perturb_times, np.real(result_m5.expect[1]), color='#800080', linestyle='-')
+
+
+plt.errorbar(x0, y15, y15e, marker="v", color='#CC7722', label='$\gamma = \Omega_R$', linestyle='', markersize="4")
+plt.plot(perturb_times, np.real(result_m15.expect[1]), color='#CC7722', linestyle='-')
+
+plt.errorbar(x0, y30, y30e, marker="s", color='#800020', label='$\gamma = 2\Omega_R$', linestyle='', markersize="4")
+plt.plot(perturb_times, np.real(result_m30.expect[1]), color='#800020', linestyle='-')
+
+
+
+
+plt.xlabel('Time [$2 \pi /\Omega_R$]', fontsize=14)
+plt.ylabel(r'Spin $\langle \hat{s}_z\rangle$', fontsize=14)
+plt.legend(loc="lower center", fontsize=12, frameon=False)
+plt.tick_params(axis="both", labelsize=12)
+plt.ylim([-0.55, 0.55])
+
+plt.yticks(ticks=np.array([-0.5, -0.25, 0., 0.25, 0.5]))
+plt.xlim([0., 3])
+
+
+plt.show()

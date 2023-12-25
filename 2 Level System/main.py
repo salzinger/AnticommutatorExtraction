@@ -291,7 +291,7 @@ for o in np.linspace(0*np.pi*23, 0*np.pi*25, 1):
             #ax2 = plt.subplot(222)
 
 
-            factor = 3
+            factor = 1
 
             #samples = 64 * 10 ** (factor+2) #min 8 * 10 ** 6 or 2*10**7 for good results
             omega= 2 * np.pi * 20 * 10 ** factor #MHz
