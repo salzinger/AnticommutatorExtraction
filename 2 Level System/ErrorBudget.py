@@ -33,7 +33,7 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 figure = plt.plot()
 c = Bloch(figure)
-c.make_sphere()
+#c.make_sphere()
 
 Flist = []
 
@@ -628,11 +628,11 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
             ax[1, 1].errorbar(tmw, total, np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
                                 color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$", markersize="4", marker="s", linestyle="")
 
-            ax[1, 1].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                                color='purple', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
+#            ax[1, 1].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
+ #                               color='purple', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
 
-            ax[1, 1].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
-                                color="blue", label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
+#            ax[1, 1].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
+#                                color="blue", label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
 
 
 
@@ -664,7 +664,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1, endpoint=1):
 
 print(Flist)
 
-c.render()
+#c.render()
 plt.show()
 
 
@@ -675,11 +675,11 @@ fig, ax = plt.subplots(2, 1, figsize=(10, 10))
 #ax[0].errorbar(tmw, total , np.sqrt( np.array(amperror)**2 + np.array(zerror)**2),
  #                   color="grey", label=r"$\sqrt{\langle \sigma_x \rangle^2 + \langle \sigma_y \rangle^2 + \langle \sigma_z \rangle^2}/2$", markersize="4", marker="s", linestyle="")
 
-ax[0].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
-                    color='black', label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
+#ax[0].errorbar(tmw, -np.array(amp * np.sin(phase)),  np.sqrt((np.array(amperror)*np.sin(np.array(phase)))**2+(np.array(amp)*np.cos(np.array(phase))*np.array(phaseerror))**2),
+  #                  color='black', label=r"$\langle \sigma_x \rangle/2}$", markersize="4", marker="s", linestyle="")
 
-ax[0].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
-                    color='#800080', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
+#ax[0].errorbar(tmw, -np.array(amp * np.cos(phase)),  np.sqrt((np.array(amperror)*np.cos(np.array(phase)))**2+(np.array(amp)*np.sin(np.array(phase))*np.array(phaseerror))**2),
+ #                   color='#800080', label=r"$\langle \sigma_y \rangle/2}$", markersize="4", marker="o", linestyle="")
 
 ax[0].errorbar(tmw, z, zerror, color='#85bb65', label=r"$\langle \sigma_z \rangle/2}$", markersize="5", marker="o",
                   linestyle="")
@@ -714,10 +714,10 @@ ax[0].legend(loc="lower center", fontsize=12)
 
 
 
-ax[1].errorbar(tmw, F2,
-                  label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$",
-                  linestyle="--", markersize="3", marker="o",
-                  color='black')
+#ax[1].errorbar(tmw, F2,
+#                  label=r"$F =\sqrt{ \langle \Psi \vert \rho_{measured} \vert \Psi \rangle}$",
+#                  linestyle="--", markersize="3", marker="o",
+#                  color='black')
 
 ax[1].set_xlabel(r'Time [$1/\Omega_R$]', fontsize=14)
 ax[1].set_ylabel('', fontsize=14)
