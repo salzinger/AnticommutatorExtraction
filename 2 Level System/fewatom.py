@@ -2,21 +2,23 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 
-N = 4
+N = 10
 
 omega = 2 * np.pi * 10 ** (-10)  # MHz
 
-Omega_R = 2 * np.pi  # MHz
+Omega_R = 1 * np.pi   # MHz
 
-gamma = 1 * np.pi  # MHz
+gamma = .8 * np.pi  # MHz
 
-J = 0 * np.pi / N  # MHz
+J = 2 * np.pi / N   # MHz
+
+
 
 bath = "markovian"
 
 endtime = 10
 
-timesteps = 200
+timesteps = 100
 
 pertubation_length = endtime / 1
 
@@ -31,6 +33,8 @@ Exps = [MagnetizationX(N), MagnetizationY(N), MagnetizationZ(N), sigmaz(0, N), s
 
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 init_state = productstateZ(0, 1, N)
+#init_state = productstateX(0, 1, N)
+
 
 pertubation_length = endtime / 1
 perturb_times = np.linspace(0, pertubation_length, timesteps)
@@ -50,6 +54,60 @@ S2 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise))
 
 result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]], init_state,
                   perturb_times, e_ops=Exps, options=opts)
+
+
+
+def func1(x):
+    noise1 = noisy_func(gamma, perturb_times, omega, bath)
+    noise2 = noisy_func(gamma, perturb_times, omega, bath)
+    noise3 = noisy_func(gamma, perturb_times, omega, bath)
+    noise4 = noisy_func(gamma, perturb_times, omega, bath)
+    noise5 = noisy_func(gamma, perturb_times, omega, bath)
+    noise6 = noisy_func(gamma, perturb_times, omega, bath)
+    noise7 = noisy_func(gamma, perturb_times, omega, bath)
+    noise8 = noisy_func(gamma, perturb_times, omega, bath)
+    noise9 = noisy_func(gamma, perturb_times, omega, bath)
+    noise10 = noisy_func(gamma, perturb_times, omega, bath)
+
+    S11 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise1)
+    S12 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise1))
+    S21 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise2)
+    S22 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise2))
+    S31 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise3)
+    S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
+    S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
+    S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
+    S51 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise5)
+    S52 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise5))
+    S61 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise6)
+    S62 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise6))
+    S71 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise7)
+    S72 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise7))
+    S81 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise8)
+    S82 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise8))
+    S91 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise9)
+    S92 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise9))
+    S101 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise10)
+    S102 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise10))
+
+    return mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
+                       [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
+                       [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
+                       [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
+                       [-Omega_R * sigmap(4, N), S31], [-Omega_R * sigmam(4, N), S32],
+                       [-Omega_R * sigmap(5, N), S41], [-Omega_R * sigmam(5, N), S42],
+                    [-Omega_R * sigmap(6, N), S61], [-Omega_R * sigmam(6, N), S62],
+                    [-Omega_R * sigmap(7, N), S41], [-Omega_R * sigmam(7, N), S72],
+                    [-Omega_R * sigmap(8, N), S81], [-Omega_R * sigmam(8, N), S82],
+                    [-Omega_R * sigmap(9, N), S91], [-Omega_R * sigmam(9, N), S92],
+
+                       ], init_state,
+                      perturb_times, e_ops=Exps, options=opts).expect[:]
+
+a = parfor(func1, range(1000))
+
+print(a)
+
 concmean = []
 # for t in range(0, timesteps):
 # concmean.append(concurrence(result2.states[t]))
@@ -63,7 +121,7 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 2:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -129,7 +187,7 @@ ax[0, 0].plot(perturb_times, np.real(expect1[7]), color='blue', label="upup 2nd_
 ax[0, 0].plot(perturb_times, np.real(expect1[8]), color='green', label="upup secondlast atom", linestyle="--")
 ax[0, 0].plot(perturb_times, np.real(expect1[9]), color='orange', label="upup last atom", linestyle="--")
 #ax[0, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
-ax[0, 0].set_ylabel('Expectation Value', fontsize=12)
+ax[0, 0].set_ylabel('Single', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[0, 0].legend(loc="lower center")
 # ax[0, 0].set_ylim([-0.501, -0.499])
@@ -151,16 +209,18 @@ ax[0, 0].legend(loc="lower center")
 
 
 
-Omega_R = 2 * np.pi  # MHz
+#Omega_R = 0 * np.pi  # MHz
 
 #gamma = 0.01 * np.pi  # MHz
 
-J = 1 * np.pi / N  # MHz
+#J = 1 * np.pi / N  # MHz
 
 noise1 = noisy_func(gamma, perturb_times, omega, bath)
 noise2 = noisy_func(gamma, perturb_times, omega, bath)
 noise3 = noisy_func(gamma, perturb_times, omega, bath)
 noise4 = noisy_func(gamma, perturb_times, omega, bath)
+noise5 = noisy_func(gamma, perturb_times, omega, bath)
+noise6 = noisy_func(gamma, perturb_times, omega, bath)
 
 S11 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise1)
 S12 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise1))
@@ -170,11 +230,17 @@ S31 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise3)
 S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
 S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
 S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
+S51 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise5)
+S52 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise5))
+S61 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise6)
+S62 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise6))
 
 result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
                                     [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
-                                    [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
-                                    [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
+                                   [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
+                                [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
+                   [-Omega_R * sigmap(4, N), S31], [-Omega_R * sigmam(4, N), S32],
+                   [-Omega_R * sigmap(5, N), S41], [-Omega_R * sigmam(5, N), S42],
                    ], init_state,
                   perturb_times, e_ops=Exps, options=opts)
 concmean = []
@@ -190,13 +256,15 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 3:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise1 = noisy_func(gamma, perturb_times, omega, bath)
     noise2 = noisy_func(gamma, perturb_times, omega, bath)
     noise3 = noisy_func(gamma, perturb_times, omega, bath)
     noise4 = noisy_func(gamma, perturb_times, omega, bath)
+    noise5 = noisy_func(gamma, perturb_times, omega, bath)
+    noise6 = noisy_func(gamma, perturb_times, omega, bath)
 
     S11 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise1)
     S12 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise1))
@@ -206,11 +274,17 @@ while i < 10:  # averages + int(2 * gamma):
     S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
     S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
     S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
+    S51 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise5)
+    S52 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise5))
+    S61 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise6)
+    S62 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise6))
 
-    result2 = mesolve([H0(omega, J, N), [Omega_R * sigmap(0, N), S11], [Omega_R * sigmam(0, N), S12],
-                                        [Omega_R * sigmap(1, N), S21], [Omega_R * sigmam(1, N), S22],
-                                        [Omega_R * sigmap(2, N), S31], [Omega_R * sigmam(2, N), S32],
-                                        [Omega_R * sigmap(3, N), S41], [Omega_R * sigmam(3, N), S42],
+    result2 = mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
+                       [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
+                       [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
+                       [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
+                       [-Omega_R * sigmap(4, N), S31], [-Omega_R * sigmam(4, N), S32],
+                       [-Omega_R * sigmap(5, N), S41], [-Omega_R * sigmam(5, N), S42],
                        ], init_state,
                       perturb_times, e_ops=Exps, options=opts)
 
@@ -252,6 +326,59 @@ density_matrix = Qobj([[expect2[5][timesteps - 1], expect2[6][timesteps - 1]],
 
 # print(Pmean)
 
+def func1(x):
+
+    noise0 = noisy_func(gamma, perturb_times, omega, bath)
+    noise1 = noisy_func(gamma, perturb_times, omega, bath)
+    noise2 = noisy_func(gamma, perturb_times, omega, bath)
+    noise3 = noisy_func(gamma, perturb_times, omega, bath)
+    noise4 = noisy_func(gamma, perturb_times, omega, bath)
+    noise5 = noisy_func(gamma, perturb_times, omega, bath)
+    noise6 = noisy_func(gamma, perturb_times, omega, bath)
+    noise7 = noisy_func(gamma, perturb_times, omega, bath)
+    noise8 = noisy_func(gamma, perturb_times, omega, bath)
+    noise9 = noisy_func(gamma, perturb_times, omega, bath)
+
+    S01 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise0)
+    S02 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise0))
+    S11 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise1)
+    S12 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise1))
+    S21 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise2)
+    S22 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise2))
+    S31 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise3)
+    S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
+    S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
+    S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
+    S51 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise5)
+    S52 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise5))
+    S61 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise6)
+    S62 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise6))
+    S71 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise7)
+    S72 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise7))
+    S81 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise8)
+    S82 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise8))
+    S91 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise9)
+    S92 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise9))
+
+
+    return mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S01], [-Omega_R * sigmam(0, N), S02],
+                        [-Omega_R * sigmap(1, N), S11], [-Omega_R * sigmam(1, N), S12],
+                        [-Omega_R * sigmap(2, N), S21], [-Omega_R * sigmam(2, N), S22],
+                        [-Omega_R * sigmap(3, N), S31], [-Omega_R * sigmam(3, N), S32],
+                        [-Omega_R * sigmap(4, N), S41], [-Omega_R * sigmam(4, N), S42],
+                        [-Omega_R * sigmap(5, N), S51], [-Omega_R * sigmam(5, N), S52],
+                        [-Omega_R * sigmap(6, N), S61], [-Omega_R * sigmam(6, N), S62],
+                        [-Omega_R * sigmap(7, N), S71], [-Omega_R * sigmam(7, N), S72],
+                        [-Omega_R * sigmap(8, N), S81], [-Omega_R * sigmam(8, N), S82],
+                        [-Omega_R * sigmap(9, N), S91], [-Omega_R * sigmam(9, N), S92],
+
+                       ], init_state,
+                      perturb_times, e_ops=Exps, options=opts).expect[:]
+
+a = parfor(func1, range(1000))
+
+print(a)
+
 
 ax[1, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
 ax[1, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
@@ -266,7 +393,7 @@ ax[1, 0].plot(perturb_times, np.real(expect2[7]), color='blue', label="upup 2nd_
 ax[1, 0].plot(perturb_times, np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
 ax[1, 0].plot(perturb_times, np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
 #ax[1, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
-ax[1, 0].set_ylabel('Expectation Value', fontsize=12)
+ax[1, 0].set_ylabel('Local Noise', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[1, 0].legend(loc="lower center")
 
@@ -279,11 +406,11 @@ ax[1, 0].legend(loc="lower center")
 
 
 
-Omega_R = 2 * np.pi  # MHz
+#Omega_R = 2 * np.pi  # MHz
 
 #gamma = 0.01 * np.pi  # MHz
 
-J = 1 * np.pi / N  # MHz
+#J = 1 * np.pi / N  # MHz
 
 noise = noisy_func(gamma, perturb_times, omega, bath)
 
@@ -305,7 +432,7 @@ Pmean = 0
 
 i = 1
 
-while i < 10:  # averages + int(2 * gamma):
+while i < 3:  # averages + int(2 * gamma):
     print(i)
     i += 1
     noise = noisy_func(gamma, perturb_times, omega, bath)
@@ -370,7 +497,7 @@ ax[2, 0].plot(perturb_times, np.real(expect3[7]), color='blue', label="upup 2nd_
 ax[2, 0].plot(perturb_times, np.real(expect3[8]), color='green', label="upup secondlast atom", linestyle="--")
 ax[2, 0].plot(perturb_times, np.real(expect3[9]), color='orange', label="upup last atom", linestyle="--")
 #ax[2, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
-ax[2, 0].set_ylabel('Expectation Value', fontsize=12)
+ax[2, 0].set_ylabel('Global Noise', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[2, 0].legend(loc="lower center")
 
@@ -391,7 +518,7 @@ ax[3, 0].plot(perturb_times, np.real(expect3[7])-np.real(expect2[7]), color='blu
 ax[3, 0].plot(perturb_times, np.real(expect3[8])-np.real(expect2[8]), color='green', label="upup secondlast atom", linestyle="--")
 ax[3, 0].plot(perturb_times, np.real(expect3[9])-np.real(expect2[9]), color='orange', label="upup last atom", linestyle="--")
 ax[3, 0].set_xlabel('Time [1/Omega_Rabi]', fontsize=12)
-ax[3, 0].set_ylabel('Diff Expectation Value', fontsize=12)
+ax[3, 0].set_ylabel('Diff', fontsize=12)
 # ax[1, 0].plot(perturb_times, np.real(expect_me[1]), label="sigma_z, ME with sqrt(gamma)*L")
 ax[3, 0].legend(loc="lower center")
 
