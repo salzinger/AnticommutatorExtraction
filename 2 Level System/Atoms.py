@@ -120,10 +120,11 @@ def H0(omega, J, N):
         H += 1 * omega / 2 * sigmaz(j, N)  #+ Qobj([[0, 0], [0, 0*2*np.pi*(-0.07)]])
         for i in range(0, N):
             if i != j:
-                if np.abs(i - j) == 1:
-                    H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / (np.abs(i - j)) ** 3
-
-                #H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / (np.random.pareto(3)+1)**3
+                #if np.abs(i - j) == 1:
+                H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / (np.abs(i - j)) ** 3
+                #rando=np.random.pareto(3)+1
+                #print(rando)
+                #H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / ((rando)*np.abs(i - j))**3
                 '''
                 if np.abs(i-j) == 1:
                     H += J * (sigmap(i, N) * sigmam(j, N) + sigmam(i, N) * sigmap(j, N)) / ((np.random.pareto(3)+1)*np.abs(i - j)) ** 3

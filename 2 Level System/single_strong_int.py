@@ -5,13 +5,13 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 plt.rcParams.update({
-  "text.usetex": True,
+  "text.usetex": 0,
 
 })
 
 
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
+#plt.rc('font',**{'family':'serif','serif':['Latin Modern Roman']})
 
 plt.rc('figure', figsize=(11.69, 8.27))
 
@@ -29,7 +29,7 @@ Omega_R = 2 * np.pi * 1 * 10 ** 0  # MHz
 
 gamma = 2 * np.pi * 15.0  # MHz
 
-J = 2 * np.pi * 1.5/15  # MHz
+J = 2 * np.pi * 1/10  # MHz
 
 bath = '10MHz_gamma.txt'
 data = np.loadtxt('10MHz_gamma.txt')
@@ -45,7 +45,7 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 figure = plt.plot()
 c = Bloch(figure)
-c.make_sphere()
+#c.make_sphere()
 
 for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
     print("Omega_R: ", Omega_R)
@@ -136,6 +136,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             min = np.min(data)
             max = np.max(data)
             print(max)
+            '''
             for element in data:
                 if element > -88.5:
                     if element > 1.14:
@@ -148,7 +149,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
                     colorlist.append([1-10/80*element/min, 1-40/80*element/min, 1-1*element/min, 1])
                 else:
                     colorlist.append([0, 0, 0, 1])
-
+            '''
             print(len(colorlist))
             print(len(expect_single[0]))
 
@@ -162,7 +163,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
                     expectsx.append(np.real(expect_single[0][n] * 2))
                     expectsy.append(np.real(expect_single[2][n] * 2))
                     expectsz.append(np.real(expect_single[1][n] * 2))
-                    colors.append(colorlist[n])
+                    #colors.append(colorlist[n])
 
             xz = np.real(expect_single[0]*2)
             yz = np.real(expect_single[2]*2)
@@ -317,7 +318,7 @@ for Omega_R in np.linspace(2*np.pi*1, 2*np.pi*1, 1):
             #plt.savefig("Omega_R =  %.2f.png" % (
             #    Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
-c.render()
+#c.render()
 plt.show()
 
 

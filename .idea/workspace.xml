@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="parallel">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2 Level System/Atoms.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/Atoms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/fewatom.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/fewatom.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2 Level System/single_strong_int.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/single_strong_int.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,17 +37,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.ErrorBudget.executor&quot;: &quot;Run&quot;,
-    &quot;Python.fewatom.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/zenoo/PycharmProjects/AnticommutatorExtraction/2 Level System&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.ErrorBudget.executor": "Run",
+    "Python.fewatom.executor": "Run",
+    "Python.plot_single_int.executor": "Run",
+    "Python.single_strong_int.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/zenoo/PycharmProjects/AnticommutatorExtraction/2 Level System",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\zenoo\PycharmProjects\AnticommutatorExtraction\2 Level System" />
@@ -118,7 +122,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_single_int" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AnticommutatorExtraction" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -131,7 +135,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/2 Level System/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/2 Level System/plot_single_int.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -140,7 +144,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_markov_61S61P" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="single_strong_int" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AnticommutatorExtraction" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -153,7 +157,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/2 Level System/plot_markov_61S61P.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/2 Level System/single_strong_int.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -165,10 +169,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.fewatom" />
+        <item itemvalue="Python.single_strong_int" />
+        <item itemvalue="Python.plot_single_int" />
         <item itemvalue="Python.ErrorBudget" />
         <item itemvalue="Python.concurrence2lvl" />
-        <item itemvalue="Python.plot_markov_61S61P" />
-        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -399,7 +403,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704319581440</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1704624208259</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1704624208259</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -437,6 +449,11 @@
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
           <line>165</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
+          <line>373</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
