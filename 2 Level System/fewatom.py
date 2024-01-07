@@ -57,56 +57,6 @@ result1 = mesolve([H0(omega, J, N), [H1(Omega_R, N), S1], [H2(Omega_R, N), S2]],
 
 
 
-def func1(x):
-    noise1 = noisy_func(gamma, perturb_times, omega, bath)
-    noise2 = noisy_func(gamma, perturb_times, omega, bath)
-    noise3 = noisy_func(gamma, perturb_times, omega, bath)
-    noise4 = noisy_func(gamma, perturb_times, omega, bath)
-    noise5 = noisy_func(gamma, perturb_times, omega, bath)
-    noise6 = noisy_func(gamma, perturb_times, omega, bath)
-    noise7 = noisy_func(gamma, perturb_times, omega, bath)
-    noise8 = noisy_func(gamma, perturb_times, omega, bath)
-    noise9 = noisy_func(gamma, perturb_times, omega, bath)
-    noise10 = noisy_func(gamma, perturb_times, omega, bath)
-
-    S11 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise1)
-    S12 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise1))
-    S21 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise2)
-    S22 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise2))
-    S31 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise3)
-    S32 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise3))
-    S41 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise4)
-    S42 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise4))
-    S51 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise5)
-    S52 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise5))
-    S61 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise6)
-    S62 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise6))
-    S71 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise7)
-    S72 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise7))
-    S81 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise8)
-    S82 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise8))
-    S91 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise9)
-    S92 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise9))
-    S101 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise10)
-    S102 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise10))
-
-    return mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S11], [-Omega_R * sigmam(0, N), S12],
-                       [-Omega_R * sigmap(1, N), S21], [-Omega_R * sigmam(1, N), S22],
-                       [-Omega_R * sigmap(2, N), S31], [-Omega_R * sigmam(2, N), S32],
-                       [-Omega_R * sigmap(3, N), S41], [-Omega_R * sigmam(3, N), S42],
-                       [-Omega_R * sigmap(4, N), S31], [-Omega_R * sigmam(4, N), S32],
-                       [-Omega_R * sigmap(5, N), S41], [-Omega_R * sigmam(5, N), S42],
-                    [-Omega_R * sigmap(6, N), S61], [-Omega_R * sigmam(6, N), S62],
-                    [-Omega_R * sigmap(7, N), S41], [-Omega_R * sigmam(7, N), S72],
-                    [-Omega_R * sigmap(8, N), S81], [-Omega_R * sigmam(8, N), S82],
-                    [-Omega_R * sigmap(9, N), S91], [-Omega_R * sigmam(9, N), S92],
-
-                       ], init_state,
-                      perturb_times, e_ops=Exps, options=opts).expect[:]
-
-a = parfor(func1, range(1000))
-
-print(a)
 
 concmean = []
 # for t in range(0, timesteps):
@@ -360,26 +310,29 @@ def func1(x):
     S91 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise9)
     S92 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise9))
 
+    a_result = mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S01], [-Omega_R * sigmam(0, N), S02],
+             [-Omega_R * sigmap(1, N), S11], [-Omega_R * sigmam(1, N), S12],
+             [-Omega_R * sigmap(2, N), S21], [-Omega_R * sigmam(2, N), S22],
+             [-Omega_R * sigmap(3, N), S31], [-Omega_R * sigmam(3, N), S32],
+             [-Omega_R * sigmap(4, N), S41], [-Omega_R * sigmam(4, N), S42],
+             [-Omega_R * sigmap(5, N), S51], [-Omega_R * sigmam(5, N), S52],
+             [-Omega_R * sigmap(6, N), S61], [-Omega_R * sigmam(6, N), S62],
+             [-Omega_R * sigmap(7, N), S71], [-Omega_R * sigmam(7, N), S72],
+             [-Omega_R * sigmap(8, N), S81], [-Omega_R * sigmam(8, N), S82],
+             [-Omega_R * sigmap(9, N), S91], [-Omega_R * sigmam(9, N), S92],
 
-    return mesolve([H0(omega, J, N), [-Omega_R * sigmap(0, N), S01], [-Omega_R * sigmam(0, N), S02],
-                        [-Omega_R * sigmap(1, N), S11], [-Omega_R * sigmam(1, N), S12],
-                        [-Omega_R * sigmap(2, N), S21], [-Omega_R * sigmam(2, N), S22],
-                        [-Omega_R * sigmap(3, N), S31], [-Omega_R * sigmam(3, N), S32],
-                        [-Omega_R * sigmap(4, N), S41], [-Omega_R * sigmam(4, N), S42],
-                        [-Omega_R * sigmap(5, N), S51], [-Omega_R * sigmam(5, N), S52],
-                        [-Omega_R * sigmap(6, N), S61], [-Omega_R * sigmam(6, N), S62],
-                        [-Omega_R * sigmap(7, N), S71], [-Omega_R * sigmam(7, N), S72],
-                        [-Omega_R * sigmap(8, N), S81], [-Omega_R * sigmam(8, N), S82],
-                        [-Omega_R * sigmap(9, N), S91], [-Omega_R * sigmam(9, N), S92],
-
-                       ], init_state,
-                      perturb_times, e_ops=Exps, options=opts).expect[:]
-
-a = parfor(func1, range(1000))
-
-print(a)
+             ], init_state,
+            perturb_times, e_ops=Exps, options=opts)
 
 
+    return a_result.expect[:] , a_result.states[timesteps - 1]
+
+a_expects, a_states = parfor(func1, range(2))
+
+print("a_expects:" , a_expects[0][2])
+
+
+ax[1, 1].plot(perturb_times,  a_expects[0][2], color='#85bb65', label="mag_z i hope")
 ax[1, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
 ax[1, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
