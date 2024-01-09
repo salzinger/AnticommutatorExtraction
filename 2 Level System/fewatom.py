@@ -3,7 +3,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 N = 10
-averages = 20
+averages = 10
 omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 1 * np.pi   # MHz
@@ -12,10 +12,11 @@ gamma = 0*2/3 * np.pi  # MHz
 
 J = 1 * np.pi / 10   # MHz
 
-for gamma in np.logspace(-2, 1, num=20):
-    print("gamma: ", gamma)
-    for J in np.logspace(-2 , 1, num=20):
+for gamma in np.logspace(-1, 4, num=6, base=np.e):
+    for J in np.logspace(-1 , 1, num=3, base=np.e):
+        print("gamma: ", gamma)
         print("J: ", J)
+
 
         bath = "markovian"
 
@@ -542,7 +543,7 @@ for gamma in np.logspace(-2, 1, num=20):
 
 
         #ax[3, 1].plot(perturb_times, np.real(expect3[2])-np.real(expect2[2]), color='#85bb65', label="mag_z")
-        ax[3, 1].plot(perturb_times, mean-mean1, color='#85bb65', label="mag_z_i_hope")
+        ax[3, 1].plot(perturb_times, mean-mean1, color='#85bb65', label="mag_z_i_diff")
         #ax[3, 1].plot(perturb_times, np.real(expect3[0])-np.real(expect2[0]), color='black', label="mag_x")
         # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
         # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
@@ -560,6 +561,13 @@ for gamma in np.logspace(-2, 1, num=20):
         ax[3, 0].legend(loc="lower center")
 
         #print(np.real(expect3[6]))
+        plt.clf()
+
+        plt.plot(perturb_times, mean1, color='#85bb65', label="mag_z_global_noise", linestyle="-")
+        plt.plot(perturb_times, mean, color='#3A6152', label="mag_z_local_noise", linestyle="--")
+        plt.plot(perturb_times, mean1 - mean, color='grey', label="global - local")
+        #plt.xlabel('Time [2pi/Omega_Rabi]', fontsize=12)
+        plt.legend(loc="lower center")
         #plt.show()
-        plt.savefig("bath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.pdf" % (
+        plt.savefig("bath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.png" % (
                         Omega_R, J, gamma))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
