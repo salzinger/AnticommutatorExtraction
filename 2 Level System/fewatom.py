@@ -13,10 +13,10 @@ gamma = 0*2/3 * np.pi  # MHz
 J = 1 * np.pi / 10   # MHz
 
 for gamma in np.logspace(-2, 3, num=12, base=np.e):
-    for J in np.logspace(-1 , 1, num=2, base=np.e):
+    for J in np.logspace(-1 , 1, num=3, base=np.e):
         print("gamma: ", gamma)
         print("J: ", J)
-        averages=2*int(gamma)+1
+        averages=2*int(gamma)+10
 
 
         bath = "markovian"
@@ -37,7 +37,7 @@ for gamma in np.logspace(-2, 3, num=12, base=np.e):
                 sigmap(0, N), sigmam(0, N), downdown(0, N)]
 
         opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
-        init_state = productstateZ(0, 1, N)
+        init_state = productstateZ(0, 0, N)
         #init_state = productstateX(0, 1, N)
 
 
@@ -510,7 +510,8 @@ for gamma in np.logspace(-2, 3, num=12, base=np.e):
         np.save("StatesGlobalBath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
                         Omega_R, J, gamma), a_expects)
 
-        mean1=a_expects[0][2]
+        mean1 = a_expects[0][2]
+
         for b in range(1,averages*32):
             mean1+=a_expects[b][2]
 
@@ -566,7 +567,7 @@ for gamma in np.logspace(-2, 3, num=12, base=np.e):
 
         plt.plot(perturb_times, mean1, color='#85bb65', label="mag_z_global_noise", linestyle="-")
         plt.plot(perturb_times, mean, color='#3A6152', label="mag_z_local_noise", linestyle="--")
-        plt.plot(perturb_times, mean1 - mean, color='grey', label="global - local")
+        plt.plot(perturb_times, mean1 - mean, color='r', label="global - local")
         #plt.xlabel('Time [2pi/Omega_Rabi]', fontsize=12)
         plt.legend(loc="lower center")
         #plt.show()
