@@ -433,7 +433,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704787600061</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1704788458464</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1704788458464</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -469,22 +477,22 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>165</line>
+          <line>168</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>379</line>
+          <line>387</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>510</line>
+          <line>523</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>530</line>
+          <line>543</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
