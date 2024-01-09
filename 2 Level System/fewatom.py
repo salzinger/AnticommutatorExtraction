@@ -3,7 +3,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 N = 10
-averages=100
+averages = 20
 omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 1 * np.pi   # MHz
@@ -501,7 +501,7 @@ for gamma in np.logspace(-2, 1, num=20):
 
             return a_result.expect[:] , a_result.states[timesteps - 1]
 
-        a_expects, a_states = parfor(func2, range(32*10))
+        a_expects, a_states = parfor(func2, range(32*averages))
 
         np.save("ExpectsGlobalBath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
                         Omega_R, J, gamma), a_expects)
