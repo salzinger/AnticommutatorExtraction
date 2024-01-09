@@ -10,7 +10,7 @@ Omega_R = 1 * np.pi   # MHz
 
 gamma = 0*2/3 * np.pi  # MHz
 
-J = 0 * np.pi / 10   # MHz
+J = 1 * np.pi / 10   # MHz
 
 
 
@@ -365,12 +365,17 @@ def func1(x):
 
 a_expects, a_states = parfor(func1, range(32*6))
 
+mean=a_expects[0][2]
+for b in range(1,6*32):
+    mean+=a_expects[b][2]
+
+mean=mean/6/32
 print("a_expects:" , a_expects[0][2])
 
-print("a_expects:" , np.real(np.mean(a_expects[:][2],axis=0)))
+print("a_expects mean:" , mean)
 
 ax[1, 1].plot(perturb_times,  a_expects[0][0], color='grey', linestyle="--", label="mag_x i hope")
-ax[1, 1].plot(perturb_times,  np.real(np.average(a_expects[:][2],axis=0)), color='#85bb65', linestyle="--", label="mag_z i hope")
+ax[1, 1].plot(perturb_times,  mean, color='#85bb65', linestyle="--", label="mag_z i hope")
 ax[1, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
 #ax[1, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
