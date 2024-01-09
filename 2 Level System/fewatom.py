@@ -3,7 +3,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 N = 10
-
+averages=100
 omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 1 * np.pi   # MHz
@@ -366,7 +366,7 @@ for gamma in np.logspace(-2, 1, num=20):
 
             return a_result.expect[:] , a_result.states[timesteps - 1]
 
-        a_expects, a_states = parfor(func1, range(32*10))
+        a_expects, a_states = parfor(func1, range(32*averages))
 
         np.save("ExpectsLocalBath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
                         Omega_R, J, gamma), a_expects)
@@ -374,10 +374,10 @@ for gamma in np.logspace(-2, 1, num=20):
                         Omega_R, J, gamma), a_expects)
 
         mean=a_expects[0][2]
-        for b in range(1,10*32):
+        for b in range(1,averages*32):
             mean+=a_expects[b][2]
 
-        mean=mean/10/32
+        mean=mean/averages/32
         #print("a_expects:" , a_expects[0][2])
 
         #print("a_expects mean:" , mean)
@@ -509,10 +509,10 @@ for gamma in np.logspace(-2, 1, num=20):
                         Omega_R, J, gamma), a_expects)
 
         mean1=a_expects[0][2]
-        for b in range(1,10*32):
+        for b in range(1,averages*32):
             mean1+=a_expects[b][2]
 
-        mean1=mean1/10/32
+        mean1=mean1/averages/32
         #print("a_expects:" , a_expects[0][2])
 
         #print("a_expects mean:" , mean1)
