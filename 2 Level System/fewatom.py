@@ -363,20 +363,20 @@ def func1(x):
 
     return a_result.expect[:] , a_result.states[timesteps - 1]
 
-a_expects, a_states = parfor(func1, range(32*6))
+a_expects, a_states = parfor(func1, range(32*10))
 
 mean=a_expects[0][2]
-for b in range(1,6*32):
+for b in range(1,10*32):
     mean+=a_expects[b][2]
 
-mean=mean/6/32
+mean=mean/10/32
 print("a_expects:" , a_expects[0][2])
 
 print("a_expects mean:" , mean)
 
-ax[1, 1].plot(perturb_times,  a_expects[0][0], color='grey', linestyle="--", label="mag_x i hope")
-ax[1, 1].plot(perturb_times,  mean, color='#85bb65', linestyle="--", label="mag_z i hope")
-ax[1, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
+#ax[1, 1].plot(perturb_times,  a_expects[0][0], color='grey', linestyle="--", label="mag_x")
+ax[1, 1].plot(perturb_times,  mean, color='#85bb65', label="mag_z")
+#ax[1, 1].plot(perturb_times, np.real(expect2[2]), color='#85bb65', label="mag_z")
 #ax[1, 1].plot(perturb_times, np.real(expect2[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
@@ -479,9 +479,36 @@ density_matrix = Qobj([[expect3[5][timesteps - 1], expect3[6][timesteps - 1]],
 
 # print(Pmean)
 
+def func2(x):
 
-ax[2, 1].plot(perturb_times, np.real(expect3[2]), color='#85bb65', label="mag_z")
-ax[2, 1].plot(perturb_times, np.real(expect3[0]), color='black', label="mag_x")
+    noise0 = noisy_func(gamma, perturb_times, omega, bath)
+
+    S01 = Cubic_Spline(perturb_times[0], perturb_times[-1], noise0)
+    S02 = Cubic_Spline(perturb_times[0], perturb_times[-1], np.conj(noise0))
+
+
+    a_result = mesolve([H0(omega, J, N), [H1(Omega_R, N), S01], [H2(Omega_R, N), S02]], init_state,
+            perturb_times, e_ops=Exps, options=opts)
+
+
+    return a_result.expect[:] , a_result.states[timesteps - 1]
+
+a_expects, a_states = parfor(func2, range(32*10))
+
+mean1=a_expects[0][2]
+for b in range(1,10*32):
+    mean1+=a_expects[b][2]
+
+mean1=mean1/10/32
+print("a_expects:" , a_expects[0][2])
+
+print("a_expects mean:" , mean1)
+
+
+#ax[2, 1].plot(perturb_times, np.real(expect3[2]), color='#85bb65', label="mag_z")
+#ax[2, 1].plot(perturb_times, np.real(expect3[0]), color='black', label="mag_x")
+ax[2, 1].plot(perturb_times, mean1, color='#85bb65', label="mag_z", linestyle="--")
+#ax[2, 1].plot(perturb_times, np.real(expect3[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 ax[2, 1].legend(loc="lower center")
@@ -501,8 +528,9 @@ ax[2, 0].legend(loc="lower center")
 
 
 
-ax[3, 1].plot(perturb_times, np.real(expect3[2])-np.real(expect2[2]), color='#85bb65', label="mag_z")
-ax[3, 1].plot(perturb_times, np.real(expect3[0])-np.real(expect2[0]), color='black', label="mag_x")
+#ax[3, 1].plot(perturb_times, np.real(expect3[2])-np.real(expect2[2]), color='#85bb65', label="mag_z")
+ax[3, 1].plot(perturb_times, mean-mean1, color='#85bb65', label="mag_z_i_hope")
+#ax[3, 1].plot(perturb_times, np.real(expect3[0])-np.real(expect2[0]), color='black', label="mag_x")
 # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
 ax[3, 1].legend(loc="lower center")
