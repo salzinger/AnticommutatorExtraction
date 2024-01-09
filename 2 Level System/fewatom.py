@@ -12,8 +12,8 @@ gamma = 0*2/3 * np.pi  # MHz
 
 J = 1 * np.pi / 10   # MHz
 
-for gamma in np.logspace(-1, 4, num=6, base=np.e):
-    for J in np.logspace(-1 , 1, num=3, base=np.e):
+for gamma in np.logspace(-2, 4, num=16, base=np.e):
+    for J in np.logspace(-0 , 1, num=2, base=np.e):
         print("gamma: ", gamma)
         print("J: ", J)
 
