@@ -12,9 +12,9 @@ gamma = 0*2/3 * np.pi  # MHz
 
 J = 1 * np.pi / 10   # MHz
 
-for gamma in np.linspace(0*2/3 * np.pi, 10*2/3 * np.pi, num=10):
+for gamma in np.logspace(-2, 1, num=20):
     print("gamma: ", gamma)
-    for J in np.logspace(0 * np.pi / 10, 10 * np.pi / 10, num=10):
+    for J in np.logspace(-2 , 1, num=20):
         print("J: ", J)
 
         bath = "markovian"
@@ -378,9 +378,9 @@ for gamma in np.linspace(0*2/3 * np.pi, 10*2/3 * np.pi, num=10):
             mean+=a_expects[b][2]
 
         mean=mean/10/32
-        print("a_expects:" , a_expects[0][2])
+        #print("a_expects:" , a_expects[0][2])
 
-        print("a_expects mean:" , mean)
+        #print("a_expects mean:" , mean)
 
         #ax[1, 1].plot(perturb_times,  a_expects[0][0], color='grey', linestyle="--", label="mag_x")
         ax[1, 1].plot(perturb_times,  mean, color='#85bb65', label="mag_z")
@@ -513,9 +513,9 @@ for gamma in np.linspace(0*2/3 * np.pi, 10*2/3 * np.pi, num=10):
             mean1+=a_expects[b][2]
 
         mean1=mean1/10/32
-        print("a_expects:" , a_expects[0][2])
+        #print("a_expects:" , a_expects[0][2])
 
-        print("a_expects mean:" , mean1)
+        #print("a_expects mean:" , mean1)
 
 
         #ax[2, 1].plot(perturb_times, np.real(expect3[2]), color='#85bb65', label="mag_z")
