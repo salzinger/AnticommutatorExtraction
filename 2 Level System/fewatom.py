@@ -3,7 +3,7 @@ from Driving import *
 import matplotlib.pyplot as plt
 
 N = 10
-averages = 10
+averages = 20
 omega = 2 * np.pi * 10 ** (-10)  # MHz
 
 Omega_R = 1 * np.pi   # MHz
