@@ -12,12 +12,15 @@ gamma = 0*2/3 * np.pi  # MHz
 
 J = 1 * np.pi / 10   # MHz
 
-for gamma in np.logspace(-3, 3, num=24, base=np.e):
-    for J in np.logspace(-1 , 1, num=1, base=np.e):
+#for gamma in np.logspace(-2, 1, num=4, base=10):
+for gamma in np.linspace(np.pi/15,2*np.pi,20):
+    for J in np.logspace(-1 , 0, num=1, base=10):
+        J = 1 * np.pi
+        #gamma = gamma * np.pi
         print("gamma: ", gamma)
         print("J: ", J)
-        averages=2*int(gamma)+10
-        J = 1 * np.pi / 10
+        averages=2*int(gamma)+20
+
 
 
         bath = "markovian"
@@ -504,7 +507,7 @@ for gamma in np.logspace(-3, 3, num=24, base=np.e):
 
             return a_result.expect[:] , a_result.states[timesteps - 1]
 
-        a_expects, a_states = parfor(func2, range(32*averages*4))
+        a_expects, a_states = parfor(func2, range(32*averages*10))
 
         np.save("ExpectsGlobalBath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
                         Omega_R, J, gamma), a_expects)
@@ -513,10 +516,10 @@ for gamma in np.logspace(-3, 3, num=24, base=np.e):
 
         mean1 = a_expects[0][2]
 
-        for b in range(1,averages*32*4):
+        for b in range(1,averages*32*10):
             mean1+=a_expects[b][2]
 
-        mean1=mean1/averages/32/4
+        mean1=mean1/averages/32/10
         #print("a_expects:" , a_expects[0][2])
 
         #print("a_expects mean:" , mean1)
@@ -546,7 +549,7 @@ for gamma in np.logspace(-3, 3, num=24, base=np.e):
 
 
         #ax[3, 1].plot(perturb_times, np.real(expect3[2])-np.real(expect2[2]), color='#85bb65', label="mag_z")
-        ax[3, 1].plot(perturb_times, mean-mean1, color='#85bb65', label="mag_z_i_diff")
+        #ax[3, 1].plot(perturb_times, mean-mean1, color='#85bb65', label="mag_z_i_diff")
         #ax[3, 1].plot(perturb_times, np.real(expect3[0])-np.real(expect2[0]), color='black', label="mag_x")
         # ax[1, 1].plot(perturb_times, (-0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
         # ax[1, 1].plot(perturb_times, (0.25)*np.ones_like(perturb_times), color='black', linestyle="--")
@@ -568,8 +571,8 @@ for gamma in np.logspace(-3, 3, num=24, base=np.e):
 
         plt.plot(perturb_times, mean1, color='#85bb65', label="mag_z_global_noise", linestyle="-")
         plt.plot(perturb_times, mean, color='#3A6152', label="mag_z_local_noise", linestyle="--")
-        plt.plot(perturb_times, mean1 - mean, color='r', label="global - local")
-        plt.ylim([-0.51, 0.51])
+        #plt.plot(perturb_times, mean1 - mean, color='r', label="global - local")
+        plt.ylim([-0.55, 0.55])
         #plt.xlabel('Time [2pi/Omega_Rabi]', fontsize=12)
         plt.legend(loc="lower center")
         #plt.show()
