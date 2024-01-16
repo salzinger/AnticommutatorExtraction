@@ -13,10 +13,10 @@ gamma = 0*2/3 * np.pi  # MHz
 J = 1 * np.pi / 10   # MHz
 
 #for gamma in np.logspace(-2, 1, num=4, base=10):
-for gamma in np.linspace(1,1.5,3):
+for gamma in np.linspace(0.41,0.55,10):
     for J in np.logspace(-1 , 0, num=1, base=10):
         J = 1 * np.pi
-        gamma = gamma / np.pi
+        #gamma = gamma / np.pi
         print("gamma: ", gamma)
         print("J: ", J)
         averages=2*int(gamma)+20
@@ -572,7 +572,8 @@ for gamma in np.linspace(1,1.5,3):
         plt.plot(perturb_times, mean1, color='#85bb65', label="mag_z_global_noise", linestyle="-")
         plt.plot(perturb_times, mean, color='#3A6152', label="mag_z_local_noise", linestyle="--")
         #plt.plot(perturb_times, mean1 - mean, color='r', label="global - local")
-        plt.ylim([-0.6, 0.6])
+        plt.ylim([-0.52, 0.52])
+        plt.yticks(ticks=np.array([-0.5, 0., 0.5]))
         #plt.xlabel('Time [2pi/Omega_Rabi]', fontsize=12)
         plt.legend(loc="lower center")
         #plt.show()
