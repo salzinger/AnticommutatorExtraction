@@ -35,19 +35,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.ErrorBudget.executor&quot;: &quot;Run&quot;,
-    &quot;Python.fewatom.executor&quot;: &quot;Run&quot;,
-    &quot;Python.plot_single_int.executor&quot;: &quot;Run&quot;,
-    &quot;Python.single_strong_int.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/zenoo/PycharmProjects/AnticommutatorExtraction/2 Level System&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.ErrorBudget.executor": "Run",
+    "Python.fewatom.executor": "Debug",
+    "Python.plot_single_int.executor": "Run",
+    "Python.single_strong_int.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/zenoo/PycharmProjects/AnticommutatorExtraction/2 Level System",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\zenoo\PycharmProjects\AnticommutatorExtraction\2 Level System" />
@@ -393,14 +393,6 @@
       <option name="project" value="LOCAL" />
       <updated>1703511967492</updated>
     </task>
-    <task id="LOCAL-00032" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704657403174</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1704657403174</updated>
-    </task>
     <task id="LOCAL-00033" summary="parallel">
       <option name="closed" value="true" />
       <created>1704661627036</created>
@@ -553,7 +545,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705438991288</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705510587881</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1705510587881</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
