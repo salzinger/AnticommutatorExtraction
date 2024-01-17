@@ -508,7 +508,7 @@ for gamma in [0.5,1,np.pi,2*np.pi]:#np.linspace(6.13,10.61,4):
 
             return a_result.expect[:] , a_result.states[timesteps - 1]
 
-        a_expects, a_states = parfor(func2, range(32*averages*5))
+        a_expects, a_states = parfor(func2, range(32*averages*10))
 
         np.save("ExpectsGlobalBath" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
                         Omega_R, J, gamma), a_expects)
@@ -517,10 +517,10 @@ for gamma in [0.5,1,np.pi,2*np.pi]:#np.linspace(6.13,10.61,4):
 
         mean1 = a_expects[0][2]
 
-        for b in range(1,averages*32*5):
+        for b in range(1,averages*32*10):
             mean1+=a_expects[b][2]
 
-        mean1=mean1/averages/32/5
+        mean1=mean1/averages/32/10
         #print("a_expects:" , a_expects[0][2])
 
         #print("a_expects mean:" , mean1)
