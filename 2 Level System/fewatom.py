@@ -15,7 +15,7 @@ J = 1 * np.pi / 10   # MHz
 #for gamma in np.logspace(-2, 1, num=4, base=10):
 for gamma in [0.01,0.1,0.3,0.4,0.5,1,np.pi,2*np.pi,3*np.pi]:#np.linspace(6.13,10.61,4):
     for J in np.logspace(-1 , 0, num=1, base=10):
-        J = 1 * np.pi
+        J = np.pi/10
         #gamma = gamma / np.pi
         print("gamma: ", gamma)
         print("J: ", J)
