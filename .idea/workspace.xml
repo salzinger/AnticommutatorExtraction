@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="parallel">
-      <change beforePath="$PROJECT_DIR$/2 Level System/fewatom.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/fewatom.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +37,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.ErrorBudget.executor": "Run",
-    "Python.fewatom.executor": "Debug",
+    "Python.fewatom.executor": "Run",
     "Python.plot_single_int.executor": "Run",
     "Python.single_strong_int.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
@@ -392,14 +392,6 @@
       <option name="project" value="LOCAL" />
       <updated>1703511967492</updated>
     </task>
-    <task id="LOCAL-00036" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704789119003</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1704789119003</updated>
-    </task>
     <task id="LOCAL-00037" summary="parallel">
       <option name="closed" value="true" />
       <created>1704796678243</created>
@@ -552,7 +544,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705512429524</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705512710950</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1705512710950</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
