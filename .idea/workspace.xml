@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="parallel">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/fewatom.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/fewatom.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -393,30 +392,6 @@
       <option name="project" value="LOCAL" />
       <updated>1703511967492</updated>
     </task>
-    <task id="LOCAL-00033" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704661627036</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1704661627036</updated>
-    </task>
-    <task id="LOCAL-00034" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704787600061</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1704787600061</updated>
-    </task>
-    <task id="LOCAL-00035" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704788458464</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1704788458464</updated>
-    </task>
     <task id="LOCAL-00036" summary="parallel">
       <option name="closed" value="true" />
       <created>1704789119003</created>
@@ -553,7 +528,31 @@
       <option name="project" value="LOCAL" />
       <updated>1705510587881</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705512387355</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1705512387355</updated>
+    </task>
+    <task id="LOCAL-00054" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705512396914</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1705512396914</updated>
+    </task>
+    <task id="LOCAL-00055" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705512429524</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1705512429524</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
