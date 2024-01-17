@@ -13,13 +13,14 @@ gamma = 0*2/3 * np.pi  # MHz
 J = 1 * np.pi / 10   # MHz
 
 #for gamma in np.logspace(-2, 1, num=4, base=10):
-for gamma in np.linspace(0.31,0.61,30):
+for gamma in np.linspace(0.51,10.61,10):
     for J in np.logspace(-1 , 0, num=1, base=10):
         J = 1 * np.pi
         #gamma = gamma / np.pi
         print("gamma: ", gamma)
         print("J: ", J)
         averages=2*int(gamma)+20
+        print(averages)
 
 
 
