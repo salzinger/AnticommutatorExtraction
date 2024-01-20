@@ -19,7 +19,7 @@ for gamma in [np.pi/6,np.pi/3,np.pi,2*np.pi]:#np.linspace(6.13,10.61,4):
         #gamma = gamma / np.pi
         print("gamma: ", gamma)
         print("J: ", J)
-        averages=2*int(gamma)+100
+        averages=10*int(gamma)+100
         print(averages)
 
 
