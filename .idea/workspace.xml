@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="parallel">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/2 Level System/fewatom.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/fewatom.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -392,14 +393,6 @@
       <option name="project" value="LOCAL" />
       <updated>1703511967492</updated>
     </task>
-    <task id="LOCAL-00043" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1704821650434</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1704821650434</updated>
-    </task>
     <task id="LOCAL-00044" summary="parallel">
       <option name="closed" value="true" />
       <created>1704823933306</created>
@@ -552,7 +545,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705783271163</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705785801126</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1705785801126</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -588,22 +589,22 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>175</line>
+          <line>152</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>394</line>
+          <line>372</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>531</line>
+          <line>500</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/2 Level System/fewatom.py</url>
-          <line>551</line>
+          <line>516</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
