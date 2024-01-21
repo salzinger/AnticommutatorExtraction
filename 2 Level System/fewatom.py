@@ -353,9 +353,9 @@ for gamma in [np.pi / 6, np.pi / 3, np.pi, 2 * np.pi]:  # np.linspace(6.13,10.61
 
         a_expects, a_states = parfor(func1, range(32 * averages))
 
-        np.save("ExpectsLocalBath2" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
+        np.save("ExpectsLocalBath4" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
             Omega_R, J, gamma), a_expects)
-        np.save("StatesLocalBath2" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
+        np.save("StatesLocalBath4" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
             Omega_R, J, gamma), a_states)
 
         mean = a_expects[0][2]
@@ -480,9 +480,9 @@ for gamma in [np.pi / 6, np.pi / 3, np.pi, 2 * np.pi]:  # np.linspace(6.13,10.61
 
         a_expects, a_states = parfor(func2, range(32 * averages * 10))
 
-        np.save("ExpectsGlobalBath2" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
+        np.save("ExpectsGlobalBath4" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
             Omega_R, J, gamma), a_expects)
-        np.save("StatesGlobalBath2" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
+        np.save("StatesGlobalBath4" + bath + ", Omega_R =  %.2f, J =  %.2f,gamma = %.2f.npy" % (
             Omega_R, J, gamma), a_states)
 
         mean1 = a_expects[0][2]
