@@ -177,7 +177,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95" />
+        <option value="bundled-python-sdk-5a2391486177-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13763.11" />
       </set>
     </attachedChunks>
   </component>
@@ -393,14 +393,6 @@
       <option name="project" value="LOCAL" />
       <updated>1703511967492</updated>
     </task>
-    <task id="LOCAL-00045" summary="parallel">
-      <option name="closed" value="true" />
-      <created>1705063250200</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1705063250201</updated>
-    </task>
     <task id="LOCAL-00046" summary="parallel">
       <option name="closed" value="true" />
       <created>1705066382723</created>
@@ -553,7 +545,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705837804793</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="parallel">
+      <option name="closed" value="true" />
+      <created>1705854825771</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1705854825771</updated>
+    </task>
+    <option name="localTasksCounter" value="66" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
