@@ -891,12 +891,31 @@ print("SpectrumMaxRatio: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)))
 
-print("SpectrumRatioAtOmega1: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+print("SpectrumRatioAtOmega1: ", (0.1663*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2))
-      /np.max(0.1407*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+      /(0.1407*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2)))
+
+print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * np.random.randn(100000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2))
+      /((0.1407+0.0129 * np.random.randn(100000))*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2)) ))
+
+print("arctan SpetrumRatioAtOmega1", np.arctanh(0.9998756287406783))
+
+print("MonteCarlo STD arctan SpetrumRatioAtOmega1", np.nanstd(np.arctanh(0.9998756287406783+0.11 * np.random.randn(100000))))
+
+print("1/arctan", 1/(2*4.84))
+
+print("1/arctan", 1/(2*4.84)*(0.57/4.84))
+
+print("e^(-2*4.84)", np.exp(-2*4.84))
+
+print("Monte Carlo STD e^(-2*4.84)", np.nanstd(np.exp(  -2*(4.84+0.57*np.random.randn(100000))  )) )
 
 
 
