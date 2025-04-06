@@ -219,7 +219,10 @@ dmodel = Model(damped_sine)
 result = dmodel.fit(y, params, weights=np.ones_like(y3) / y3e[0], t=x)
 print(result.fit_report())
 
+herm_fitted_amplitude = result.params.get("a").value
+print(herm_fitted_amplitude)
 params1 = Parameters()
+
 params1.add('a', value=0.1)
 #params1.add('d', value=0.01, min=0)
 #params1.add('p', value=0)
@@ -228,6 +231,10 @@ params1.add('a', value=0.1)
 dmodel1 = Model(damped_cosine)
 result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3) / y3e[0], t=x)
 print(result1.fit_report())
+
+print(result1.params)
+nonherm_fitted_amplitude=result1.params.get("a").value
+print(nonherm_fitted_amplitude)
 
 # result.plot_fit(show_init=True)
 
@@ -620,6 +627,10 @@ result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[i
                     np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)])))
 print(result.fit_report())
 
+print(nonherm_fitted_amplitude)
+print("nonhermfactor*fit result cos", nonhermfactor*nonherm_fitted_amplitude)
+print("hermfactor*fit result sin", hermfactor*herm_fitted_amplitude)
+
 print("residual vector: ", result.residual)
 
 print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[166:int(len(ynhf0) / 2 - 333)])
@@ -856,13 +867,36 @@ ax1.errorbar(om, 0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.co
                    label=r"Dissipative susceptibility $\hbar\chi^{\prime\prime}(\omega)$")
 
 
+print("SpectrumHermMax: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2)))
 
-print("MaxRatio: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
+print("SpectrumHermAtOmega1: ", 0.1663*hermfactor * (Omega * np.sin(2 * np.pi * 1.0001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0001 * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0001 * T))
+                  / ((1.0001) ** 2 - Omega ** 2))
+
+
+print("SpectrumNonHermMax: ", np.max(0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
+                  / ((om) ** 2 - Omega ** 2)))
+
+print("SpectrumNonHermAtOmega1: ", 0.1407*nonhermfactor * (1.0001 * np.sin(2 * np.pi * 1.0001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0001 * T))
+                  / ((1.0001) ** 2 - Omega ** 2))
+
+print("SpectrumMaxRatio: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - om * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2))
       /np.max(0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * om * T))
                   / ((om) ** 2 - Omega ** 2)))
+
+print("SpectrumRatioAtOmega1: ", np.max(0.1663*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2))
+      /np.max(0.1407*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2)))
 
 
 

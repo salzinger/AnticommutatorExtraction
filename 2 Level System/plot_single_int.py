@@ -33,7 +33,7 @@ Exps = [MagnetizationX(N), MagnetizationZ(N), MagnetizationY(N), sigmaz(0, N), s
 opts = Options(store_states=True, store_final_state=True)  # , nsteps=50000)
 figure = plt.plot()
 c = Bloch(figure)
-c.make_sphere()
+#c.make_sphere()
 
 for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
     print("Omega_R: ", Omega_R)
@@ -293,6 +293,6 @@ for Omega_R in np.linspace(2*np.pi*15, 2*np.pi*15, 1):
             #plt.savefig("Omega_R =  %.2f.png" % (
             #    Omega_R))  # and BW %.2f.pdf" % (noise_amplitude, bandwidth))
 
-c.render()
+#c.render()
 plt.show()
 
