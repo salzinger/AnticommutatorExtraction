@@ -13,6 +13,44 @@ plt.rcParams.update({
     "font.family": "sans-serif",
 })
 
+def jackknife(x, estimator):
+    """Jackknife method for estimating statistics of (non-linear) functions of averages of one or more random variables.
+
+    Parameters
+    ----------
+    x : array_like
+        Array of shape `(num_samples, ...)` containing the samples.
+    estimator : callable
+        Function with signature `theta = estimator(xs)` returning an estimator `theta` of the parameters of interest
+        given a subset `xs` of the samples.
+
+    Returns
+    -------
+    pseudovalues : ndarray
+        Array of shape `(num_samples, *theta.shape)` containing the jackknife pseudovalues.
+
+    Note
+    ----
+    The bias-corrected jackknife estimate is given by `pseudovalues.mean(axis=0)`.
+    The standard error of the jackknife estimate is `pseudovalues.std(axis=0, ddof=1) / np.sqrt(pseudovalues.shape[0])`.
+
+    """
+    x = np.atleast_1d(x)
+    n = x.shape[0]
+    if n <= 1:
+        raise ValueError("number of samples must be larger than 1")
+
+    theta_raw = np.asarray(estimator(x))
+
+    jackknife_replicates = np.zeros_like(theta_raw, shape=(n, *np.shape(theta_raw)))
+    for i in range(n):
+        mask = np.ones(n, dtype=bool)
+        mask[i] = False
+        leave_one_out_samples = x[mask, ...]
+        theta = estimator(leave_one_out_samples)
+        jackknife_replicates[i] = theta
+
+    return n * theta_raw - (n - 1) * jackknife_replicates
 
 def configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True):
     if usetex:
@@ -896,29 +934,39 @@ print("SpectrumRatioAtOmega1: ", (0.1663*hermfactor * (Omega * np.sin(2 * np.pi 
                   / ((1.0000001) ** 2 - Omega ** 2))
       /(0.1407*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
-                  / ((1.0000001) ** 2 - Omega ** 2)))
+                  / ((1.0000001) ** 2 - Omega ** 2))) # =0.9998756
 
-print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * np.random.randn(100000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+print("Amplitude Ratio: ", (0.1663*hermfactor )/(0.1407*nonhermfactor)) # =0.9998756
+
+print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2))
-      /((0.1407+0.0129 * np.random.randn(100000))*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+      /((0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
-                  / ((1.0000001) ** 2 - Omega ** 2)) ))
+                  / ((1.0000001) ** 2 - Omega ** 2)) )) # =0.11
 
-print("arctan SpetrumRatioAtOmega1", np.arctanh(0.9998756287406783))
+print("arctan(SpetrumRatioAtOmega1)", np.arctanh(0.9998756287406783)) # =4.84
 
-print("MonteCarlo STD arctan SpetrumRatioAtOmega1", np.nanstd(np.arctanh(0.9998756287406783+0.11 * np.random.randn(100000))))
-
-print("1/arctan", 1/(2*4.84))
-
-print("1/arctan", 1/(2*4.84)*(0.57/4.84))
-
-print("e^(-2*4.84)", np.exp(-2*4.84))
-
-print("Monte Carlo STD e^(-2*4.84)", np.nanstd(np.exp(  -2*(4.84+0.57*np.random.randn(100000))  )) )
+print("MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(0.9998756287406783+0.11 * np.random.randn(1000000)))) # =0.57
 
 
+print("Direct MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2))
+      /((0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
+    2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
+                  / ((1.0000001) ** 2 - Omega ** 2)) ))) # = 0.57
 
+print("1/arctan", 1/(2*4.84)) # =0.1
+
+print("Error on 1/arctan", 1/(2*4.84)*(0.57/4.84)) # =0.012
+
+print("e^(-2*4.84)", np.exp(-2*4.84) ) # =6.25*10^-5
+
+print("Monte Carlo STD e^(-2*4.84)", np.nanstd(np.exp(  -2*(4.84+0.57*np.random.randn(1000000))  )) ) # =20*10^-5
+
+
+#Temp=10**(-5)
 
 
 ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
@@ -927,7 +975,7 @@ ax1.errorbar(om, 0.1407*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.co
 *np.tanh(prefactor * om / Temp)#(1 - 2 / (np.exp(
                  #prefactor * om / Temp) + 1))
              , marker="", color='blue', linestyle='--', markersize="1",
-                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = 0.11 \hbar \Omega_R$")
+                   label=r"$S(\omega)\tanh(\frac{\hbar \omega}{2k_B T})$ for $k_B T = \hbar \Omega_R/10$")
 
 '''
 ax1.fill_between(om,(0.1407-0.013)*nonhermfactor * (om * np.sin(2 * np.pi * om * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
