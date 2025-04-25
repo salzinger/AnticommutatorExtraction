@@ -185,13 +185,6 @@
       <option name="presentableId" value="Default" />
       <updated>1659634219673</updated>
     </task>
-    <task id="LOCAL-00003" summary="dft">
-      <created>1685040862493</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1685040862493</updated>
-    </task>
     <task id="LOCAL-00004" summary="dft vs new analytic ft">
       <created>1685106295382</created>
       <option name="number" value="00004" />
@@ -548,7 +541,14 @@
       <option name="project" value="LOCAL" />
       <updated>1743939276715</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Monte Carlo">
+      <created>1744998706068</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1744998706068</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
