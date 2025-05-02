@@ -936,9 +936,12 @@ print("SpectrumRatioAtOmega1: ", (0.1663*hermfactor * (Omega * np.sin(2 * np.pi 
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2))) # =0.9998756
 
-print("Amplitude Ratio: ", (0.1663*hermfactor )/(0.1407*nonhermfactor)*1.12196) # =0.999873
+print("Amplitude Ratio: ", (0.1663*hermfactor)/(0.1407*nonhermfactor)*1.12196) # =0.999873
 
-print("Amplitude Ratio Error: ", (0.1663*hermfactor)/(0.1407*nonhermfactor) * 1.12196 * np.sqrt(0.0093**2 / 0.1663**2 + 0.0129**2 / 0.1407**2)) # =0.107
+print("Gauss Amplitude Ratio Error: ", (0.1663*hermfactor)/(0.1407*nonhermfactor) * 1.12196 * np.sqrt(0.0093**2 / 0.1663**2 + 0.0129**2 / 0.1407**2)) # =0.107
+
+print("MonteCarlo Amplitude Ratio Error", np.nanstd( np.arctanh( (0.1663+0.0093 * np.random.randn(1000000))*hermfactor
+                                                                           / ( (0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor) * 1.12196) ) ) # =0.57
 
 print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
@@ -949,7 +952,22 @@ print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * n
 
 print("arctan(SpetrumRatioAtOmega1)", np.arctanh(0.9998756287406783)) # =4.84
 
-print("MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(0.9998756287406783+0.11 * np.random.randn(1000000)))) # =0.57
+print("MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd( np.arctanh(0.9998756287406783+0.11 * np.random.randn(1000000)) ) ) # =0.57
+
+x = 0.1663 * hermfactor
+x_err = 0.0093 * hermfactor
+y = 0.1407 * nonhermfactor
+y_err = 0.0129 * nonhermfactor
+a = 1.12196
+
+print( ( a*x / ((a*x)**2 - y**2) ) * (0.0129*nonhermfactor) )
+print( ( a*y / (y**2 - (a*x)**2) ) * (0.0093*hermfactor) )
+
+print("Gauss Error arctan(amplitude ratio)", np.sqrt( (( a*x / ((a*x)**2 - y**2) )**2) * (0.0129*nonhermfactor)**2 +
+                                                      (( a*y / (y**2 - (a*x)**2) )**2) * (0.0093*hermfactor)**2))# =423
+
+
+print("Gauss Error on hbar Omega / k_b T  = ", a * np.sqrt( ( (y*x_err)**2 + (x*y_err)**2 ) / ( (a*x)**2-y**2 )**2 )   )
 
 print("Direct MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
