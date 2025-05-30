@@ -81,7 +81,9 @@ t = np.append(t, np.linspace(t_min, t_max, num=num_points))
 
 #print("t-array=", t)
 
-sz = harmonic_oscillation(t, omega_rabi, amp=amp, phi=phi, offset=offset)
+sz = harmonic_oscillation(t[9:19], omega_rabi, amp=amp, phi=phi, offset=offset)
+
+sz = np.append(sz, minus_sine(t[0:9], omega_rabi, amp=amp, phi=phi, offset=offset))
 
 # generate random samples with normally distributed errors
 num_samples = 50
@@ -101,14 +103,14 @@ ax.errorbar(t * omega_rabi / (2.0 * np.pi), sz_mean, sz_sem, linestyle="None", m
 
 ax.fill_between(t * omega_rabi / (2.0 * np.pi), sz_mean + sz_std, sz_mean - sz_std, alpha=0.25)
 
-popt, pcov = curve_fit(harmonic_oscillation, t, sz_mean, sigma=sz_sem, absolute_sigma=True)
+popt, pcov = curve_fit(harmonic_oscillation, t[0:9], sz_mean[0:9], sigma=sz_sem[0:9], absolute_sigma=True)
 
-t_plot = np.linspace(t_min, t_max, num=1000)
-ax.plot(t_plot * omega_rabi / (2.0 * np.pi), harmonic_oscillation(t_plot, *popt), color="tab:orange")
+t_plot = np.linspace(0, t_max, num=1000)
+ax.plot(t_plot[0:500] * omega_rabi / (2.0 * np.pi), harmonic_oscillation(t_plot[0:500], *popt), color="tab:orange")
 
-popt1, pcov1 = curve_fit(minus_sine, t, sz_mean, sigma=sz_sem, absolute_sigma=True)
+popt1, pcov1 = curve_fit(minus_sine, t[9:19], sz_mean[9:19], sigma=sz_sem[9:19], absolute_sigma=True)
 
-ax.plot(t_plot * omega_rabi / (2.0 * np.pi), minus_sine(t_plot, *popt1), color="tab:green")
+ax.plot(t_plot[500:1000] * omega_rabi / (2.0 * np.pi), minus_sine(t_plot[500:1000], *popt1), color="tab:green")
 
 ax.set_xlabel(r"$\Omega_R t / 2\pi$")
 ax.set_ylabel(r"$\langle s_z \rangle$")
@@ -184,8 +186,8 @@ plt.close(f)
 def fit_and_arctanh(t, y):
     y = np.mean(y, axis=0)
 
-    popt_sin, _ = curve_fit(minus_sine, t[0:9], y[0:9])
-    popt_cos, _ = curve_fit(harmonic_oscillation, t[9:19], y[9:19])
+    popt_sin, _ = curve_fit(minus_sine, t[9:19], y[9:19])
+    popt_cos, _ = curve_fit(harmonic_oscillation, t[0:9], y[0:9])
 
     return popt_sin[1] / popt_cos[1] #np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
