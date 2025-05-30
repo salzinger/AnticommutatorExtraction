@@ -5,6 +5,11 @@ from Driving import *
 import matplotlib.pyplot as plt
 from scipy import integrate
 
+from scipy.optimize import curve_fit
+from scipy.integrate import trapezoid
+
+import matplotlib.pyplot as plt
+
 from lmfit import Model, Parameters
 
 
@@ -51,6 +56,137 @@ def jackknife(x, estimator):
         jackknife_replicates[i] = theta
 
     return n * theta_raw - (n - 1) * jackknife_replicates
+
+
+def harmonic_oscillation(t, omega, amp=1.0, phi=0.0, offset=0.0):
+    return offset + amp * np.cos(omega * t + phi)
+
+amp = 0.15
+omega_rabi = 1.0
+phi = 0.0
+offset = 0.0
+
+t_min = 0.0
+t_max = 1.4 * 2.0 * np.pi / omega_rabi
+num_points = 9
+t = np.linspace(t_min, t_max, num=num_points)
+
+sz = harmonic_oscillation(t, omega_rabi, amp=amp, phi=phi, offset=offset)
+
+# generate random samples with normally distributed errors
+num_samples = 50
+sigma = 0.55 * amp  # standard deviation
+rng = np.random.default_rng(42)
+sz_samples = sz[None, :] + rng.normal(loc=0.0, scale=sigma, size=(num_samples, sz.size))
+
+
+sz_mean = np.mean(sz_samples, axis=0)  # sample mean
+sz_std = np.std(sz_samples, axis=0)  # sample standard deviation
+sz_sem = np.std(sz_samples, axis=0, ddof=1) / np.sqrt(num_samples)  # standard error of the mean
+
+
+f, ax = plt.subplots()
+
+ax.errorbar(t * omega_rabi / (2.0 * np.pi), sz_mean, sz_sem, linestyle="None", marker=".")
+
+ax.fill_between(t * omega_rabi / (2.0 * np.pi), sz_mean + sz_std, sz_mean - sz_std, alpha=0.25)
+
+popt, pcov = curve_fit(harmonic_oscillation, t, sz_mean, sigma=sz_sem, absolute_sigma=True)
+
+t_plot = np.linspace(t_min, t_max, num=1000)
+ax.plot(t_plot * omega_rabi / (2.0 * np.pi), harmonic_oscillation(t_plot, *popt), color="tab:orange")
+
+ax.set_xlabel(r"$\Omega_R t / 2\pi$")
+ax.set_ylabel(r"$\langle s_z \rangle$")
+
+#plt.show()
+plt.close(f)
+
+
+def compute_power_spectrum(t, y, omega, sign=1, normalize=False):
+    y = np.mean(y, axis=0)
+
+    popt, _ = curve_fit(harmonic_oscillation, t, y)
+
+    t_int = np.linspace(t.min(), t.max(), num=1000)
+    y_int = harmonic_oscillation(t_int, *popt)
+
+    omega = np.asarray(omega)[..., None]
+
+    z = trapezoid(y_int * np.exp(1j * sign * omega * t_int), x=t_int, axis=-1)
+
+    if normalize == "ortho":
+        z = z / np.sqrt(y_int.size)
+    elif normalize:
+        z = z / y_int.size
+    else:
+        pass
+
+    return np.abs(z) ** 2
+
+omega = np.linspace(-2.5 * omega_rabi, 2.5 * omega_rabi, num=100)
+
+# power spectrum computed with raw data set
+power_spectrum = compute_power_spectrum(t, sz_samples, omega)
+power_spectrum_error = np.zeros_like(power_spectrum)
+
+jackknife_pseudovalues = jackknife(
+    sz_samples,
+    lambda sz: compute_power_spectrum(t, sz, omega),
+)
+jackknife_estimate = jackknife_pseudovalues.mean(axis=0)
+jackknife_standard_error = jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0])
+
+print("jackknive_estimate", jackknife_estimate)
+print("jackknive_standard_error", jackknife_standard_error)
+
+# power spectrum computed with jackknife resampling (including error estimate)
+power_spectrum = jackknife_estimate
+power_spectrum_error = jackknife_standard_error
+
+f, ax = plt.subplots()
+
+line, = ax.plot(
+    omega / omega_rabi,
+    power_spectrum * omega_rabi ** 2,
+)
+
+ax.fill_between(
+    omega / omega_rabi,
+    (power_spectrum - power_spectrum_error) * omega_rabi ** 2,
+    (power_spectrum + power_spectrum_error) * omega_rabi ** 2,
+    color=line.get_color(),
+    alpha=0.25,
+)
+
+ax.set_xlabel(r"Frequency $\omega / \Omega_R$")
+ax.set_ylabel(r"Power spectrum $|z(\omega)|^2 \Omega_R^2$")
+
+plt.show()
+plt.close(f)
+
+
+def fit_and_arctanh(t, y):
+    y = np.mean(y, axis=0)
+
+    popt_sin, _ = curve_fit(harmonic_oscillation, t, y)
+    popt_cos, _ = curve_fit(harmonic_oscillation, t, y)
+
+    return popt_sin[1] / popt_cos[1] #np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
+
+
+jackknife_pseudovalues = jackknife(
+
+    sz_samples,
+
+    lambda sz: fit_and_arctanh(t, sz),
+
+)
+
+print("Jackknive Pseudovalues:", jackknife_pseudovalues.mean(axis=0))
+
+print("Jackknive Pseudovalues STD:", jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0]))
+
 
 def configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True):
     if usetex:
@@ -274,6 +410,8 @@ print(result1.params)
 nonherm_fitted_amplitude=result1.params.get("a").value
 print(nonherm_fitted_amplitude)
 
+
+
 # result.plot_fit(show_init=True)
 
 # plt.show()
@@ -372,12 +510,12 @@ endpoint = 9
 
 for o in omegas:
     integrals.append(
-        2 * np.pi * integrate.simps(yhf3[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
+        2 * np.pi * integrate.simpson(yhf3[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
                                     x0[startpoint:endpoint]))
 
 for o in omegas:
     integrals0.append(
-        2 * np.pi * integrate.simps(ynhf0[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
+        2 * np.pi * integrate.simpson(ynhf0[startpoint:endpoint] * np.exp(-1j * o * x0[startpoint:endpoint] * 2 * np.pi),
                                     x0[startpoint:endpoint]))
 
 #t("integrals", integrals)
@@ -516,10 +654,10 @@ integralsshort = []
 integralsshort0 = []
 
 for o in omegas:
-    integralsshort.append(2 * np.pi * integrate.simps(yhf3 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
+    integralsshort.append(2 * np.pi * integrate.simpson(yhf3 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
 
 for o in omegas:
-    integralsshort0.append(2 * np.pi * integrate.simps(ynhf0 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
+    integralsshort0.append(2 * np.pi * integrate.simpson(ynhf0 * np.exp(-1j * o * x0 * 2 * np.pi), x0))
 
 # ax1.errorbar(omegas, hermfactor*np.imag(integralsshort), hermfactor*fserror[0:len(integralsshort)], marker="o", color='black', linestyle='', markersize="3",
 #                  label=r'$\chi^{\prime\prime}(\omega)=\mathcal{I}(\mathcal{F}\langle [ \hat{s}_z(0),\hat{s}_z(t) ] \rangle)$')
@@ -936,12 +1074,23 @@ print("SpectrumRatioAtOmega1: ", (0.1663*hermfactor * (Omega * np.sin(2 * np.pi 
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2))) # =0.9998756
 
+
+x = 0.1663 * hermfactor
+x_err = 0.0093 * hermfactor
+y = 0.1407 * nonhermfactor
+y_err = 0.0129 * nonhermfactor
+a = 1.12196
+
 print("Amplitude Ratio: ", (0.1663*hermfactor)/(0.1407*nonhermfactor)*1.12196) # =0.999873
 
 print("Gauss Amplitude Ratio Error: ", (0.1663*hermfactor)/(0.1407*nonhermfactor) * 1.12196 * np.sqrt(0.0093**2 / 0.1663**2 + 0.0129**2 / 0.1407**2)) # =0.107
 
-print("MonteCarlo Amplitude Ratio Error", np.nanstd( np.arctanh( (0.1663+0.0093 * np.random.randn(1000000))*hermfactor
-                                                                           / ( (0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor) * 1.12196) ) ) # =0.57
+
+print("MonteCarlo Amplitude Ratio Error", np.nanstd( (0.1663+0.0093 * np.random.randn(1000000))*hermfactor
+                                                                           / ( (0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor) * 1.12196) ) # =0.57
+
+print("MonteCarlo STD arctanh(SpetrumRatioAtOmega1)", np.nanstd( np.arctanh(0.9998756287406783+0.11 * np.random.randn(1000000)) ) ) # =0.57
+
 
 print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
@@ -950,39 +1099,35 @@ print("MonteCarlo STD for SpetrumRatioAtOmega1: ", np.nanstd(((0.1663+0.0093 * n
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2)) )) # =0.11
 
-print("arctan(SpetrumRatioAtOmega1)", np.arctanh(0.9998756287406783)) # =4.84
+print("arctanh(SpetrumRatioAtOmega1)", np.arctanh(0.9998756287406783)) # =4.84
 
-print("MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd( np.arctanh(0.9998756287406783+0.11 * np.random.randn(1000000)) ) ) # =0.57
-
-x = 0.1663 * hermfactor
-x_err = 0.0093 * hermfactor
-y = 0.1407 * nonhermfactor
-y_err = 0.0129 * nonhermfactor
-a = 1.12196
 
 print( ( a*x / ((a*x)**2 - y**2) ) * (0.0129*nonhermfactor) )
 print( ( a*y / (y**2 - (a*x)**2) ) * (0.0093*hermfactor) )
 
-print("Gauss Error arctan(amplitude ratio)", np.sqrt( (( a*x / ((a*x)**2 - y**2) )**2) * (0.0129*nonhermfactor)**2 +
+print("Gauss Error arctanh(amplitude ratio)", np.sqrt( (( a*x / ((a*x)**2 - y**2) )**2) * (0.0129*nonhermfactor)**2 +
                                                       (( a*y / (y**2 - (a*x)**2) )**2) * (0.0093*hermfactor)**2))# =423
 
 
 print("Gauss Error on hbar Omega / k_b T  = ", a * np.sqrt( ( (y*x_err)**2 + (x*y_err)**2 ) / ( (a*x)**2-y**2 )**2 )   )
 
-print("Direct MonteCarlo STD arctan(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
+print("Direct MonteCarlo STD arctanh(SpetrumRatioAtOmega1)", np.nanstd(np.arctanh(((0.1663+0.0093 * np.random.randn(1000000))*hermfactor * (Omega * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - 1.0000001 * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2))
       /((0.1407+0.0129 * np.random.randn(1000000))*nonhermfactor * (1.0000001 * np.sin(2 * np.pi * 1.0000001 * T) * np.cos(2 * np.pi * Omega * T) - Omega * np.sin(
     2 * np.pi * Omega * T) * np.cos(2 * np.pi * 1.0000001 * T))
                   / ((1.0000001) ** 2 - Omega ** 2)) ))) # = 0.57
 
-print("1/arctan", 1/(2*4.84)) # =0.1
+print("1/arctanh", 1/(2*4.84)) # =0.1
 
-print("Error on 1/arctan", 1/(2*4.84)*(0.57/4.84)) # =0.012
+print("Error on 1/arctanh", 1/(2*4.84)*(0.57/4.84)) # =0.012
 
 print("e^(-2*4.84)", np.exp(-2*4.84) ) # =6.25*10^-5
 
 print("Monte Carlo STD e^(-2*4.84)", np.nanstd(np.exp(  -2*(4.84+0.57*np.random.randn(1000000))  )) ) # =20*10^-5
+
+
+print("Gauss Error e^(-2*4.84)", 2*np.exp(-2*4.84)*0.55 ) # =6.25*10^-5
 
 
 #Temp=10**(-5)
