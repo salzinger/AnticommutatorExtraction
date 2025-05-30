@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="Monte Carlo compared to Gauss">
-      <change beforePath="$PROJECT_DIR$/.idea/AnticommutatorExtraction.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/AnticommutatorExtraction.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" afterDir="false" />
     </list>
@@ -186,13 +184,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1659634219673</updated>
-    </task>
-    <task id="LOCAL-00006" summary="dft padded">
-      <created>1685473269852</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1685473269852</updated>
     </task>
     <task id="LOCAL-00007" summary="dft left vs right padded">
       <created>1685528118149</created>
@@ -550,7 +541,14 @@
       <option name="project" value="LOCAL" />
       <updated>1746189032857</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="Monte Carlo compared to Gauss compared to jackknive">
+      <created>1748600477319</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1748600477319</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -582,7 +580,8 @@
     <MESSAGE value="mente carlos" />
     <MESSAGE value="Monte Carlo" />
     <MESSAGE value="Monte Carlo compared to Gauss" />
-    <option name="LAST_COMMIT_MESSAGE" value="Monte Carlo compared to Gauss" />
+    <MESSAGE value="Monte Carlo compared to Gauss compared to jackknive" />
+    <option name="LAST_COMMIT_MESSAGE" value="Monte Carlo compared to Gauss compared to jackknive" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

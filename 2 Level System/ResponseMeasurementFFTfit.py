@@ -58,8 +58,11 @@ def jackknife(x, estimator):
     return n * theta_raw - (n - 1) * jackknife_replicates
 
 
-def harmonic_oscillation(t, omega, amp=1.0, phi=0.0, offset=0.0):
+def harmonic_oscillation(t, omega, amp=1.0, phi=0.0, offset=0.0, start=0, end=1.36 * 2.0 * np.pi):
     return offset + amp * np.cos(omega * t + phi)
+
+def minus_sine(t, omega, amp=1.0, phi=0.0, offset=0.0, start=2 * 2.0 * np.pi, end=2 * 2.0 * np.pi + 1.36 * 2.0 * np.pi):
+    return offset - amp * np.sin(omega * t + phi)
 
 amp = 0.15
 omega_rabi = 1.0
@@ -67,9 +70,16 @@ phi = 0.0
 offset = 0.0
 
 t_min = 0.0
-t_max = 1.4 * 2.0 * np.pi / omega_rabi
+t_max = 1.36 * 2.0 * np.pi / omega_rabi
 num_points = 9
 t = np.linspace(t_min, t_max, num=num_points)
+
+t_min = 2 * 2.0 * np.pi
+t_max = 2 * 2.0 * np.pi + 1.36 * 2.0 * np.pi
+num_points = 9
+t = np.append(t, np.linspace(t_min, t_max, num=num_points))
+
+#print("t-array=", t)
 
 sz = harmonic_oscillation(t, omega_rabi, amp=amp, phi=phi, offset=offset)
 
@@ -96,10 +106,14 @@ popt, pcov = curve_fit(harmonic_oscillation, t, sz_mean, sigma=sz_sem, absolute_
 t_plot = np.linspace(t_min, t_max, num=1000)
 ax.plot(t_plot * omega_rabi / (2.0 * np.pi), harmonic_oscillation(t_plot, *popt), color="tab:orange")
 
+popt1, pcov1 = curve_fit(minus_sine, t, sz_mean, sigma=sz_sem, absolute_sigma=True)
+
+ax.plot(t_plot * omega_rabi / (2.0 * np.pi), minus_sine(t_plot, *popt1), color="tab:green")
+
 ax.set_xlabel(r"$\Omega_R t / 2\pi$")
 ax.set_ylabel(r"$\langle s_z \rangle$")
 
-#plt.show()
+plt.show()
 plt.close(f)
 
 
@@ -134,11 +148,12 @@ jackknife_pseudovalues = jackknife(
     sz_samples,
     lambda sz: compute_power_spectrum(t, sz, omega),
 )
+
 jackknife_estimate = jackknife_pseudovalues.mean(axis=0)
 jackknife_standard_error = jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0])
 
-print("jackknive_estimate", jackknife_estimate)
-print("jackknive_standard_error", jackknife_standard_error)
+#print("jackknive_estimate", jackknife_estimate)
+#print("jackknive_standard_error", jackknife_standard_error)
 
 # power spectrum computed with jackknife resampling (including error estimate)
 power_spectrum = jackknife_estimate
@@ -162,15 +177,15 @@ ax.fill_between(
 ax.set_xlabel(r"Frequency $\omega / \Omega_R$")
 ax.set_ylabel(r"Power spectrum $|z(\omega)|^2 \Omega_R^2$")
 
-plt.show()
+#plt.show()
 plt.close(f)
 
 
 def fit_and_arctanh(t, y):
     y = np.mean(y, axis=0)
 
-    popt_sin, _ = curve_fit(harmonic_oscillation, t, y)
-    popt_cos, _ = curve_fit(harmonic_oscillation, t, y)
+    popt_sin, _ = curve_fit(minus_sine, t[0:9], y[0:9])
+    popt_cos, _ = curve_fit(harmonic_oscillation, t[9:19], y[9:19])
 
     return popt_sin[1] / popt_cos[1] #np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
