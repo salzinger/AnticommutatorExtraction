@@ -58,11 +58,13 @@ def jackknife(x, estimator):
     return n * theta_raw - (n - 1) * jackknife_replicates
 
 
-def harmonic_oscillation(t, omega, amp=1.0, phi=0.0, offset=0.0, start=0, end=1.36 * 2.0 * np.pi):
-    return offset + amp * np.cos(omega * t + phi)
+def harmonic_oscillation(t, omega, amp=1.0):#, phi=0.0, offset=0.0, start=0, end=1.36 * 2.0 * np.pi):
+    return  amp * np.cos(omega * t)
+    #return offset + amp * np.cos(omega * t + phi)
 
-def minus_sine(t, omega, amp=1.0, phi=0.0, offset=0.0, start=2 * 2.0 * np.pi, end=2 * 2.0 * np.pi + 1.36 * 2.0 * np.pi):
-    return offset - amp * np.sin(omega * t + phi)
+def minus_sine(t, omega, amp=1.0):#, phi=0.0, offset=0.0, start=2 * 2.0 * np.pi, end=2 * 2.0 * np.pi + 1.36 * 2.0 * np.pi):
+    return - amp * np.sin(omega * t)
+    #return offset - amp * np.sin(omega * t + phi)
 
 amp = 0.15
 omega_rabi = 1.0
@@ -81,20 +83,24 @@ t = np.append(t, np.linspace(t_min, t_max, num=num_points))
 
 #print("t-array=", t)
 
-sz = harmonic_oscillation(t[9:19], omega_rabi, amp=amp, phi=phi, offset=offset)
+sz = harmonic_oscillation(t[9:19], omega_rabi, amp=amp)#, phi=phi, offset=offset)
 
-sz = np.append(sz, minus_sine(t[0:9], omega_rabi, amp=amp, phi=phi, offset=offset))
+sz = np.append(sz, minus_sine(t[0:9], omega_rabi, amp=amp))#, phi=phi, offset=offset))
+
 
 # generate random samples with normally distributed errors
-num_samples = 50
+num_samples = 10
 sigma = 0.55 * amp  # standard deviation
 rng = np.random.default_rng(42)
 sz_samples = sz[None, :] + rng.normal(loc=0.0, scale=sigma, size=(num_samples, sz.size))
+
+#print("sz_samples", sz_samples)
 
 
 sz_mean = np.mean(sz_samples, axis=0)  # sample mean
 sz_std = np.std(sz_samples, axis=0)  # sample standard deviation
 sz_sem = np.std(sz_samples, axis=0, ddof=1) / np.sqrt(num_samples)  # standard error of the mean
+
 
 
 f, ax = plt.subplots()
@@ -189,7 +195,7 @@ def fit_and_arctanh(t, y):
     popt_sin, _ = curve_fit(minus_sine, t[9:19], y[9:19])
     popt_cos, _ = curve_fit(harmonic_oscillation, t[0:9], y[0:9])
 
-    return popt_sin[1] / popt_cos[1] #np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
+    return 1.122 * popt_sin[1] / popt_cos[1]#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
 
 jackknife_pseudovalues = jackknife(
@@ -200,9 +206,9 @@ jackknife_pseudovalues = jackknife(
 
 )
 
-print("Jackknive Pseudovalues:", jackknife_pseudovalues.mean(axis=0))
+#print("Jackknive Pseudovalues:", jackknife_pseudovalues.mean(axis=0))
 
-print("Jackknive Pseudovalues STD:", jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0]))
+#print("Jackknive Pseudovalues STD:", jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0]))
 
 
 def configure_plots(fontsize_figure=None, fontsize_inset=None, usetex=True):
@@ -352,6 +358,63 @@ for element in range(1, 10):
 ft = np.fft.fft(y0)
 
 freq = np.fft.fftfreq(ft.size, x0[1])
+
+
+sz_real_data = nonhermfactor*np.array(y0)
+
+sz_real_data = np.append(sz_real_data, hermfactor*np.array(y3))
+
+print(sz_real_data)
+
+# generate random samples with normally distributed errors
+num_samples = 200
+sigma = 0.012 * nonhermfactor # standard deviation
+rng = np.random.default_rng(42)
+sz_real_samples = sz_real_data[None, :] + rng.normal(loc=0.0, scale=sigma, size=(num_samples, sz_real_data.size))
+
+#print("sz_samples", sz_samples)
+
+sz_real_mean = np.mean(sz_real_samples, axis=0)  # sample mean
+sz_real_std = np.std(sz_real_samples, axis=0)  # sample standard deviation
+sz_real_sem = np.std(sz_real_samples, axis=0, ddof=1) / np.sqrt(num_samples)  # standard error of the mean
+
+
+
+f, ax = plt.subplots()
+
+ax.errorbar(t * omega_rabi / (2.0 * np.pi), sz_real_mean, sz_real_sem, linestyle="None", marker=".")
+
+ax.fill_between(t * omega_rabi / (2.0 * np.pi), sz_real_mean + sz_real_std, sz_real_mean - sz_real_std, alpha=0.25)
+
+popt, pcov = curve_fit(harmonic_oscillation, t[0:9], sz_real_mean[0:9], sigma=sz_real_sem[0:9], absolute_sigma=True)
+
+t_plot = np.linspace(0, t_max, num=1000)
+ax.plot(t_plot[0:450] * omega_rabi / (2.0 * np.pi), harmonic_oscillation(t_plot[0:450], *popt), color="tab:orange")
+
+popt1, pcov1 = curve_fit(minus_sine, t[9:19], sz_real_mean[9:19], sigma=sz_real_sem[9:19], absolute_sigma=True)
+
+ax.plot(t_plot[600:1000] * omega_rabi / (2.0 * np.pi), minus_sine(t_plot[600:1000], *popt1), color="tab:green")
+
+ax.set_xlabel(r"$\Omega_R t / 2\pi$")
+ax.set_ylabel(r"$Real Data \langle s_z \rangle$")
+
+jackknife_pseudovalues = jackknife(
+
+    sz_real_samples,
+
+    lambda sz: fit_and_arctanh(t, sz),
+
+)
+
+print("Jackknive Real Data Pseudovalues:", jackknife_pseudovalues.mean(axis=0))
+
+print("Jackknive Real Data Pseudovalues STD:", jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0]))
+
+
+plt.show()
+plt.close(f)
+
+
 
 
 def psd(data, samples, sample_time):
