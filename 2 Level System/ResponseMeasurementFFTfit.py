@@ -491,7 +491,7 @@ params1.add('a', value=0.1)
 #params1.add('f', value=1)
 
 dmodel1 = Model(damped_cosine)
-result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3) / y3e[0], t=x)
+result1 = dmodel1.fit(y11, params1, weights=np.ones_like(y3) / y0e[0], t=x)
 print(result1.fit_report())
 
 print(result1.params)
