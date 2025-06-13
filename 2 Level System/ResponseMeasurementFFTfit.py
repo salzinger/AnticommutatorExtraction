@@ -195,6 +195,8 @@ def fit_and_arctanh(t, y):
     popt_sin, _ = curve_fit(minus_sine, t[9:19], y[9:19])
     popt_cos, _ = curve_fit(harmonic_oscillation, t[0:9], y[0:9])
 
+    print("value of fit ratio: ", 1.122 * popt_sin[1] / popt_cos[1])
+
     return 1.122 * popt_sin[1] / popt_cos[1]#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
 
@@ -367,8 +369,8 @@ sz_real_data = np.append(sz_real_data, hermfactor*np.array(y3))
 print(sz_real_data)
 
 # generate random samples with normally distributed errors
-num_samples = 200
-sigma = 0.012 * nonhermfactor # standard deviation
+num_samples = 50
+sigma = (0.013 * nonhermfactor +0.012 *hermfactor)/2 # standard deviation
 rng = np.random.default_rng(42)
 sz_real_samples = sz_real_data[None, :] + rng.normal(loc=0.0, scale=sigma, size=(num_samples, sz_real_data.size))
 
@@ -415,8 +417,6 @@ plt.show()
 plt.close(f)
 
 
-
-
 def psd(data, samples, sample_time):
     long = data
     fs = samples / sample_time
@@ -459,7 +459,6 @@ y11 = np.asarray(y0)
 def damped_cosine(t, a):
     return (a * np.cos(2 * np.pi * (t)))
 
-
 def damped_sine(t, a):
     return (-a * np.sin(2 * np.pi * (t)))
 
@@ -490,11 +489,56 @@ print(result1.params)
 nonherm_fitted_amplitude=result1.params.get("a").value
 print(nonherm_fitted_amplitude)
 
+def real_fit_and_arctanh(t, y):
+    y = np.mean(y, axis=0)
 
+    params = Parameters()
+    params.add('a', value=0.1)
+    # params.add('d', value=0.01, min=0)
+    # params.add('p', value=0)
+    # params.add('f', value=1)
+
+    dmodel = Model(damped_sine)
+    result = dmodel.fit(y[9:19], params, weights=np.ones_like(y[9:19]) / y3e[0] / nonhermfactor, t=t[9:19])
+    #print(result.fit_report())
+
+    herm_fitted_amplitude = result.params.get("a").value # * hermfactor
+    #print(herm_fitted_amplitude)
+    params1 = Parameters()
+
+    params1.add('a', value=0.1)
+    # params1.add('d', value=0.01, min=0)
+    # params1.add('p', value=0)
+    # params1.add('f', value=1)
+
+    dmodel1 = Model(damped_cosine)
+    result1 = dmodel1.fit(y[0:9], params1, weights=np.ones_like(y[0:9]) / y3e[0] / hermfactor, t=t[0:9])
+    #print(result1.fit_report())
+
+    #print(result1.params)
+    nonherm_fitted_amplitude = result1.params.get("a").value #* nonhermfactor
+    #print(nonherm_fitted_amplitude)
+
+    print("value of REAL FIT ratio: ", 1.122 * herm_fitted_amplitude / nonherm_fitted_amplitude)
+
+    return 1.122 * herm_fitted_amplitude / nonherm_fitted_amplitude#popt_sin[1] / popt_cos[1]#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
 # result.plot_fit(show_init=True)
 
 # plt.show()
+
+jackknife_pseudovalues = jackknife(
+
+    sz_real_samples,
+
+    lambda sz: real_fit_and_arctanh(t, sz),
+
+)
+
+print("Jackknive Real Data REAL FIT Pseudovalues:", jackknife_pseudovalues.mean(axis=0))
+
+print("Jackknive Real Data REAL FIT Pseudovalues STD:", jackknife_pseudovalues.std(axis=0, ddof=1) / np.sqrt(jackknife_pseudovalues.shape[0]))
+
 
 
 y0e = y0e[0:len(y0)]
