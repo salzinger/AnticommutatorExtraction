@@ -185,13 +185,6 @@
       <option name="presentableId" value="Default" />
       <updated>1659634219673</updated>
     </task>
-    <task id="LOCAL-00010" summary="replot">
-      <created>1693761349618</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1693761349618</updated>
-    </task>
     <task id="LOCAL-00011" summary="replot">
       <created>1693764241709</created>
       <option name="number" value="00011" />
@@ -548,7 +541,14 @@
       <option name="project" value="LOCAL" />
       <updated>1748792106470</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="Monte Carlo compared to Gauss compared to jackknive">
+      <created>1749812038837</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1749812038837</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
