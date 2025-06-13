@@ -549,7 +549,7 @@ def real_fit_and_arctanh(t, y):
     nonherm_fitted_amplitude = result1.params.get("a").value * nonhermfactor
     #print(nonherm_fitted_amplitude)
 
-    print("value of REAL FIT ratio: ", *1.12196 * herm_fitted_amplitude / nonherm_fitted_amplitude)
+    print("value of REAL FIT ratio: ", 1.12196 * herm_fitted_amplitude / nonherm_fitted_amplitude)
 
     return 1.122 * herm_fitted_amplitude / nonherm_fitted_amplitude#popt_sin[1] / popt_cos[1]#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
