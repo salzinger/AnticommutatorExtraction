@@ -84,6 +84,7 @@ t_max = 2 * 2.0 * np.pi + 1.36 * 2.0 * np.pi
 num_points = 9
 t = np.append(t, np.linspace(t_min, t_max, num=num_points))
 
+real_times = t
 #print("t-array=", t)
 
 sz = harmonic_oscillation(t[9:19], omega_rabi, amp=amp)#, phi=phi, offset=offset)
@@ -121,7 +122,7 @@ popt1, pcov1 = curve_fit(minus_sine, t[9:19], sz_mean[9:19], sigma=sz_sem[9:19],
 
 ax.plot(t_plot[500:1000] * omega_rabi / (2.0 * np.pi), minus_sine(t_plot[500:1000], *popt1), color="tab:green")
 
-print("FIGURE RATIO: ", 1.122 * (popt1[1] * hermfactor) / (popt[1] * nonhermfactor))
+#print("FIGURE RATIO: ", 1.122 * (popt1[1] * hermfactor) / (popt[1] * nonhermfactor))
 
 ax.set_xlabel(r"$\Omega_R t / 2\pi$")
 ax.set_ylabel(r"$\langle s_z \rangle$")
@@ -200,7 +201,7 @@ def fit_and_arctanh(t, y):
     popt_sin, _ = curve_fit(minus_sine, t[9:19], y[9:19])
     popt_cos, _ = curve_fit(harmonic_oscillation, t[0:9], y[0:9])
 
-    print("value of fit ratio: ", (1.122 * popt_sin[1] * hermfactor) / (popt_cos[1] * nonhermfactor) )
+    #print("value of fit ratio: ", (1.122 * popt_sin[1] * hermfactor) / (popt_cos[1] * nonhermfactor) )
 
     return (1.122 * popt_sin[1] * hermfactor) / (popt_cos[1] * nonhermfactor)#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
 
@@ -375,7 +376,7 @@ print(sz_real_data)
 
 # generate random samples with normally distributed errors
 num_samples = 50
-sigma = (0.013 * nonhermfactor + 0.012 * hermfactor)/2 # standard deviation
+sigma = (0.013 + 0.012 )/2 # standard deviation
 rng = np.random.default_rng(42)
 sz_real_samples = sz_real_data[None, :] + rng.normal(loc=0.0, scale=sigma, size=(num_samples, sz_real_data.size))
 
@@ -465,6 +466,7 @@ y = np.asarray(y3)
 y11 = np.asarray(y0)
 
 
+
 def damped_cosine(t, a):
     return (a * np.cos(2 * np.pi * (t)))
 
@@ -519,39 +521,60 @@ plt.close(f)
 def real_fit_and_arctanh(t, y):
     y = np.mean(y, axis=0)
 
+    #t= t / 2 / np.pi
+    #print(t[0:9])
+    #print(y[0:9])
+
     #popt_sin, _ = curve_fit(minus_sine, t[9:19], y[9:19])
     #popt_cos, _ = curve_fit(harmonic_oscillation, t[0:9], y[0:9])
 
     params = Parameters()
-    params.add('a', value=0.1)
+    params.add('a', value=0.15)
     # params.add('d', value=0.01, min=0)
     # params.add('p', value=0)
     # params.add('f', value=1)
 
     dmodel = Model(damped_sine)
-    result = dmodel.fit(y[9:19], params, weights=np.ones_like(y[9:19]) / y3e[0] / nonhermfactor, t=t[9:19])
+    result = dmodel.fit(y[9:19], params, weights=np.ones_like(y[9:19]) / y3e[0] / nonhermfactor, t=real_times[9:19]/2/np.pi)
     #print(result.fit_report())
 
-    herm_fitted_amplitude = result.params.get("a").value * hermfactor
+    herm_fitted_amplitude = result.params.get("a").value# * hermfactor
     #print(herm_fitted_amplitude)
     params1 = Parameters()
 
-    params1.add('a', value=0.1)
+    params1.add('a', value=0.15)
     # params1.add('d', value=0.01, min=0)
     # params1.add('p', value=0)
     # params1.add('f', value=1)
 
     dmodel1 = Model(damped_cosine)
-    result1 = dmodel1.fit(y[0:9], params1, weights=np.ones_like(y[0:9]) / y0e[0] / hermfactor, t=t[0:9])
+    result1 = dmodel1.fit(y[0:9], params1, weights=np.ones_like(y[0:9]) / y0e[0] / hermfactor, t=real_times[0:9]/2/np.pi)
     #print(result1.fit_report())
 
     #print(result1.params)
-    nonherm_fitted_amplitude = result1.params.get("a").value * nonhermfactor
+    nonherm_fitted_amplitude = result1.params.get("a").value# * nonhermfactor
     #print(nonherm_fitted_amplitude)
+    '''
+    f, ax = plt.subplots()
 
-    print("value of REAL FIT ratio: ", 1.12196 * herm_fitted_amplitude / nonherm_fitted_amplitude)
+    ax.errorbar(real_times/2/np.pi, sz_real_mean, sz_real_sem, linestyle="None", marker=".")
 
-    return 1.122 * herm_fitted_amplitude / nonherm_fitted_amplitude#popt_sin[1] / popt_cos[1]#np.arctanh(1.122 * popt_sin[1] / popt_cos[1])
+    # ax.fill_between(t * omega_rabi / (2.0 * np.pi), sz_real_mean + sz_real_std, sz_real_mean - sz_real_std, alpha=0.25)
+
+    t_plot = np.linspace(0, real_times[-1]/2/np.pi, num=1000)
+    ax.plot(t_plot[0:450], damped_cosine(t_plot[0:450], nonherm_fitted_amplitude), color="tab:orange")
+
+    ax.plot(t_plot[600:1000], damped_sine(t_plot[600:1000], herm_fitted_amplitude), color="tab:green")
+
+    print("FIGURE RATIO REAL FIT REAL DATA: ",  (1.12196 * herm_fitted_amplitude * hermfactor) / (nonherm_fitted_amplitude * nonhermfactor))
+
+    plt.show()
+    plt.close(f)
+    '''
+
+    #print("value of REAL FIT ratio: ", 1.12196 * herm_fitted_amplitude / nonherm_fitted_amplitude)
+
+    return (1.12196 * herm_fitted_amplitude * hermfactor) / (nonherm_fitted_amplitude * nonhermfactor)
 
 # result.plot_fit(show_init=True)
 
@@ -561,7 +584,7 @@ jackknife_pseudovalues = jackknife(
 
     sz_real_samples,
 
-    lambda sz: real_fit_and_arctanh(t, sz),
+    lambda sz: real_fit_and_arctanh(real_times, sz),
 
 )
 
@@ -958,9 +981,26 @@ result = dmodel.fit(np.concatenate((np.imag(np.fft.fft(yhf3, norm="backward"))[i
 print(result.fit_report())
 
 print(nonherm_fitted_amplitude)
+print(herm_fitted_amplitude)
 print("nonhermfactor*fit result cos", nonhermfactor*nonherm_fitted_amplitude)
 print("hermfactor*fit result sin", hermfactor*herm_fitted_amplitude)
+print("factored ratio", (hermfactor*herm_fitted_amplitude) / (nonhermfactor*nonherm_fitted_amplitude) * 1.122)
 
+
+#dist1 = prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(10000)) #rng.standard_normal(N_points)
+
+dist1 = (hermfactor* (herm_fitted_amplitude + 0.01 * np.random.randn(10000))) / (nonhermfactor*
+                                    (nonherm_fitted_amplitude + 0.01 * np.random.randn(10000))) * 1.122
+
+fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
+
+# We can set the number of bins with the *bins* keyword argument.
+axs.hist(dist1, bins=50)
+#axs[1].hist(dist2, bins=n_bins)
+
+plt.show()
+
+'''
 print("residual vector: ", result.residual)
 
 print("maximum hf", np.imag(np.fft.fft(yhf3, norm="backward"))[166:int(len(ynhf0) / 2 - 333)])
@@ -991,6 +1031,10 @@ print("One std error: ", prefactor/2/np.arctanh(0.9975-0.08245))
 
 
 print("Monte Carlo error: ", np.nanstd(prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(1000))))
+
+'''
+
+
 
 '''
 ax1.errorbar(np.fft.fftfreq(len(ynhf0), d=x0[1])[168:int(len(ynhf0) / 2 - 325)],
