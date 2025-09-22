@@ -4,6 +4,7 @@ from Atoms import *
 from Driving import *
 import matplotlib.pyplot as plt
 from scipy import integrate
+import math
 
 from scipy.optimize import curve_fit
 from scipy.integrate import trapezoid
@@ -989,13 +990,31 @@ print("factored ratio", (hermfactor*herm_fitted_amplitude) / (nonhermfactor*nonh
 
 #dist1 = prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(10000)) #rng.standard_normal(N_points)
 
-dist1 = (hermfactor* (herm_fitted_amplitude + 0.01 * np.random.randn(10000))) / (nonhermfactor*
+dist1 = (hermfactor * (herm_fitted_amplitude + 0.01 * np.random.randn(10000))) / (nonhermfactor *
                                     (nonherm_fitted_amplitude + 0.01 * np.random.randn(10000))) * 1.122
+#dist1 = np.arctanh(dist1)
+fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
+
+# We can set the number of bins with the *bins* keyword argument.
+axs.hist(dist1, bins=100)
+axs.set_xlabel("r_f * Herm / Nonherm ")
+#axs[1].hist(dist2, bins=n_bins)
+
+plt.show()
+
+dist2=[]
+
+for element in dist1:
+    if math.isnan(np.arctanh(element)):
+        dist2.append(element-1)
+    else: dist2.append(np.arctanh(element))
+
 
 fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 
 # We can set the number of bins with the *bins* keyword argument.
-axs.hist(dist1, bins=50)
+axs.hist(dist2, bins=100)
+axs.set_xlabel("arctanh(r_f * Herm / Nonherm)")
 #axs[1].hist(dist2, bins=n_bins)
 
 plt.show()
