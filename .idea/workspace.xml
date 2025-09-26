@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" beforeDir="false" afterPath="$PROJECT_DIR$/2 Level System/ResponseMeasurementFFTfit.py" afterDir="false" />
-    </list>
+    <list default="true" id="c756bc1a-c861-45e0-b79c-07b5ef79dc9c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -184,13 +181,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1659634219673</updated>
-    </task>
-    <task id="LOCAL-00016" summary="replot">
-      <created>1694448781513</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1694448781513</updated>
     </task>
     <task id="LOCAL-00017" summary="added control sequence">
       <created>1694681864872</created>
@@ -548,7 +538,14 @@
       <option name="project" value="LOCAL" />
       <updated>1758548356642</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="Monte Carlo histograms">
+      <created>1758551130717</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1758551130717</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
