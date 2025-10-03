@@ -989,9 +989,21 @@ print("factored ratio", (hermfactor*herm_fitted_amplitude) / (nonhermfactor*nonh
 
 
 #dist1 = prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(10000)) #rng.standard_normal(N_points)
+def gaussian (x,mu,sigma):
+    return 1/(sigma*np.sqrt(2*np.pi))*np.exp(-0.5*(((xvalues-mu)/(2*sigma))**2))
 
-dist1 = (hermfactor * (herm_fitted_amplitude + 0.01 * np.random.randn(10000))) / (nonhermfactor *
-                                    (nonherm_fitted_amplitude + 0.01 * np.random.randn(10000))) * 1.122
+mu1, sigma1 = 0, 0.01 # mean and standard deviation
+
+
+
+rng = np.random.default_rng()
+
+srandom1 = rng.normal(mu1, sigma1, 4000)
+
+srandom2 = rng.normal(mu1, sigma1, 4000)
+
+dist1 = (hermfactor * (herm_fitted_amplitude + srandom1)) / (nonhermfactor *
+                                    (nonherm_fitted_amplitude + srandom2)) * 1.122
 #dist1 = np.arctanh(dist1)
 fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 
@@ -1002,12 +1014,66 @@ axs.set_xlabel("r_f * Herm / Nonherm ")
 
 plt.show()
 
+from scipy.stats import norm
+
+fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
+
+# We can set the number of bins with the *bins* keyword argument.
+axs.hist(dist1, bins=100, density=True)
+
+(mu, sigma) = norm.fit(dist1)
+
+print("mu=", mu)
+print("sigma=", sigma)
+
+xvalues = np.linspace(start=np.min(dist1), stop=np.max(dist1), num=100)
+
+l = plt.plot(xvalues, gaussian(xvalues,mu=mu,sigma=sigma))
+
+plt.title(r'$\mathrm{Histogram\ of\ Amplitude Ratios:}\ \mu=%.3f,\ \sigma=%.3f$' %(mu, sigma))
+
+axs.set_xlabel("r_f * Herm / Nonherm ")
+
+plt.show()
+
 dist2=[]
 
 for element in dist1:
-    if math.isnan(np.arctanh(element)):
-        dist2.append(element-1)
-    else: dist2.append(np.arctanh(element))
+    if element > 1:#math.isnan(np.arctanh(element)):
+        None#print("error")#dist2.append(np.random.randn(1)[0]*4)
+    else:dist2.append(np.arctanh(element))
+
+print("MeanDist1", np.mean(dist1))
+print("MedianDist1", np.median(dist1))
+
+print("STDDist1", np.std(dist1))
+
+
+print("MeanDist2", np.mean(dist2))
+print("MedianDist2", np.median(dist2))
+
+print("STDDist2", np.std(dist2))
+
+
+dist3 = []
+
+for element in dist2:
+    dist3.append(2/element)
+
+print("MeanDistTEMP", np.mean(dist3))
+print("MedianDistTEMP", np.median(dist3))
+
+print("STDDistTEMP", np.std(dist3))
+
+from scipy.stats import shapiro
+
+print("Shapiro Dist1 Amplitues", shapiro(dist1))
+
+print("Shapiro Dist2 arctanh(Amplitues)", shapiro(dist2))
+
+print("Shapiro Dist3 kB T [hbar Omega]", shapiro(dist3))
+
+
 
 
 fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
@@ -1016,6 +1082,29 @@ fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 axs.hist(dist2, bins=100)
 axs.set_xlabel("arctanh(r_f * Herm / Nonherm)")
 #axs[1].hist(dist2, bins=n_bins)
+
+plt.show()
+
+
+from scipy.stats import norm
+
+fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
+
+# We can set the number of bins with the *bins* keyword argument.
+axs.hist(dist3, bins=100, density=True)
+
+(mu, sigma) = norm.fit(dist3)
+
+print("mu=", mu)
+print("sigma=", sigma)
+
+xvalues = np.linspace(start=np.min(dist3), stop=np.max(dist3), num=100)
+
+l = plt.plot(xvalues, gaussian(xvalues,mu=mu,sigma=sigma))
+
+plt.title(r'$\mathrm{Histogram\ of\ Temperatures:}\ \mu=%.3f,\ \sigma=%.3f$' %(mu, sigma))
+
+axs.set_xlabel("k_bT [hbar Omega]")
 
 plt.show()
 
