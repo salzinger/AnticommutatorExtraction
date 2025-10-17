@@ -988,6 +988,8 @@ print("hermfactor*fit result sin", hermfactor*herm_fitted_amplitude)
 print("factored ratio", (hermfactor*herm_fitted_amplitude) / (nonhermfactor*nonherm_fitted_amplitude) * 1.122)
 
 
+from scipy.stats import shapiro
+from scipy.stats import norm
 #dist1 = prefactor/2/np.arctanh(0.9975 + 0.08245 * np.random.randn(10000)) #rng.standard_normal(N_points)
 def gaussian (x,mu,sigma):
     return 1/(sigma*np.sqrt(2*np.pi))*np.exp(-0.5*(((xvalues-mu)/(2*sigma))**2))
@@ -998,12 +1000,25 @@ mu1, sigma1 = 0, 0.01 # mean and standard deviation
 
 rng = np.random.default_rng()
 
-srandom1 = rng.normal(mu1, sigma1, 4000)
+srandom1 = rng.normal(mu1, sigma1, 500)
 
-srandom2 = rng.normal(mu1, sigma1, 4000)
+srandom2 = rng.normal(mu1, sigma1, 500)
+
+dist0= herm_fitted_amplitude + srandom1
+
+print("shapiro dist0= ", shapiro(dist0))
+
+dist0= nonherm_fitted_amplitude + srandom2
+
+print("shapiro dist0= ", shapiro(dist0))
 
 dist1 = (hermfactor * (herm_fitted_amplitude + srandom1)) / (nonhermfactor *
                                     (nonherm_fitted_amplitude + srandom2)) * 1.122
+
+
+print("shapiro dist1= ", shapiro(dist1))
+
+
 #dist1 = np.arctanh(dist1)
 fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 
@@ -1014,7 +1029,6 @@ axs.set_xlabel("r_f * Herm / Nonherm ")
 
 plt.show()
 
-from scipy.stats import norm
 
 fig, axs = plt.subplots(1, 1, sharey=True, tight_layout=True)
 
@@ -1065,7 +1079,6 @@ print("MedianDistTEMP", np.median(dist3))
 
 print("STDDistTEMP", np.std(dist3))
 
-from scipy.stats import shapiro
 
 print("Shapiro Dist1 Amplitues", shapiro(dist1))
 
